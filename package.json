@@ -1,0 +1,45 @@
+{
+  "name": "plepgame",
+  "version": "0.0.1",
+  "description": "PLEP Developers Group horror/action/satire game",
+  "keywords": [
+    "Animation",
+    "game",
+    "engine",
+    "engine",
+    "horror",
+    "action",
+    "satire"
+  ],
+  "homepage": "https://github.com/presia27/plep-game-2026#readme",
+  "bugs": {
+    "url": "https://github.com/presia27/plep-game-2026/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/presia27/plep-game-2026.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Preston Sia (presia27)",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "buildserver": "tsc -p tsconfig.server.json",
+    "start": "node srvbuild/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "eslint": "^9.39.2",
+    "eslint-plugin-import": "^2.32.0",
+    "express": "^5.2.1",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.6"
+  }
+}

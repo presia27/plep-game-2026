@@ -1,0 +1,1 @@
+Image and sound assets go in this folder.
