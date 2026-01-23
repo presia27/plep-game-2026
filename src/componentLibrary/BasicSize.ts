@@ -1,4 +1,4 @@
-import { GameContext, IComponent, ISize } from "../classinterfaces";
+import { GameContext, IComponent, ISize } from "../classinterfaces.ts";
 
 /**
  * Very basic size component, suitable for most entities
@@ -13,8 +13,8 @@ export class BasicSize implements IComponent, ISize {
 
   constructor(width: number, height: number, scale: number) {
     this.scale = scale;
-    this.width = width * scale;
-    this.height = height * scale;
+    this.width = width;
+    this.height = height;
   }
 
   update(context: GameContext): void {
@@ -26,10 +26,10 @@ export class BasicSize implements IComponent, ISize {
   }
 
   getWidth(): number {
-    return this.width;
+    return this.width * this.scale;
   }
 
   getHeight(): number {
-    return this.height;
+    return this.height * this.scale;
   }
 }
