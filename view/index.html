@@ -10,7 +10,7 @@
     For scripts that are NOT modules, add the "defer" property if you need to ensure that
     the document is loaded before script execution.
     -->
-    <script type="module" src="js/samplefiles/main.js"></script>
+    <script type="module" src="js/gamefiles/main.js"></script>
 
     <style>
       @media (min-width: 1440px) {
@@ -26,33 +26,15 @@
   <body style="font-family: sans-serif;">
      <div id="mainContainer">
         <div>
-            <canvas id="gameWorld" width="1024" height="768" style="background: white; border: 1px solid black" tabindex="0" autofocus></canvas>
+            <canvas id="gameWorld" width="1280" height="720" style="background: white; border: 1px solid black" tabindex="0" autofocus></canvas>
             <div>
                 <button type="button" id="btnDebug">Toggle Debugging</button>
             </div>
         </div>
         <div>
-            <h1>Sample Cat Animation</h1>
-            <p>Preston Sia (presia27), forked from Dr. Chris Marriott's (algorithm0r) <a href="https://github.com/algorithm0r/Empty--GameEngine">Empty--GameEngine repository</a></p>
-            <p>Cat sprites by "asneakylittlebe" (Ellie) on  <a href="https://www.pinterest.com/pin/86412886593184356/" target="_blank">Pinterest</a></p>
-            <p>View the source code for this project on my <a href="https://github.com/presia27/AnimationEngineRefactor">GitHub</a></p>
-            <h2>About This Animation</h2>
+            <h1>491 Game Development Front-end</h1>
             <p>
-                The original sprite sheet has about 34 animations if I counted correctly (some are still frames).
-                I've animated 8 of them corresponding to different directions of the cat sprite walking. You can
-                use the WASD keys, including combinations, to view the different animations as the cat walks across
-                the canvas.
-            </p>
-            <h2>About This Refactor</h2>
-            <p>
-                This project builds on top of the previous <a href="https://github.com/presia27/AnimationTest1">animation demo project</a>
-                as a refactor of its code into TypeScript. The code powering the page has been transpiled into JavaScript from the
-                TypeScript source. Using TypeScript in development adds types, allowing code to be more reliable with fewer potential
-                bugs. Further, the logic of this animation has been re-organized into components, providing flexibility when used
-                as a base for larger projects. I originally stumbled over something called the Entity Component System (ECS), which
-                would have gone even further and organized the game completely out of components with entities containing almost nothing
-                but an ID. Ultimatly I decided not to go quite that far. Instead, entities are instantiated and behavior components added
-                to them, defining their behavior.
+                Primo, Luke, Emma, Preston
             </p>
         </div>
       </div>
