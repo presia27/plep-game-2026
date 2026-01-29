@@ -1,5 +1,6 @@
 import { GameContext } from "../../classinterfaces";
 import { Entity } from "../../entity.ts";
+import { Item } from "./item.ts";
 import { Order } from "./order.ts";
 
 export class OrderDeliveryLoop extends Entity {
@@ -20,7 +21,7 @@ export class OrderDeliveryLoop extends Entity {
    * @param totalOrders Total number of orders in a level
    */
   constructor(startTime: number, duration: number, promptIntervalFactor: number, totalOrders: number) {
-    // explicit call to super()
+    // explicit call to super
     super();
 
     this.startTime = startTime;
@@ -31,6 +32,9 @@ export class OrderDeliveryLoop extends Entity {
     this.activeOrders = [];
     this.doneOrders = [];
     this.lastPromptTime = null;
+
+    // Generate orders
+    this.generateOrders(totalOrders);
   }
 
   public override update(context: GameContext): void {
@@ -40,6 +44,19 @@ export class OrderDeliveryLoop extends Entity {
 
     if (currentTime < this.startTime + this.duration) {
       // do something
+    }
+  }
+
+  private generateOrders(quantity: number) {
+    for (let i = 0; i < quantity; i++) {
+      // THIS IS ALL TEST CODE
+      const order = new Order();
+      order.addItem(new Item("Toothpaste"));
+      order.addItem(new Item("Orange"));
+      order.addItem(new Item("Ice Cream"));
+      order.addItem(new Item("Item " + (i + 1)));
+
+      this.inactiveOrders.push(order);
     }
   }
 
