@@ -51,7 +51,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 181,      // x, y start
-      20, 20,      // width, height
+      20, 19,      // width, height
       4, 0.2,      // frame count, frame duration
       0,           // frame padding
       false,       // reverse
@@ -63,7 +63,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 201, 
-      20, 20, 
+      20, 19, 
       4, 0.2, 
       0, false, true, false
     ));
@@ -72,7 +72,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 221, 
-      20, 20, 
+      20, 19, 
       4, 0.2, 
       0, false, true, false
     ));
@@ -81,7 +81,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 241, 
-      20, 20, 
+      20, 19, 
       4, 0.2, 
       0, false, true, false
     ));
@@ -90,7 +90,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 261, 
-      20, 20, 
+      20, 19, 
       4, 0.2, 
       0, false, true, false
     ));
@@ -99,7 +99,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 281, 
-      20, 20, 
+      20, 19, 
       4, 0.2, 
       0, false, true, false
     ));
@@ -108,7 +108,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 301, 
-      20, 20, 
+      20, 19, 
       4, 0.2, 
       0, false, true, false
     ));
@@ -117,7 +117,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations.push(new Animator(
       this.spritesheet, 
       0, 321, 
-      20, 20, 
+      20, 19, 
       4, 0.2, 
       0, false, true, false
     ));
@@ -174,9 +174,9 @@ export class AnimatedSpriteRenderer implements IRenderer {
         context.ctx.drawImage(
           this.spritesheet,
           0, 181 + (this.currentDirection * 20), // x, y on spritesheet
-          20, 20, // source width, height
+          20, 19, // source width, height
           pos.x, pos.y, // destination x, y
-          20 * this.scale, 20 * this.scale // destination width, height
+          20 * this.scale, 19 * this.scale // destination width, height
         );
       }
     }

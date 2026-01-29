@@ -26,12 +26,11 @@ export class AnimatedSpriteRenderer {
     }
     /**
      * Load all 8 directional animations from the sprite sheet
-     * Based on EmployeeFullSpriteSheet layout
      */
     loadAnimations() {
         // 0 WALK DOWN
         this.animations.push(new Animator(this.spritesheet, 0, 181, // x, y start
-        20, 20, // width, height
+        20, 19, // width, height
         4, 0.2, // frame count, frame duration
         0, // frame padding
         false, // reverse
@@ -39,19 +38,19 @@ export class AnimatedSpriteRenderer {
         false // flipflop
         ));
         // 1 WALK DOWN-RIGHT
-        this.animations.push(new Animator(this.spritesheet, 0, 200, 20, 20, 4, 0.2, 0, false, true, false));
+        this.animations.push(new Animator(this.spritesheet, 0, 201, 20, 19, 4, 0.2, 0, false, true, false));
         // 2 WALK RIGHT
-        this.animations.push(new Animator(this.spritesheet, 0, 220, 20, 20, 4, 0.2, 0, false, true, false));
+        this.animations.push(new Animator(this.spritesheet, 0, 221, 20, 19, 4, 0.2, 0, false, true, false));
         // 3 WALK UP-RIGHT
-        this.animations.push(new Animator(this.spritesheet, 0, 240, 20, 20, 4, 0.2, 0, false, true, false));
+        this.animations.push(new Animator(this.spritesheet, 0, 241, 20, 19, 4, 0.2, 0, false, true, false));
         // 4 WALK UP
-        this.animations.push(new Animator(this.spritesheet, 0, 260, 20, 20, 4, 0.2, 0, false, true, false));
+        this.animations.push(new Animator(this.spritesheet, 0, 261, 20, 19, 4, 0.2, 0, false, true, false));
         // 5 WALK UP-LEFT
-        this.animations.push(new Animator(this.spritesheet, 0, 280, 20, 20, 4, 0.2, 0, false, true, false));
+        this.animations.push(new Animator(this.spritesheet, 0, 281, 20, 19, 4, 0.2, 0, false, true, false));
         // 6 WALK LEFT
-        this.animations.push(new Animator(this.spritesheet, 0, 300, 20, 20, 4, 0.2, 0, false, true, false));
+        this.animations.push(new Animator(this.spritesheet, 0, 301, 20, 19, 4, 0.2, 0, false, true, false));
         // 7 WALK DOWN-LEFT
-        this.animations.push(new Animator(this.spritesheet, 0, 320, 20, 20, 4, 0.2, 0, false, true, false));
+        this.animations.push(new Animator(this.spritesheet, 0, 321, 20, 19, 4, 0.2, 0, false, true, false));
     }
     /**
      * Update the current direction based on input and return if moving
@@ -104,9 +103,9 @@ export class AnimatedSpriteRenderer {
             else {
                 // Draw static idle frame when not moving (first frame of current direction)
                 context.ctx.drawImage(this.spritesheet, 0, 181 + (this.currentDirection * 20), // x, y on spritesheet
-                20, 20, // source width, height
+                20, 19, // source width, height
                 pos.x, pos.y, // destination x, y
-                20 * this.scale, 20 * this.scale // destination width, height
+                20 * this.scale, 19 * this.scale // destination width, height
                 );
             }
         }
