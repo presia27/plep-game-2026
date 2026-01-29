@@ -36,6 +36,9 @@ export default class GameEngine {
     // What you will use to draw
     // Documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
     this.ctx = ctx;
+    
+    // Disable image smoothing for crisp pixel art
+    this.ctx.imageSmoothingEnabled = false;
 
     this.timer = new Timer();
     this.clockTick = 0; // Game delta

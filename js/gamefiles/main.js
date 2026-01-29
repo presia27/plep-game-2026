@@ -8,5 +8,4 @@ if (ctx === null || ctx === undefined) {
 }
 const gameEngine = new GameEngine(ctx, myInputMap);
 const ASSET_MANAGER = new AssetManager();
-console.log("test");
 // Download assets and start the game engine and related systems
