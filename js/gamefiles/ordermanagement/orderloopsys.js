@@ -78,8 +78,15 @@ export class OrderDeliveryLoop extends Entity {
             }
             const curTime = times[j];
             if (curTime !== undefined) {
-                times[j] = curTime + random;
-                //let timeAdjusted = curTime + random;
+                // ensure that each timestamp is greater than the last one (doesn't quite work right now)
+                let timeAdjusted = curTime + random;
+                if (times.length > 1 && j < times.length - 1) {
+                    const previousTime = times[j + 1];
+                    if (previousTime !== undefined && timeAdjusted < previousTime) {
+                        timeAdjusted = previousTime + 1;
+                    }
+                }
+                times[j] = timeAdjusted;
             }
         }
         return times;
