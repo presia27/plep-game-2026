@@ -1,6 +1,7 @@
 import AssetManager from "../assetmanager.js";
 import GameEngine from "../gameengine.js";
 import { myInputMap } from "./inputmap.js";
+import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.js";
 const canvas = document.getElementById("gameWorld");
 const ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext("2d");
 if (ctx === null || ctx === undefined) {
@@ -8,5 +9,6 @@ if (ctx === null || ctx === undefined) {
 }
 const gameEngine = new GameEngine(ctx, myInputMap);
 const ASSET_MANAGER = new AssetManager();
-console.log("test");
+gameEngine.start();
+gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 7, 8));
 // Download assets and start the game engine and related systems

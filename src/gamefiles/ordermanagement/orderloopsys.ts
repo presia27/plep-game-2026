@@ -3,20 +3,24 @@ import { Entity } from "../../entity.ts";
 import { Item } from "./item.ts";
 import { Order } from "./order.ts";
 
+const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
+const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
+
 export class OrderDeliveryLoop extends Entity {
-  startTime: number;
-  duration: number;
-  promptIntervalFactor: number;
-  totalOrders: number;
-  inactiveOrders: Order[];
-  activeOrders: Order[];
-  doneOrders: Order[];
-  lastPromptTime: number | null;
+  private startTime: number;
+  private duration: number;
+  private promptIntervalFactor: number;
+  private totalOrders: number;
+  private inactiveOrders: Order[];
+  private activeOrders: Order[];
+  private doneOrders: Order[];
+  private lastPromptTime: number | null;
+  private promptTimes: number[]; // order prompts times in reverse order (treat as a stack)
 
   /**
    * 
    * @param startTime Timestamp of the start of the level
-   * @param duration Length of time that the level runs for
+   * @param duration Length of time that the level runs for (MUST be at least 60 seconds)
    * @param promptIntervalFactor A number that varies the prompting of active orders
    * @param totalOrders Total number of orders in a level
    */
@@ -24,9 +28,13 @@ export class OrderDeliveryLoop extends Entity {
     // explicit call to super
     super();
 
+    if (duration < 60) {
+      throw new Error("Duration must be at least 60 seconds, instead got " + duration);
+    }
+
     this.startTime = startTime;
     this.duration = duration;
-    this.promptIntervalFactor = promptIntervalFactor;
+    this.promptIntervalFactor = Math.min(promptIntervalFactor, MAX_ORDER_PROMPT_FREQ);
     this.totalOrders = totalOrders;
     this.inactiveOrders = [];
     this.activeOrders = [];
@@ -35,15 +43,30 @@ export class OrderDeliveryLoop extends Entity {
 
     // Generate orders
     this.generateOrders(totalOrders);
+    this.promptTimes = this.generateTimes();
+    console.log(this.promptTimes);
   }
 
   public override update(context: GameContext): void {
     super.update(context);
 
-    const currentTime = context.clockTick;
+    const currentTime = context.gameTime;
 
     if (currentTime < this.startTime + this.duration) {
-      // do something
+      console.log(Math.floor(context.gameTime));
+
+      const nextTime = this.promptTimes[this.promptTimes.length - 1];
+      if (Math.floor(currentTime) === nextTime) {
+        this.promptTimes.pop();
+
+        // load the next order
+        const nextOrder: Order | undefined = this.inactiveOrders.shift();
+        if (nextOrder !== undefined) {
+          this.activeOrders.push(nextOrder);
+          nextOrder.setArrivalTime(Math.floor(currentTime));
+          console.log(nextOrder);
+        }
+      }
     }
   }
 
@@ -58,6 +81,58 @@ export class OrderDeliveryLoop extends Entity {
 
       this.inactiveOrders.push(order);
     }
+  }
+
+  private generateTimes(): number[] {
+    const start = Math.floor(this.startTime + SCHED_BUFFER);
+    const end = Math.floor((this.startTime + this.duration) - SCHED_BUFFER); // elapsed time, not ending timestamp
+
+    const freq = Math.floor((this.duration - (SCHED_BUFFER * 2)) / this.totalOrders);
+
+    const times = [];
+
+    let lastTime = end;
+    for (let i = this.totalOrders; i > 0; i--) {
+      let nextTime = lastTime - freq; // calculate the next order prompt time in reverse order
+      times.push(nextTime);
+      lastTime = nextTime;
+    }
+
+    // Introduce a variation based on promptIntervalFactor
+    for (let j = 0; j < times.length; j++) {
+      let random = this.generateRandom(0, this.promptIntervalFactor);
+      if (this.generateRandNegative()) {
+        random = random * -1;
+      }
+
+      const curTime: number | undefined = times[j];
+      if (curTime !== undefined) {
+        times[j] = curTime + random;
+        //let timeAdjusted = curTime + random;
+      }
+    }
+
+    return times;
+  }
+
+  /** 
+   * From
+   * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+   * 
+   * Generate a random number between min and max INCLUSIVE
+   */
+  private generateRandom(min: number, max: number): number {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max + 1); // make it inclusive
+    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
+  }
+
+  /**
+   * Randomly returns true or false to indicate a negative or positive sign
+   */
+  private generateRandNegative(): boolean {
+    const rand = Math.random();
+    return rand < 0.5;
   }
 
   private activateNextOrder(): void {
