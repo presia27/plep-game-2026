@@ -1,0 +1,106 @@
+/**
+ * Shelf component that holds an item and allows player interaction
+ * @author pmo
+ */
+
+import { GameContext, IComponent, IPosition } from "../classinterfaces.ts";
+import { ItemType } from "../gamefiles/itemTypes.ts";
+import { ShelfConfig } from "../gamefiles/orderTypes.ts";
+
+/**
+ * Component that manages shelf state and item storage
+ */
+export class ShelfComponent implements IComponent {
+  private itemType: ItemType | null;
+  private positionComponent: IPosition;
+  private interactionRadius: number;
+  private isEmpty: boolean;
+
+  /**
+   * @param positionComponent Position component of the shelf entity
+   * @param interactionRadius Radius within which players can interact
+   * @param initialItem Item type initially on the shelf (null for empty)
+   */
+  constructor(
+    positionComponent: IPosition, 
+    interactionRadius: number = 50, 
+    initialItem: ItemType | null = null
+  ) {
+    this.positionComponent = positionComponent;
+    this.interactionRadius = interactionRadius;
+    this.itemType = initialItem;
+    this.isEmpty = initialItem === null;
+  }
+
+  public update(context: GameContext): void {
+    // Shelf is static, no update needed
+  }
+
+  /**
+   * Get the current item on this shelf
+   */
+  public getItemType(): ItemType | null {
+    return this.itemType;
+  }
+
+  /**
+   * Set the item on this shelf
+   */
+  public setItemType(itemType: ItemType | null): void {
+    this.itemType = itemType;
+    this.isEmpty = itemType === null;
+  }
+
+  /**
+   * Remove the item from this shelf
+   */
+  public removeItem(): ItemType | null {
+    const item = this.itemType;
+    this.itemType = null;
+    this.isEmpty = true;
+    return item;
+  }
+
+  /**
+   * Check if shelf is empty
+   */
+  public isShelfEmpty(): boolean {
+    return this.isEmpty;
+  }
+
+  /**
+   * Get the interaction radius
+   */
+  public getInteractionRadius(): number {
+    return this.interactionRadius;
+  }
+
+  /**
+   * Get the shelf position
+   */
+  public getPosition(): { x: number; y: number } {
+    return this.positionComponent.getPosition();
+  }
+
+  /**
+   * Check if a position is within interaction range
+   */
+  public isInRange(pos: { x: number; y: number }): boolean {
+    const shelfPos = this.positionComponent.getPosition();
+    const dx = pos.x - shelfPos.x;
+    const dy = pos.y - shelfPos.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    return distance <= this.interactionRadius;
+  }
+
+  /**
+   * Convert to ShelfConfig for use with order system functions
+   */
+  public toShelfConfig(): ShelfConfig {
+    return {
+      itemType: this.itemType,
+      position: this.positionComponent.getPosition(),
+      interactionRadius: this.interactionRadius
+    };
+  }
+}

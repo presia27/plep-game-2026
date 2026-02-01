@@ -79,7 +79,6 @@ export default class GameEngine {
     }
     ;
     update() {
-        this.inputSystem.onFrameUpdate();
         this.entities = this.entities.filter((entity) => {
             const lifecycle = entity.getComponent(BasicLifecycle);
             return !lifecycle || lifecycle.isAlive();
@@ -88,6 +87,8 @@ export default class GameEngine {
             entity.update(this.getGameContext());
         });
         this.collisionSystem.checkCollisions();
+        // Clear input flags AFTER all entities have had a chance to read them
+        this.inputSystem.onFrameUpdate();
     }
     ;
     loop() {
