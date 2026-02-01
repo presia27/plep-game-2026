@@ -3,19 +3,23 @@ import { Item } from "./item.js";
 import { Order } from "./order.js";
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
+const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed THIS percent of the number of seconds
 export class OrderDeliveryLoop extends Entity {
     /**
      *
      * @param startTime Timestamp of the start of the level
      * @param duration Length of time that the level runs for (MUST be at least 60 seconds)
      * @param promptIntervalFactor A number that varies the prompting of active orders
-     * @param totalOrders Total number of orders in a level
+     * @param totalOrders Total number of orders in a level (must be less than 80% of the number of seconds)
      */
     constructor(startTime, duration, promptIntervalFactor, totalOrders) {
         // explicit call to super
         super();
         if (duration < 60) {
             throw new Error("Duration must be at least 60 seconds, instead got " + duration);
+        }
+        if (totalOrders > Math.floor(duration * MAX_ORDERS_PERCENT_OF_TIME)) {
+            throw new Error("The number of orders must be less than " + (MAX_ORDERS_PERCENT_OF_TIME * 100) + "% of the number of seconds passed in");
         }
         this.startTime = startTime;
         this.duration = duration;
@@ -28,7 +32,6 @@ export class OrderDeliveryLoop extends Entity {
         // Generate orders
         this.generateOrders(totalOrders);
         this.promptTimes = this.generateTimes();
-        console.log(this.promptTimes);
     }
     update(context) {
         super.update(context);
@@ -71,7 +74,7 @@ export class OrderDeliveryLoop extends Entity {
             lastTime = nextTime;
         }
         // Introduce a variation based on promptIntervalFactor
-        for (let j = 0; j < times.length; j++) {
+        for (let j = times.length - 1; j >= 0; j--) {
             let random = this.generateRandom(0, this.promptIntervalFactor);
             if (this.generateRandNegative()) {
                 random = random * -1;

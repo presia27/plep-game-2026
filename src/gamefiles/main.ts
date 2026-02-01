@@ -15,6 +15,6 @@ const ASSET_MANAGER = new AssetManager();
 
 gameEngine.start();
 
-gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 7, 100))
+gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
 
 // Download assets and start the game engine and related systems
