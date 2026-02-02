@@ -14,8 +14,8 @@ const createApp = (): Express => {
 
   // Configure routes
   app.use('/', express.static('view'));
-  app.use('/assets', express.static('assets'));
-  app.use('/js', express.static('js'));
+  app.use('/assets', express.static('publishweb/assets'));
+  app.use('/js', express.static('jsbuild'));
 
   return app;
 };

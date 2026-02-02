@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Language and Environment */
     "target": "es2017",
-    "outDir": "./js",
+    "outDir": "./jsbuild",
     "rootDir": "./src",
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
@@ -37,6 +37,7 @@
     "server",
     "build",
     "srvbuild",
-    "js"
+    "jsbuild",
+    "publishweb"
   ]
 }
