@@ -1,6 +1,7 @@
 import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
+import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.ts";
 import { Entity } from "../entity.ts";
 import { staticPositionComponent } from "../componentLibrary/staticPositionComponent.ts";
 import { MovementComponent } from "../componentLibrary/movementComponent.ts";
@@ -21,6 +22,8 @@ if (ctx === null || ctx === undefined) {
 
 const gameEngine = new GameEngine(ctx, myInputMap, { debugging: true });
 const ASSET_MANAGER = new AssetManager();
+
+gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
 
 // Download assets and start the game engine and related systems
 

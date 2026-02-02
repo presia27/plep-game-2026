@@ -1,6 +1,7 @@
 import AssetManager from "../assetmanager.js";
 import GameEngine from "../gameengine.js";
 import { myInputMap } from "./inputmap.js";
+import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.js";
 import { Entity } from "../entity.js";
 import { staticPositionComponent } from "../componentLibrary/staticPositionComponent.js";
 import { MovementComponent } from "../componentLibrary/movementComponent.js";
@@ -18,6 +19,7 @@ if (ctx === null || ctx === undefined) {
 }
 const gameEngine = new GameEngine(ctx, myInputMap, { debugging: true });
 const ASSET_MANAGER = new AssetManager();
+
 // Download assets and start the game engine and related systems
 async function initGame() {
     // Queue assets
