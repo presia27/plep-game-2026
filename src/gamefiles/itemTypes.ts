@@ -22,30 +22,6 @@ export enum ItemType {
   BUCKET = 10,
   DETERGENT = 11
 }
-/**
- * Item type definitions for the order pickup system
- * Each item corresponds to a frame in the items.png spritesheet
- * @author pmo
- */
-
-/**
- * Available item types in the game.
- * Each item maps to a specific frame index in the items.png spritesheet.
- */
-export enum ItemType {
-  APPLE = 0,
-  BREAD = 1,
-  CHEESE = 2,
-  MILK = 3,
-  EGGS = 4,
-  FISH = 5,
-  MEAT = 6,
-  CARROT = 7,
-  TOMATO = 8,
-  LETTUCE = 9,
-  BANANA = 10,
-  ORANGE = 11
-}
 
 /**
  * Metadata for each item type
@@ -60,18 +36,18 @@ export interface ItemMetadata {
  * All available items with their metadata
  */
 export const ALL_ITEMS: ItemMetadata[] = [
-  { type: ItemType.APPLE, name: "Apple", spriteFrameIndex: 0 },
-  { type: ItemType.BREAD, name: "Bread", spriteFrameIndex: 1 },
-  { type: ItemType.CHEESE, name: "Cheese", spriteFrameIndex: 2 },
-  { type: ItemType.MILK, name: "Milk", spriteFrameIndex: 3 },
-  { type: ItemType.EGGS, name: "Eggs", spriteFrameIndex: 4 },
-  { type: ItemType.FISH, name: "Fish", spriteFrameIndex: 5 },
-  { type: ItemType.MEAT, name: "Meat", spriteFrameIndex: 6 },
-  { type: ItemType.CARROT, name: "Carrot", spriteFrameIndex: 7 },
-  { type: ItemType.TOMATO, name: "Tomato", spriteFrameIndex: 8 },
-  { type: ItemType.LETTUCE, name: "Lettuce", spriteFrameIndex: 9 },
-  { type: ItemType.BANANA, name: "Banana", spriteFrameIndex: 10 },
-  { type: ItemType.ORANGE, name: "Orange", spriteFrameIndex: 11 }
+  { type: ItemType.TOILETPAPER, name: "Toilet Paper", spriteFrameIndex: 0 },
+  { type: ItemType.TISSUES, name: "Tissues", spriteFrameIndex: 1 },
+  { type: ItemType.PAPERTOWEL, name: "Paper Towel", spriteFrameIndex: 2 },
+  { type: ItemType.SPRAY, name: "Spray", spriteFrameIndex: 3 },
+  { type: ItemType.SPONGE, name: "Sponge", spriteFrameIndex: 4 },
+  { type: ItemType.MOP, name: "Mop", spriteFrameIndex: 5 },
+  { type: ItemType.DUSTER, name: "Duster", spriteFrameIndex: 6 },
+  { type: ItemType.VACUUM, name: "Vacuum", spriteFrameIndex: 7 },
+  { type: ItemType.DUSTPAN, name: "Dustpan", spriteFrameIndex: 8 },
+  { type: ItemType.CLEANER, name: "Cleaner", spriteFrameIndex: 9 },
+  { type: ItemType.BUCKET, name: "Bucket", spriteFrameIndex: 10 },
+  { type: ItemType.DETERGENT, name: "Detergent", spriteFrameIndex: 11 }
 ];
 
 /**
@@ -81,7 +57,7 @@ export function getItemMetadata(type: ItemType): ItemMetadata {
   const item = ALL_ITEMS.find(item => item.type === type);
   if (!item) {
     console.warn(`Item type ${type} not found, returning default`);
-    return { type: ItemType.APPLE, name: "Unknown", spriteFrameIndex: 0 };
+    return { type: ItemType.TOILETPAPER, name: "Unknown", spriteFrameIndex: 0 };
   }
   return item;
 }
