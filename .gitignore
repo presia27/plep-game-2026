@@ -196,6 +196,7 @@ sftp-config.json
 dist/
 build/
 lib/
+js/
 
 # Runtime configuration files
 .env
