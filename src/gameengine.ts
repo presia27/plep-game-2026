@@ -36,6 +36,9 @@ export default class GameEngine {
     // What you will use to draw
     // Documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
     this.ctx = ctx;
+    
+    // Disable image smoothing for crisp pixel art
+    this.ctx.imageSmoothingEnabled = false;
 
     this.timer = new Timer();
     this.clockTick = 0; // Game delta
@@ -97,8 +100,6 @@ export default class GameEngine {
   };
 
   private update() {
-    this.inputSystem.onFrameUpdate();
-
     this.entities = this.entities.filter((entity) => {
       const lifecycle = entity.getComponent(BasicLifecycle);
       return !lifecycle || lifecycle.isAlive();
@@ -109,6 +110,9 @@ export default class GameEngine {
     });
 
     this.collisionSystem.checkCollisions();
+    
+    // Clear input flags AFTER all entities have had a chance to read them
+    this.inputSystem.onFrameUpdate();
   };
 
   private loop() {
