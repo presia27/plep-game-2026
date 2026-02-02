@@ -2,7 +2,7 @@ import { InputAction } from "../../inputactionlist.js";
 /**
  * Player input controller component that handles WASD input
  * and translates it into movement commands
- * @author Preston Sia
+ * @author Preston Sia, pmo
  */
 export class PlayerInputController {
     constructor(movementComponent, inputSystem, speed = 200) {

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLEP Game 2026</title>
+
+    <!--
+    JS modules are automatically deferred (they execute after the document is parsed/loaded)
+    For scripts that are NOT modules, add the "defer" property if you need to ensure that
+    the document is loaded before script execution.
+    -->
+    <script type="module" src="js/main.js"></script>
+
+    <style>
+      @media (min-width: 1440px) {
+          #mainContainer {
+              display: flex;
+              flex-direction: row;
+              gap: 16px;
+          }
+      }
+    </style>
+  </head>
+  
+  <body style="font-family: sans-serif;">
+     <div id="mainContainer">
+        <div>
+            <canvas id="gameWorld" width="1280" height="720" style="background: white; border: 1px solid black" tabindex="0" autofocus></canvas>
+            <div>
+                <button type="button" id="btnDebug">Toggle Debugging</button>
+            </div>
+        </div>
+        <div>
+            <h1>PLEP Game 2026</h1>
+            <p>Use WASD keys to move the character around the canvas.</p>
+            <h2>Controls</h2>
+            <ul>
+                <li><strong>W</strong> - Move Up</li>
+                <li><strong>A</strong> - Move Left</li>
+                <li><strong>S</strong> - Move Down</li>
+                <li><strong>D</strong> - Move Right</li>
+                <li><strong>E</strong> - Pick Up Item (when near shelf)</li>
+            </ul>
+            <h2>Objective</h2>
+            <p>Collect the 3 items shown in the order list (top-left of canvas). Walk near shelves and press E to pick up items.</p>
+        </div>
+      </div>
+  </body>
+</html>

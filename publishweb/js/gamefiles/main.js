@@ -19,7 +19,7 @@ if (ctx === null || ctx === undefined) {
 }
 const gameEngine = new GameEngine(ctx, myInputMap, { debugging: true });
 const ASSET_MANAGER = new AssetManager();
-
+gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10));
 // Download assets and start the game engine and related systems
 async function initGame() {
     // Queue assets
@@ -39,7 +39,7 @@ async function initGame() {
         console.log("itemsSprite:", itemsSprite);
         return;
     }
-    console.log("✅ All assets loaded successfully");
+    console.log("All assets loaded successfully");
     console.log("Items sprite dimensions:", itemsSprite.width, "x", itemsSprite.height);
     // Create player
     const player = new Entity();
@@ -77,17 +77,17 @@ async function initGame() {
     }
     // Create order manager
     const orderManager = new OrderManager(shelfComponents, (orderState) => {
-        console.log("🎉 ORDER COMPLETE!");
+        console.log("ORDER COMPLETE!");
         console.log("Collected items:", Array.from(orderState.collectedItems));
         // Start new order after 2 seconds
         setTimeout(() => {
-            console.log("📋 Starting new order...");
+            console.log("Starting new order...");
             orderManager.startNewOrder();
         }, 2000);
     });
     // Start first order
     const orderState = orderManager.startNewOrder();
-    console.log("🛒 Order system initialized!");
+    console.log("Order system initialized!");
     console.log("Required items:", orderState.requiredItems);
     // Debug: Check which shelves have items
     console.log("Shelves with items:");
@@ -100,7 +100,7 @@ async function initGame() {
     // Add player interaction
     const interactionComp = new PlayerInteractionComponent(playerPos, gameEngine.getInputSystem(), orderManager, (result) => orderManager.handlePickup(result));
     player.addComponent(interactionComp);
-    // Create UI (add LAST so it draws on top)
+    // Create UI (add LAST so it draws on top.. hopefully)
     const uiEntity = new Entity();
     const uiRenderer = new OrderUIRenderer(orderState, itemsSprite, 20, 20, // position
     56, 60, // item frame size (226/4 x 180/3)
@@ -109,10 +109,10 @@ async function initGame() {
     );
     uiEntity.setRenderer(uiRenderer);
     gameEngine.addEntity(uiEntity);
-    console.log("✅ UI created at position (20, 20)");
+    console.log("UI created at position (20, 20)");
     // Start game
     gameEngine.start();
-    console.log("✅ Game started! Use WASD to move, E to pick up items.");
-    console.log("📍 Walk near a shelf (green circle) and press E to collect items");
+    console.log("Game started! Use WASD to move, E to pick up items.");
+    console.log("Walk near a shelf (supposed to be green circle, for now just walk over the item sprite) and press E to collect items");
 }
 initGame().catch(console.error);

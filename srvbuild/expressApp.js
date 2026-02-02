@@ -10,8 +10,8 @@ const createApp = () => {
     app.use((0, cors_1.default)());
     app.use(express_1.default.json({ limit: '10mb' }));
     app.use('/', express_1.default.static('view'));
-    app.use('/assets', express_1.default.static('assets'));
-    app.use('/js', express_1.default.static('js'));
+    app.use('/assets', express_1.default.static('publishweb/assets'));
+    app.use('/js', express_1.default.static('jsbuild'));
     return app;
 };
 exports.default = createApp;
