@@ -7,7 +7,7 @@ import { ISize } from "../../classinterfaces.ts";
 /**
  * Player collision handler that prevents the player from
  * moving through solid objects
- * @author Preston Sia
+ * @author Emma and Primo
  */
 export class PlayerCollisionHandler extends AbstractCollisionHandler {
   private movementComponent: MovementComponent;

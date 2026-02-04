@@ -4,9 +4,9 @@
  * @author pmo
  */
 
-import { GameContext, IRenderer, IPosition } from "../classinterfaces.ts";
+import { GameContext, IRenderer, IPosition } from "../../classinterfaces.ts";
 import { ShelfComponent } from "./shelfComponent.ts";
-import { getItemMetadata } from "../gamefiles/itemTypes.ts";
+import { getItemMetadata } from "../itemTypes.ts";
 
 /**
  * Renders a shelf and its item (if present)

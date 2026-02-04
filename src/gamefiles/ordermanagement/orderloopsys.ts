@@ -7,6 +7,11 @@ const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
 const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed THIS percent of the number of seconds
 
+/**
+ * The main driver or prompting orders in the game
+ * 
+ * @author Preston Sia
+ */
 export class OrderDeliveryLoop extends Entity {
   private startTime: number;
   private duration: number;

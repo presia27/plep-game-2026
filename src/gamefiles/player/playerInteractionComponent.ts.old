@@ -3,13 +3,13 @@
  * @author pmo
  */
 
-import { GameContext, IComponent, IPosition } from "../classinterfaces.ts";
-import { InputSystem } from "../inputsys.ts";
-import { InputAction } from "../inputactionlist.ts";
-import { ShelfComponent } from "./shelfComponent.ts";
-import { tryPickup } from "../gamefiles/orderSystem.ts";
-import { OrderState, PickupResult } from "../gamefiles/orderTypes.ts";
-import { OrderManager } from "../gamefiles/OrderManager.ts";
+import { GameContext, IComponent, IPosition } from "../../classinterfaces.ts";
+import { InputSystem } from "../../inputsys.ts";
+import { InputAction } from "../../inputactionlist.ts";
+import { ShelfComponent } from "../shelves/shelfComponent.ts";
+import { tryPickup } from "../ordermanagement/orderSystem.ts";
+import { OrderState, PickupResult } from "../ordermanagement/orderTypes.ts";
+import { OrderManager } from "../ordermanagement/OrderManager.ts";
 
 /**
  * Callback type for pickup events

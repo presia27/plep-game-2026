@@ -6,7 +6,7 @@
  * @author pmo
  */
 
-import { GameContext, IRenderer } from "../classinterfaces.ts";
+import { GameContext, IRenderer } from "../../classinterfaces.ts";
 import { ShelfRenderer } from "./shelfRenderer.ts";
 
 /**

@@ -1,5 +1,7 @@
 /**
  * Represents a game item
+ * 
+ * @author Preston Sia
  */
 export class Item {
   private name: string;
