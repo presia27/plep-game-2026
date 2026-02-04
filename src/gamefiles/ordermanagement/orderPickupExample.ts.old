@@ -4,17 +4,17 @@
  * @author pmo
  */
 
-import GameEngine from "../gameengine.ts";
-import { Entity } from "../entity.ts";
-import AssetManager from "../assetmanager.ts";
-import { staticPositionComponent } from "../componentLibrary/staticPositionComponent.ts";
-import { ShelfComponent } from "../componentLibrary/shelfComponent.ts";
-import { ShelfRenderer } from "../componentLibrary/shelfRenderer.ts";
-import { PlayerInteractionComponent } from "../componentLibrary/playerInteractionComponent.ts";
-import { OrderUIRenderer } from "../componentLibrary/orderUIRenderer.ts";
+import GameEngine from "../../gameengine.ts";
+import { Entity } from "../../entity.ts";
+import AssetManager from "../../assetmanager.ts";
+import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
+import { ShelfComponent } from "../shelves/shelfComponent.ts";
+import { ShelfRenderer } from "../shelves/shelfRenderer.ts";
+import { PlayerInteractionComponent } from "../player/playerInteractionComponent.ts";
+import { OrderUIRenderer } from "./orderUIRenderer.ts";
 import { OrderManager } from "./OrderManager.ts";
-import { InputAction } from "../inputactionlist.ts";
-import { InputMapValue } from "../typeinterfaces.ts";
+import { InputAction } from "../../inputactionlist.ts";
+import { InputMapValue } from "../../typeinterfaces.ts";
 
 /**
  * Example: Setting up the order pickup system

@@ -3,10 +3,10 @@
  * @author pmo
  */
 
-import { GameContext, IRenderer } from "../classinterfaces.ts";
-import { OrderState } from "../gamefiles/orderTypes.ts";
-import { getItemMetadata } from "../gamefiles/itemTypes.ts";
-import { getProgressText } from "../gamefiles/orderSystem.ts";
+import { GameContext, IRenderer } from "../../classinterfaces.ts";
+import { OrderState } from "../ordermanagement/orderTypes.ts";
+import { getItemMetadata } from "../itemTypes.ts";
+import { getProgressText } from "../ordermanagement/orderSystem.ts";
 
 /**
  * Renders the order UI showing required items and progress

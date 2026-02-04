@@ -7,7 +7,7 @@
  * @author pmo
  */
 
-import { ItemType } from "./itemTypes.ts";
+import { ItemType } from "../itemTypes.ts";
 import { OrderState, OrderCompleteCallback, PickupResult } from "./orderTypes.ts";
 import { 
   generateOrder, 
@@ -15,7 +15,7 @@ import {
   checkComplete,
   getProgressText 
 } from "./orderSystem.ts";
-import { ShelfComponent } from "../componentLibrary/shelfComponent.ts";
+import { ShelfComponent } from "../shelves/shelfComponent.ts";
 
 /**
  * Central manager for the order pickup objective

@@ -6,12 +6,12 @@ import { InputAction } from "../../inputactionlist.ts";
 /**
  * Animated sprite renderer that uses directional animations
  * based on the EmployeeFullSpriteSheet sprite sheet
- * @author Preston Sia
+ * @author Emma and Primo, Preston
  */
 export class AnimatedSpriteRenderer implements IRenderer {
   private spritesheet: HTMLImageElement;
   private positionComponent: IPosition;
-  private sizeComponent: ISize | null;
+  private sizeComponent: ISize;
   private inputSystem: InputSystem;
   private animations: Animator[];
   private currentDirection: number;
@@ -28,7 +28,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
   constructor(
     spritesheet: HTMLImageElement, 
     positionComponent: IPosition, 
-    sizeComponent: ISize | null, 
+    sizeComponent: ISize, 
     inputSystem: InputSystem,
     scale: number = 5.0
   ) {
@@ -179,6 +179,18 @@ export class AnimatedSpriteRenderer implements IRenderer {
           20 * this.scale, 19 * this.scale // destination width, height
         );
       }
+    }
+
+    if (context.debug) {
+      context.ctx.save();
+      context.ctx.strokeStyle = "#ff0000";
+      context.ctx.strokeRect(
+        this.positionComponent.getPosition().x,
+        this.positionComponent.getPosition().y,
+        this.sizeComponent.getWidth(),
+        this.sizeComponent.getHeight(),
+      );
+      context.ctx.restore();
     }
   }
 }

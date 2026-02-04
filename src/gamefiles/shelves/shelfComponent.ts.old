@@ -3,9 +3,9 @@
  * @author pmo
  */
 
-import { GameContext, IComponent, IPosition } from "../classinterfaces.ts";
-import { ItemType } from "../gamefiles/itemTypes.ts";
-import { ShelfConfig } from "../gamefiles/orderTypes.ts";
+import { GameContext, IComponent, IPosition } from "../../classinterfaces.ts";
+import { ItemType } from "../itemTypes.ts";
+import { ShelfConfig } from "../ordermanagement/orderTypes.ts";
 
 /**
  * Component that manages shelf state and item storage

@@ -3,7 +3,7 @@
  * @author pmo
  */
 
-import { ItemType } from "./itemTypes.ts";
+import { ItemType } from "../itemTypes.ts";
 
 /**
  * Represents the current state of a player's order
