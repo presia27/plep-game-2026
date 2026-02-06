@@ -13,6 +13,8 @@ import { PlayerInputController } from "./playerInputController.ts";
 const PLAYER_SPEED: number = 150;
 const PLAYER_SIZE_X: number = 20;
 const PLAYER_SIZE_Y: number = 19;
+const PLAYER_BOUND_X: number = 15;
+const PLAYER_BOUND_Y: number = 14;
 
 /**
  * This is the main entity controller for the player.
@@ -38,11 +40,13 @@ export class PlayerController extends Entity {
     const playerMovementAndPosition = new MovementComponent(defaultXY);
     const playerInputCtl = new PlayerInputController(playerMovementAndPosition, inputSystem, PLAYER_SPEED)
     const playerSize = new BasicSize(PLAYER_SIZE_X, PLAYER_SIZE_Y, scale);
-    const playerBoundingBox = new BoundingBox(playerMovementAndPosition, playerSize);
-    const playerCollisionHandler = new PlayerCollisionHandler(playerMovementAndPosition, playerSize);
+    const playerBoundSize = new BasicSize(PLAYER_BOUND_X, PLAYER_BOUND_Y, scale);
+    const playerBoundingBox = new BoundingBox(playerMovementAndPosition, playerBoundSize);
+    const playerCollisionHandler = new PlayerCollisionHandler(playerMovementAndPosition, playerBoundSize);
     super.addComponent(playerMovementAndPosition)
     super.addComponent(playerInputCtl);
-    super.addComponent(playerSize);
+    // super.addComponent(playerSize);
+    // super.addComponent(playerBoundSize);
     super.addComponent(playerBoundingBox);
     super.addComponent(playerCollisionHandler);
 
@@ -50,7 +54,7 @@ export class PlayerController extends Entity {
     if (playerSprite === null) {
       throw new Error("Failed to load asset for the player");
     }
-    const renderer = new AnimatedSpriteRenderer(playerSprite, playerMovementAndPosition, playerSize, inputSystem, scale);
+    const renderer = new AnimatedSpriteRenderer(playerSprite, playerMovementAndPosition, playerSize, inputSystem, scale, playerBoundSize);
     super.setRenderer(renderer);
   }
 }
