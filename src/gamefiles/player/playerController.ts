@@ -13,8 +13,10 @@ import { PlayerInputController } from "./playerInputController.ts";
 const PLAYER_SPEED: number = 150;
 const PLAYER_SIZE_X: number = 20;
 const PLAYER_SIZE_Y: number = 19;
-const PLAYER_BOUND_X: number = 15;
-const PLAYER_BOUND_Y: number = 14;
+const PLAYER_BOUND_X: number = 14;
+const PLAYER_BOUND_Y: number = 17;
+const PLAYER_BOUND_OFFSET_X: number = 13;
+const PLAYER_BOUND_OFFSET_Y: number = 11;
 
 /**
  * This is the main entity controller for the player.
@@ -41,8 +43,8 @@ export class PlayerController extends Entity {
     const playerInputCtl = new PlayerInputController(playerMovementAndPosition, inputSystem, PLAYER_SPEED)
     const playerSize = new BasicSize(PLAYER_SIZE_X, PLAYER_SIZE_Y, scale);
     const playerBoundSize = new BasicSize(PLAYER_BOUND_X, PLAYER_BOUND_Y, scale);
-    const playerBoundingBox = new BoundingBox(playerMovementAndPosition, playerBoundSize, 10, 10);
-    const playerCollisionHandler = new PlayerCollisionHandler(playerMovementAndPosition, playerBoundSize);
+    const playerBoundingBox = new BoundingBox(playerMovementAndPosition, playerBoundSize, PLAYER_BOUND_OFFSET_X, PLAYER_BOUND_OFFSET_Y);
+    const playerCollisionHandler = new PlayerCollisionHandler(playerBoundingBox, playerMovementAndPosition, playerSize);
     super.addComponent(playerMovementAndPosition)
     super.addComponent(playerInputCtl);
     // super.addComponent(playerSize);

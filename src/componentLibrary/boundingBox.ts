@@ -57,6 +57,14 @@ export class BoundingBox implements IComponent {
     return this.bottom;
   }
 
+  public getOffsetX(): number {
+    return this.offsetX;
+  }
+
+  public getOffsetY(): number {
+     return this.offsetY;
+  }
+
   private applyOffsets(): void {
     this.left = this.left + this.offsetX;
     this.right = this.right + this.offsetX;
