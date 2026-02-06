@@ -14,7 +14,8 @@ export const playerAssets: IAssetList[] = [
 
 /** All environment assets, such as shelves, desks, obstacles, background music, and more */
 export const environmentAssets: IAssetList[] = [
-  { id: "shelf", type: "img", location: "./assets/shelf.JPG" }
+  { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" },
+  { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }
 ];
 
 /** Assets for items */

@@ -30,7 +30,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     positionComponent: IPosition, 
     sizeComponent: ISize, 
     inputSystem: InputSystem,
-    scale: number = 5.0
+    scale: number = 4.0
   ) {
     this.spritesheet = spritesheet;
     this.positionComponent = positionComponent;

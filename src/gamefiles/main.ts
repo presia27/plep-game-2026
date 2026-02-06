@@ -44,17 +44,17 @@ ASSET_MANAGER.downloadAll().then(() => {
 
   // Create shelves TEMPORARILY
   const shelfPositions = [
-    { x: 150, y: 150 },
-    { x: 350, y: 150 },
-    { x: 550, y: 150 },
-    { x: 150, y: 500 },
-    { x: 350, y: 500 },
-    { x: 550, y: 500 }
+    { x: 100, y: 150 },
+    { x: 400, y: 150 },
+    { x: 700, y: 150 },
+    { x: 100, y: 500 },
+    { x: 400, y: 500 },
+    { x: 700, y: 500 }
   ];
 
-  const shelfSprite = ASSET_MANAGER.getImageAsset("shelf");
+  const shelfSprite = ASSET_MANAGER.getImageAsset("HShelvesNoVines");
   if (shelfSprite === null) {
-    throw new Error("Failed to load asset for the player");
+    throw new Error("Failed to load asset for the horizontal shelves without vines!");
   }
 
   for (const pos of shelfPositions) {
