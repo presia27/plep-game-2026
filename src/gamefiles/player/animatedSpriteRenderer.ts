@@ -2,6 +2,7 @@ import { GameContext, IRenderer, IPosition, ISize } from "../../classinterfaces.
 import { Animator } from "../../animator.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { InputAction } from "../../inputactionlist.ts";
+import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 
 /**
  * Animated sprite renderer that uses directional animations
@@ -12,7 +13,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
   private spritesheet: HTMLImageElement;
   private positionComponent: IPosition;
   private sizeComponent: ISize;
-  private boundingBoxExtent: ISize | null;
+  private boundingBox: BoundingBox | null;
   private inputSystem: InputSystem;
   private animations: Animator[];
   private currentDirection: number;
@@ -24,7 +25,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
    * @param positionComponent The position component to get x,y coordinates
    * @param sizeComponent The size component representing the width and height of the full entity,
    *    regardless of its bounding box. This is what is used to draw the sprite.
-   * @param boundingBoxExtent Size component representing the width and height of the actual bounding box.
+   * @param boundingBox Bounding box component representing the corners of the actual bounding box.
    *    This is used for debugging, hence it is optional
    * @param inputSystem The input system to detect movement direction
    * @param scale Scale factor for drawing
@@ -35,7 +36,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     sizeComponent: ISize,
     inputSystem: InputSystem,
     scale: number = 4.0,
-    boundingBoxExtent?: ISize | null
+    boundingBox?: BoundingBox | null
   ) {
     this.spritesheet = spritesheet;
     this.positionComponent = positionComponent;
@@ -45,10 +46,10 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.currentDirection = 0; // default facing down
     this.scale = scale;
 
-    if (boundingBoxExtent) {
-      this.boundingBoxExtent = boundingBoxExtent;
+    if (boundingBox) {
+      this.boundingBox = boundingBox;
     } else {
-      this.boundingBoxExtent = null;
+      this.boundingBox = null;
     }
     
     this.loadAnimations();
@@ -206,13 +207,13 @@ export class AnimatedSpriteRenderer implements IRenderer {
 
       // draw bounding box
       context.ctx.strokeStyle = "#ff0000";
-      if (this.boundingBoxExtent) {
+      if (this.boundingBox) {
         context.ctx.strokeRect(
-          this.positionComponent.getPosition().x,
-          this.positionComponent.getPosition().y,
-          this.boundingBoxExtent.getWidth(),
-          this.boundingBoxExtent.getHeight(),
-        );
+          this.boundingBox.getLeft(),
+          this.boundingBox.getTop(),
+          this.boundingBox.getRight() - this.boundingBox.getLeft(),
+          this.boundingBox.getBottom() - this.boundingBox.getTop()
+        )
       }
       context.ctx.restore();
     }

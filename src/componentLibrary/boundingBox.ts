@@ -10,6 +10,8 @@ export class BoundingBox implements IComponent {
   private top: number;
   private right: number;
   private bottom: number;
+  private offsetX: number;
+  private offsetY: number;
 
   /**
    * 
@@ -19,13 +21,15 @@ export class BoundingBox implements IComponent {
    * @param height Initial height
    * @param positionMgr Component that holds the current X-Y position of an entity
    */
-  constructor(positionMgr: IPosition, sizeMgr: ISize) {
+  constructor(positionMgr: IPosition, sizeMgr: ISize, offsetX?: number, offsetY?: number) {
    this.left = positionMgr.getPosition().x;
    this.top = positionMgr.getPosition().y;
    this.right = this.left + sizeMgr.getWidth();
    this.bottom = this.top + sizeMgr.getHeight(); 
    this.positionMgr = positionMgr;
    this.sizeMgr = sizeMgr;
+   this.offsetX = offsetX ? offsetX : 0;
+   this.offsetY = offsetY ? offsetY : 0;
   }
 
   public update(context: GameContext): void {
@@ -33,6 +37,8 @@ export class BoundingBox implements IComponent {
     this.top = this.positionMgr.getPosition().y;
     this.right = this.left + this.sizeMgr.getWidth();
     this.bottom = this.top + this.sizeMgr.getHeight();
+
+    this.applyOffsets();
   }
 
   public getLeft(): number {
@@ -49,6 +55,13 @@ export class BoundingBox implements IComponent {
 
   public getBottom(): number {
     return this.bottom;
+  }
+
+  private applyOffsets(): void {
+    this.left = this.left + this.offsetX;
+    this.right = this.right + this.offsetX;
+    this.top = this.top + this.offsetY;
+    this.bottom = this.bottom + this.offsetY;
   }
 
   public collide(oth: BoundingBox) {
