@@ -5,6 +5,8 @@ import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.ts";
 import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import { PlayerController } from "./player/playerController.ts";
 import { ShelfController } from "./shelves/shelfController.ts";
+import { ItemEntity } from "./ordermanagement/itemEntity.ts";
+import { ItemType } from "./ordermanagement/itemTypes.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -63,6 +65,10 @@ ASSET_MANAGER.downloadAll().then(() => {
     gameEngine.addEntity(shelf);
     gameEngine.getCollisionSystem().addEntity(shelf);
   }
+
+  const item = new ItemEntity(ItemType.TOILETPAPER, {x: 96, y: 96});
+  gameEngine.addEntity(item);
+  gameEngine.getCollisionSystem().addEntity(item);
 
   gameEngine.start();
 });
