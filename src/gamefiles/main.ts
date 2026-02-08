@@ -23,7 +23,7 @@ if (ctx === null || ctx === undefined) {
 }
 
 const gameEngine = new GameEngine(ctx, myInputMap, { debugging: true });
-const ASSET_MANAGER = new AssetManager();
+export const ASSET_MANAGER = new AssetManager();
 
 gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
 
