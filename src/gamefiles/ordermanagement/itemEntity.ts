@@ -1,9 +1,11 @@
 import { BasicSize } from "../../componentLibrary/BasicSize.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
+import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
 import { Entity } from "../../entity.ts";
 import { XY } from "../../typeinterfaces.ts";
-import { ItemType } from "./itemTypes.ts";
+import { ASSET_MANAGER } from "../main.ts";
+import { getItemMetadata, ItemType } from "./itemTypes.ts";
 
 const ITEM_WIDTH = 60;
 const ITEM_HEIGHT = 58;
@@ -35,6 +37,20 @@ export class ItemEntity extends Entity {
     super.addComponent(pickupSize);
     super.addComponent(pickupBounds);
 
-    //const renderer = ;
+    const itemSprite = ASSET_MANAGER.getImageAsset("items");
+    if (itemSprite === null) {
+      throw new Error("Failed to load spritesheet for items");
+    }
+    const itemMeta = getItemMetadata(itemType);
+    const renderer = new StaticSpriteRenderer(
+      itemSprite,
+      itemMeta.spriteFrameX,
+      itemMeta.spriteFrameY,
+      ITEM_WIDTH,
+      ITEM_HEIGHT,
+      itemPosition,
+      itemSize
+    );
+    super.setRenderer(renderer);
   }
 }
