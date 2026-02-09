@@ -66,7 +66,7 @@ ASSET_MANAGER.downloadAll().then(() => {
     gameEngine.getCollisionSystem().addEntity(shelf);
   }
 
-  const item = new ItemEntity(ItemType.TOILETPAPER, {x: 104, y: 72});
+  const item = new ItemEntity(ItemType.TOILETPAPER, {x: 384, y: 72});
   gameEngine.addEntity(item);
   gameEngine.getCollisionSystem().addEntity(item);
 

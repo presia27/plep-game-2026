@@ -11,8 +11,8 @@ export class StaticSpriteRenderer implements IRenderer {
   private yStart: number;
   private spriteWidth: number;
   private spriteHeight: number;
-  private positionComponent: IPosition;
-  private sizeComponent: ISize;
+  positionComponent: IPosition;
+  sizeComponent: ISize;
   private boundingBox: BoundingBox | null;
 
   /**

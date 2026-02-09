@@ -1,10 +1,12 @@
+import { GameContext } from "../../classinterfaces";
 import { BasicSize } from "../../componentLibrary/BasicSize.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
-import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
 import { Entity } from "../../entity.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { ASSET_MANAGER } from "../main.ts";
+import { ItemCollisionHandler } from "./itemCollisionHandler.ts";
+import { ItemRenderer } from "./itemRenderer.ts";
 import { getItemMetadata, ItemType } from "./itemTypes.ts";
 
 const ITEM_WIDTH = 60;
@@ -51,7 +53,7 @@ export class ItemEntity extends Entity {
       throw new Error("Failed to load spritesheet for items");
     }
     const itemMeta = getItemMetadata(itemType);
-    const renderer = new StaticSpriteRenderer(
+    const renderer = new ItemRenderer(
       itemSprite,
       itemMeta.spriteFrameX,
       itemMeta.spriteFrameY,
@@ -61,6 +63,10 @@ export class ItemEntity extends Entity {
       itemSize,
       pickupBounds
     );
+
+    const itemCollision = new ItemCollisionHandler(renderer);
+    super.addComponent(itemCollision);
+
     super.setRenderer(renderer);
   }
 }

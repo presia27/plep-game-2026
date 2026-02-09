@@ -1,0 +1,48 @@
+import { GameContext, IPosition, ISize } from "../../classinterfaces.ts";
+import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
+import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
+
+export class ItemRenderer extends StaticSpriteRenderer {
+  private showHintText = false;
+
+  constructor(
+    image: HTMLImageElement,
+    spriteXstart: number,
+    spriteYstart: number,
+    spriteWidth: number,
+    spriteHeight: number,
+    positionComponent: IPosition,
+    sizeComponent: ISize,
+    boundingBox?: BoundingBox | null
+  ) {
+    super(
+      image,
+      spriteXstart,
+      spriteYstart,
+      spriteWidth,
+      spriteHeight,
+      positionComponent,
+      sizeComponent,
+      boundingBox
+    );
+  }
+
+  public enableHintText(): void {
+    this.showHintText = true;
+  }
+
+  // extend the functionality of draw to be able to draw hint text
+  public override draw(context: GameContext): void {
+    super.draw(context);
+
+    if (this.showHintText) {
+      // TEMPORARY
+      const ctx = context.ctx;
+      ctx.fillText("PRESS E TO PICKUP", 45, 45);
+
+      // Once everything is drawn, reset temporary state used when a collision occurs
+      this.showHintText = false;
+    }
+    
+  }
+}
