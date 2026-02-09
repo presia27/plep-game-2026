@@ -9,6 +9,11 @@ import { getItemMetadata, ItemType } from "./itemTypes.ts";
 
 const ITEM_WIDTH = 60;
 const ITEM_HEIGHT = 58;
+/** 
+ * multiplies the with and height by this number to determine the bounds within
+ * which a player can pickup items
+ */
+const PICKUP_RADIUS_MULTIPLIER = 2;
 
 /**
  * Represents a concrete Item entity that
@@ -29,8 +34,12 @@ export class ItemEntity extends Entity {
 
     const itemSize = new BasicSize(ITEM_WIDTH, ITEM_HEIGHT, 1);
     const itemPosition = new staticPositionComponent(positionXY);
-    const pickupSize = new BasicSize(ITEM_WIDTH, ITEM_HEIGHT, 1.25);
-    const pickupBounds = new BoundingBox(itemPosition, pickupSize);
+    const pickupSize = new BasicSize(ITEM_WIDTH, ITEM_HEIGHT, PICKUP_RADIUS_MULTIPLIER);
+    const pickupBounds = new BoundingBox(
+      itemPosition,
+      pickupSize,
+      -((ITEM_WIDTH * PICKUP_RADIUS_MULTIPLIER - ITEM_WIDTH) / 2),
+      -((ITEM_HEIGHT * PICKUP_RADIUS_MULTIPLIER - ITEM_HEIGHT) / 2));
 
     super.addComponent(itemSize);
     super.addComponent(itemPosition);
@@ -49,7 +58,8 @@ export class ItemEntity extends Entity {
       ITEM_WIDTH,
       ITEM_HEIGHT,
       itemPosition,
-      itemSize
+      itemSize,
+      pickupBounds
     );
     super.setRenderer(renderer);
   }

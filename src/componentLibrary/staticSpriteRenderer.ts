@@ -1,4 +1,5 @@
 import { GameContext, IRenderer, IPosition, ISize } from "../classinterfaces.ts";
+import { BoundingBox } from "./boundingBox.ts";
 
 /**
  * Static sprite renderer component that draws an image at the entity's position with a specified starting point on the sprite sheet
@@ -12,6 +13,7 @@ export class StaticSpriteRenderer implements IRenderer {
   private spriteHeight: number;
   private positionComponent: IPosition;
   private sizeComponent: ISize;
+  private boundingBox: BoundingBox | null;
 
   /**
    * 
@@ -30,7 +32,8 @@ export class StaticSpriteRenderer implements IRenderer {
     spriteWidth: number,
     spriteHeight: number,
     positionComponent: IPosition,
-    sizeComponent: ISize
+    sizeComponent: ISize,
+    boundingBox?: BoundingBox | null
   ) {
     this.image = image;
     this.xStart = spriteXstart;
@@ -39,6 +42,7 @@ export class StaticSpriteRenderer implements IRenderer {
     this.spriteHeight = spriteHeight;
     this.sizeComponent = sizeComponent;
     this.positionComponent = positionComponent;
+    this.boundingBox = boundingBox ?? null;
   }
   
   public draw(context: GameContext): void {
@@ -63,13 +67,26 @@ export class StaticSpriteRenderer implements IRenderer {
 
     if (context.debug) {
       context.ctx.save();
-      context.ctx.strokeStyle = "#ff0000";
+
+      // draw the full extent of the entity
+      context.ctx.strokeStyle = "#0000cd";
       context.ctx.strokeRect(
         this.positionComponent.getPosition().x,
         this.positionComponent.getPosition().y,
         width,
         height,
       );
+
+      // draw bounding box
+      context.ctx.strokeStyle = "#ff0000";
+      if (this.boundingBox) {
+        context.ctx.strokeRect(
+          this.boundingBox.getLeft(),
+          this.boundingBox.getTop(),
+          this.boundingBox.getRight() - this.boundingBox.getLeft(),
+          this.boundingBox.getBottom() - this.boundingBox.getTop()
+        )
+      }
       context.ctx.restore();
     }
     
