@@ -77,3 +77,15 @@ export interface ILifecycle {
   die(): void;
   revive(): void;
 }
+
+/**
+ * Interface for Scene components
+ * represents the functions that
+ * a scene should have
+ */
+export interface IScene {
+  onEnter(sceneManager: SceneManager): void;
+  onExit(): void;
+  update(context: GameContext): void;
+  draw(context: GameContext): void;
+}
