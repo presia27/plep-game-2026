@@ -77,6 +77,14 @@ ASSET_MANAGER.downloadAll().then(() => {
   gameEngine.addEntity(item);
   gameEngine.getCollisionSystem().addEntity(item);
 
+  const item2 = new ItemEntity(ItemType.BUCKET, {x: 540, y: 72});
+  gameEngine.addEntity(item2);
+  gameEngine.getCollisionSystem().addEntity(item2);
+
+  const item3 = new ItemEntity(ItemType.DETERGENT, {x: 760, y: 72});
+  gameEngine.addEntity(item3);
+  gameEngine.getCollisionSystem().addEntity(item3);
+
   gameEngine.start();
 });
 

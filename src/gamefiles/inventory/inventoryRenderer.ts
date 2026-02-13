@@ -7,6 +7,7 @@ import { ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 const PANELWIDTH = 400;
 const PANELHEIGHT = 80;
 const ITEM_SIDE_WIDTH = 36;
+const BUFFER = 4;
 
 export class InventoryRenderer implements IRenderer {
   private posX: number;
@@ -62,7 +63,7 @@ export class InventoryRenderer implements IRenderer {
         itemMeta.spriteFrameY,
         ITEM_WIDTH,
         ITEM_HEIGHT,
-        this.posX + (i * ITEM_SIDE_WIDTH) + 4,
+        this.posX + ((i * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER),
         this.posY + 36,
         ITEM_SIDE_WIDTH,
         ITEM_SIDE_WIDTH
