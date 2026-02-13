@@ -36,9 +36,15 @@ export class ItemRenderer extends StaticSpriteRenderer {
     super.draw(context);
 
     if (this.showHintText) {
-      // TEMPORARY
       const ctx = context.ctx;
-      ctx.fillText("PRESS E TO PICKUP", 45, 45);
+
+      const positionX = this.positionComponent.getPosition().x + (this.sizeComponent.getWidth() / 2);
+      const positionY = this.positionComponent.getPosition().y - 8;
+
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.fillText("PRESS E TO PICKUP", positionX, positionY);
+      ctx.restore()
 
       // Once everything is drawn, reset temporary state used when a collision occurs
       this.showHintText = false;
