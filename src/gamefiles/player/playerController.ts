@@ -44,7 +44,7 @@ export class PlayerController extends Entity {
     const playerSize = new BasicSize(PLAYER_SIZE_X, PLAYER_SIZE_Y, scale);
     const playerBoundSize = new BasicSize(PLAYER_BOUND_X, PLAYER_BOUND_Y, scale);
     const playerBoundingBox = new BoundingBox(playerMovementAndPosition, playerBoundSize, PLAYER_BOUND_OFFSET_X, PLAYER_BOUND_OFFSET_Y);
-    const playerCollisionHandler = new PlayerCollisionHandler(playerBoundingBox, playerMovementAndPosition, playerSize);
+    const playerCollisionHandler = new PlayerCollisionHandler(playerBoundingBox, playerMovementAndPosition, playerSize, inputSystem);
     super.addComponent(playerMovementAndPosition)
     super.addComponent(playerInputCtl);
     // super.addComponent(playerSize);

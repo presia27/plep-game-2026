@@ -4,22 +4,27 @@ import { AbstractCollisionHandler } from "../../componentLibrary/AbstractCollisi
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { ISize } from "../../classinterfaces.ts";
 import { ShelfController } from "../shelves/shelfController.ts";
+import { InputSystem } from "../../inputsys.ts";
+import { ItemEntity } from "../ordermanagement/itemEntity.ts";
+import { InputAction } from "../../inputactionlist.ts";
 
 /**
  * Player collision handler that prevents the player from
  * moving through solid objects
- * @author Emma and Primo
+ * @author Emma and Primo, Preston
  */
 export class PlayerCollisionHandler extends AbstractCollisionHandler {
   private boundingBox: BoundingBox;
   private movementComponent: MovementComponent;
   private sizeComponent: ISize;
+  private inputSys: InputSystem;
 
-  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize) {
+  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, inputSys: InputSystem) {
     super();
     this.boundingBox = boundingBox;
     this.movementComponent = movementComponent;
     this.sizeComponent = sizeComponent;
+    this.inputSys = inputSys;
   }
 
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {
@@ -77,6 +82,13 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
       }
 
       this.movementComponent.setPosition(pos);
+    }
+
+    // handle item collisions and pickups
+    if (other instanceof ItemEntity) {
+      if (this.inputSys.isActionActiveSingle(InputAction.PICK_UP)) {
+        console.log("Picking up " + (other as ItemEntity).getItemType());
+      }
     }
   }
 }

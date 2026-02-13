@@ -69,4 +69,8 @@ export class ItemEntity extends Entity {
 
     super.setRenderer(renderer);
   }
+
+  public getItemType(): ItemType {
+    return this.itemType;
+  }
 }
