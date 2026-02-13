@@ -7,6 +7,7 @@ import { PlayerController } from "./player/playerController.ts";
 import { ShelfController } from "./shelves/shelfController.ts";
 import { ItemEntity } from "./ordermanagement/itemEntity.ts";
 import { ItemType } from "./ordermanagement/itemTypes.ts";
+import { InventoryManager } from "./inventory/inventoryManager.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -37,8 +38,11 @@ itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, 
 ASSET_MANAGER.downloadAll().then(() => {
   // Start the game engine and components, pass control to the manager
 
+  // Temporarily create an inventory manager (this should be managed by the scene manager)
+  const inventorymgr = new InventoryManager(6);
+
   // okay, temporarily create a player
-  const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5)
+  const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5, inventorymgr)
   gameEngine.addEntity(player);
   gameEngine.getCollisionSystem().addEntity(player);
 

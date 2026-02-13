@@ -1,6 +1,7 @@
-import { GameContext } from "../../classinterfaces";
+import { GameContext } from "../../classinterfaces.ts";
 import { BasicSize } from "../../componentLibrary/BasicSize.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
+import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 import { Entity } from "../../entity.ts";
 import { XY } from "../../typeinterfaces.ts";
@@ -42,11 +43,15 @@ export class ItemEntity extends Entity {
       pickupSize,
       -((ITEM_WIDTH * PICKUP_RADIUS_MULTIPLIER - ITEM_WIDTH) / 2),
       -((ITEM_HEIGHT * PICKUP_RADIUS_MULTIPLIER - ITEM_HEIGHT) / 2));
+    
+    const lifecycle = new BasicLifecycle();
 
     super.addComponent(itemSize);
     super.addComponent(itemPosition);
     super.addComponent(pickupSize);
     super.addComponent(pickupBounds);
+
+    super.addComponent(lifecycle);
 
     const itemSprite = ASSET_MANAGER.getImageAsset("items");
     if (itemSprite === null) {

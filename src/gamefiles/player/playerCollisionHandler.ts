@@ -7,6 +7,8 @@ import { ShelfController } from "../shelves/shelfController.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { ItemEntity } from "../ordermanagement/itemEntity.ts";
 import { InputAction } from "../../inputactionlist.ts";
+import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
+import { InventoryManager } from "../inventory/inventoryManager.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -18,13 +20,15 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
   private movementComponent: MovementComponent;
   private sizeComponent: ISize;
   private inputSys: InputSystem;
+  private inventoryMgr: InventoryManager;
 
-  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, inputSys: InputSystem) {
+  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, inputSys: InputSystem, inventoryMgr: InventoryManager) {
     super();
     this.boundingBox = boundingBox;
     this.movementComponent = movementComponent;
     this.sizeComponent = sizeComponent;
     this.inputSys = inputSys;
+    this.inventoryMgr = inventoryMgr;
   }
 
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {
@@ -86,8 +90,13 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
 
     // handle item collisions and pickups
     if (other instanceof ItemEntity) {
+      const item = other as ItemEntity;
+      const itemType = item.getItemType();
       if (this.inputSys.isActionActiveSingle(InputAction.PICK_UP)) {
-        console.log("Picking up " + (other as ItemEntity).getItemType());
+        console.log("Picking up " + itemType);
+        // Pickup component and remove the component from the canvas
+        item.getComponent(BasicLifecycle)?.die();
+        this.inventoryMgr.addItem(itemType);
       }
     }
   }
