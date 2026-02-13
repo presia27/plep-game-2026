@@ -10,8 +10,8 @@ import { ItemCollisionHandler } from "./itemCollisionHandler.ts";
 import { ItemRenderer } from "./itemRenderer.ts";
 import { getItemMetadata, ItemType } from "./itemTypes.ts";
 
-const ITEM_WIDTH = 60;
-const ITEM_HEIGHT = 58;
+export const ITEM_WIDTH = 60;
+export const ITEM_HEIGHT = 58;
 /** 
  * multiplies the with and height by this number to determine the bounds within
  * which a player can pickup items

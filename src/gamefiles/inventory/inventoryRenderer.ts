@@ -1,8 +1,12 @@
 import { GameContext, IRenderer } from "../../classinterfaces.ts";
+import { ASSET_MANAGER } from "../main.ts";
+import { getItemMetadata } from "../ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventoryManager.ts";
+import { ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 
-const PANELWIDTH = 600;
+const PANELWIDTH = 400;
 const PANELHEIGHT = 80;
+const ITEM_SIDE_WIDTH = 36;
 
 export class InventoryRenderer implements IRenderer {
   private posX: number;
@@ -24,14 +28,14 @@ export class InventoryRenderer implements IRenderer {
   draw(context: GameContext): void {
     const ctx = context.ctx;
 
+    ctx.save();
+
     // Draw background panel
-    const panelWidth = 200;
-    const panelHeight = 80;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(this.posX, this.posY, panelWidth, panelHeight);
+    ctx.fillRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.lineWidth = 2;
-    ctx.strokeRect(this.posX, this.posY, panelWidth, panelHeight);
+    ctx.strokeRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
 
     // Draw title
     ctx.fillStyle = 'white';
@@ -42,6 +46,29 @@ export class InventoryRenderer implements IRenderer {
     const inventory = this.inventoryMgr.getAllItems();
     const totalSize = this.inventoryMgr.getMaxItems();
 
-    
+    // Get inventory sprites
+    const itemSprite = ASSET_MANAGER.getImageAsset("items");
+    if (itemSprite === null) {
+      throw new Error("Inventory Renderer: Failed to load spritesheet for items");
+    }
+
+    for (let i = 0; i < inventory.length; i++) {
+      const item = inventory[i];
+      if (item === undefined || item === undefined) continue;
+      const itemMeta = getItemMetadata(item);
+      ctx.drawImage(
+        itemSprite,
+        itemMeta.spriteFrameX,
+        itemMeta.spriteFrameY,
+        ITEM_WIDTH,
+        ITEM_HEIGHT,
+        this.posX + (i * ITEM_SIDE_WIDTH) + 4,
+        this.posY + 36,
+        ITEM_SIDE_WIDTH,
+        ITEM_SIDE_WIDTH
+      );
+    }
+
+    ctx.restore();
   }
 }

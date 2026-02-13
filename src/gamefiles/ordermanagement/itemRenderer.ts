@@ -43,6 +43,7 @@ export class ItemRenderer extends StaticSpriteRenderer {
 
       ctx.save();
       ctx.textAlign = "center";
+      ctx.fillStyle = '#000000'
       ctx.fillText("PRESS E TO PICKUP", positionX, positionY);
       ctx.restore()
 

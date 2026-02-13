@@ -8,6 +8,7 @@ import { ShelfController } from "./shelves/shelfController.ts";
 import { ItemEntity } from "./ordermanagement/itemEntity.ts";
 import { ItemType } from "./ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventory/inventoryManager.ts";
+import { TemporaryInventoryDisplayEntity } from "./inventory/temporaryInventoryDisplayEntity.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -40,6 +41,8 @@ ASSET_MANAGER.downloadAll().then(() => {
 
   // Temporarily create an inventory manager (this should be managed by the scene manager)
   const inventorymgr = new InventoryManager(6);
+  const temporaryInventoryDisplayEntity = new TemporaryInventoryDisplayEntity(256, ctx.canvas.height - 96, inventorymgr);
+  gameEngine.addEntity(temporaryInventoryDisplayEntity); // temporarily add an entity to display the inventory renderer since the scene manager is still in progress
 
   // okay, temporarily create a player
   const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5, inventorymgr)
