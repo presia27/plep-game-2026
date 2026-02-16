@@ -1,3 +1,4 @@
+import SceneManager from "./sceneManager.ts";
 import { XY } from "./typeinterfaces.ts";
 
 /**
