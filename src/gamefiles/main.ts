@@ -9,6 +9,7 @@ import { ItemEntity } from "./ordermanagement/itemEntity.ts";
 import { ItemType } from "./ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventory/inventoryManager.ts";
 import { TemporaryInventoryDisplayEntity } from "./inventory/temporaryInventoryDisplayEntity.ts";
+import SceneManager from "../sceneManager.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -26,10 +27,11 @@ if (ctx === null || ctx === undefined) {
   throw new Error("Unable to get 2D canvas context");
 }
 
-const gameEngine = new GameEngine(ctx, myInputMap, { debugging: true });
-export const ASSET_MANAGER = new AssetManager();
+const sceneManager = new SceneManager();
+const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
+export export const ASSET_MANAGER = new AssetManager();
 
-gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
+sceneManager.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
 
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
@@ -45,7 +47,7 @@ ASSET_MANAGER.downloadAll().then(() => {
   gameEngine.addEntity(temporaryInventoryDisplayEntity); // temporarily add an entity to display the inventory renderer since the scene manager is still in progress
 
   // okay, temporarily create a player
-  const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5, inventorymgr)
+  const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5)
   gameEngine.addEntity(player);
   gameEngine.getCollisionSystem().addEntity(player);
 
@@ -69,7 +71,7 @@ ASSET_MANAGER.downloadAll().then(() => {
   for (const pos of shelfPositions) {
     const shelf = new ShelfController(pos, shelfSprite);
 
-    gameEngine.addEntity(shelf);
+    sceneManager.addEntity(shelf);
     gameEngine.getCollisionSystem().addEntity(shelf);
   }
 

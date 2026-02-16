@@ -52,20 +52,8 @@ export default class SceneManager {
     
     this.currentScene = scene;
     scene.onEnter(this);  // Pass SceneManager to scene
+    // Does introduce some coupling, similar to Marriott's game engine,
+    // but I think this is okay here now that sceneManager is separate
+    // from the rest of the game engine.
   }
-}
-
-// Scene implementation
-class MainMenuScene implements IScene {
-  onEnter(sceneManager: SceneManager): void {
-    const background = new Background();
-    sceneManager.addEntity(background);
-    
-    const menuButton = new MenuButton();
-    sceneManager.addEntity(menuButton);
-  }
-
-  onExit(): void {}
-  update(context: GameContext): void {}
-  draw(context: GameContext): void {}
 }
