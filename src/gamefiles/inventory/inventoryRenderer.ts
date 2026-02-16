@@ -55,7 +55,7 @@ export class InventoryRenderer implements IRenderer {
 
     for (let i = 0; i < inventory.length; i++) {
       const item = inventory[i];
-      if (item === undefined || item === undefined) continue;
+      if (item === null || item === undefined) continue;
       const itemMeta = getItemMetadata(item);
       ctx.drawImage(
         itemSprite,
