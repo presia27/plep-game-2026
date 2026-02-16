@@ -6,6 +6,7 @@ import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import { PlayerController } from "./player/playerController.ts";
 import { ShelfController } from "./shelves/shelfController.ts";
 import SceneManager from "../sceneManager.ts";
+import { DemoScene } from "./scenes/demoscene.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -27,8 +28,6 @@ const sceneManager = new SceneManager();
 const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
 export const ASSET_MANAGER = new AssetManager();
 
-sceneManager.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
-
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
@@ -37,34 +36,8 @@ itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, 
 ASSET_MANAGER.downloadAll().then(() => {
   // Start the game engine and components, pass control to the manager
 
-  // okay, temporarily create a player
-  const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5)
-  sceneManager.addEntity(player);
-  gameEngine.getCollisionSystem().addEntity(player);
-
-  // SHELVES
-
-  // Create shelves TEMPORARILY
-  const shelfPositions = [
-    { x: 150, y: 150 },
-    { x: 350, y: 150 },
-    { x: 550, y: 150 },
-    { x: 150, y: 500 },
-    { x: 350, y: 500 },
-    { x: 550, y: 500 }
-  ];
-
-  const shelfSprite = ASSET_MANAGER.getImageAsset("shelf");
-  if (shelfSprite === null) {
-    throw new Error("Failed to load asset for the player");
-  }
-
-  for (const pos of shelfPositions) {
-    const shelf = new ShelfController(pos, shelfSprite);
-
-    sceneManager.addEntity(shelf);
-    gameEngine.getCollisionSystem().addEntity(shelf);
-  }
+  const demoScene = new DemoScene(gameEngine);
+  sceneManager.loadScene(demoScene);
 
   gameEngine.start();
 });
