@@ -8,7 +8,7 @@ import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { PlayerController } from "../player/playerController.ts";
 import { ShelfController } from "../shelves/shelfController.ts";
 
-class DemoScene implements IScene {
+export class DemoScene implements IScene {
   private inputSystem: InputSystem;
   private collisionSystem: CollisionSystem;
   private getContext: () => GameContext;
@@ -20,7 +20,7 @@ class DemoScene implements IScene {
   }
 
   onEnter(sceneManager: SceneManager): void {
-    sceneManager.addEntity(new OrderDeliveryLoop(this.getContext().gameTime, 120, 8, 10))
+    //sceneManager.addEntity(new OrderDeliveryLoop(this.getContext().gameTime, 120, 8, 10))
     const player = new PlayerController(ASSET_MANAGER, this.inputSystem, {x: 50, y: 50}, 5)
     sceneManager.addEntity(player);
     this.collisionSystem.addEntity(player);

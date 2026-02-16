@@ -10,6 +10,7 @@ import { ItemType } from "./ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventory/inventoryManager.ts";
 import { TemporaryInventoryDisplayEntity } from "./inventory/temporaryInventoryDisplayEntity.ts";
 import SceneManager from "../sceneManager.ts";
+import { DemoScene } from "./scenes/demoscene.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -30,8 +31,6 @@ if (ctx === null || ctx === undefined) {
 const sceneManager = new SceneManager();
 const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
 export export const ASSET_MANAGER = new AssetManager();
-
-sceneManager.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
 
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
@@ -86,6 +85,8 @@ ASSET_MANAGER.downloadAll().then(() => {
   const item3 = new ItemEntity(ItemType.DETERGENT, {x: 760, y: 72});
   gameEngine.addEntity(item3);
   gameEngine.getCollisionSystem().addEntity(item3);
+  const demoScene = new DemoScene(gameEngine);
+  sceneManager.loadScene(demoScene);
 
   gameEngine.start();
 });
