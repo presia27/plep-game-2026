@@ -1,6 +1,7 @@
 import { IEntity } from "./classinterfaces.ts";
 import { AbstractCollisionHandler } from "./componentLibrary/AbstractCollisionHandler.ts";
 import { BoundingBox } from "./componentLibrary/boundingBox.ts";
+import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
 
 /**
  * Describes a pair of entities which have collided
@@ -36,12 +37,19 @@ export class CollisionSystem {
     for (let i = 0; i < this.entities.length; i++) {
       const entityA = this.entities[i];
       const boundsA = entityA?.getComponent(BoundingBox);
-      if (!entityA || !boundsA) continue;
-
+      if (!entityA || !boundsA) continue; // move on if its null of undefined
+      // check if component is alive (don't count collisions with dead components, assuming they actually have a lifecycle component)
+      const lifecycleA = entityA.getComponent(BasicLifecycle);
+      if (lifecycleA && !lifecycleA.isAlive()) continue;
+      
       for (let j = i + 1; j < this.entities.length; j++) {
         const entityB = this.entities[j];
         const boundsB = entityB?.getComponent(BoundingBox);
         if (!entityB || !boundsB) continue;
+
+        // check if component is alive (don't count collisions with dead components, assuming they have a lifecycle)
+        const lifecycleB = entityB.getComponent(BasicLifecycle);
+        if (lifecycleB && !lifecycleB.isAlive()) continue;
 
         if (boundsA.collide(boundsB)) {
           collisionPairs.push({

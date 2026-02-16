@@ -1,6 +1,6 @@
 import { GameContext } from "../../classinterfaces";
 import { Entity } from "../../entity.ts";
-import { Item } from "./item.ts";
+import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
@@ -83,10 +83,10 @@ export class OrderDeliveryLoop extends Entity {
     for (let i = 0; i < quantity; i++) {
       // THIS IS ALL TEST CODE
       const order = new Order();
-      order.addItem(new Item("Toothpaste"));
-      order.addItem(new Item("Orange"));
-      order.addItem(new Item("Ice Cream"));
-      order.addItem(new Item("Item " + (i + 1)));
+      order.addItem(ItemType.TOILETPAPER);
+      order.addItem(ItemType.SPONGE);
+      order.addItem(ItemType.MOP);
+      order.addItem(ItemType.DETERGENT);
 
       this.inactiveOrders.push(order);
     }
@@ -151,14 +151,5 @@ export class OrderDeliveryLoop extends Entity {
   private generateRandNegative(): boolean {
     const rand = Math.random();
     return rand < 0.5;
-  }
-
-  private activateNextOrder(): void {
-    if (this.inactiveOrders.length > 0) {
-      const nextOrder = this.inactiveOrders.pop();
-      if (nextOrder !== undefined) {
-        this.activeOrders.push(nextOrder);
-      }
-    }
   }
 }
