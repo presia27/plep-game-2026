@@ -5,6 +5,8 @@ import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.ts";
 import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import { PlayerController } from "./player/playerController.ts";
 import { ShelfController } from "./shelves/shelfController.ts";
+import SceneManager from "../sceneManager.ts";
+import { DemoScene } from "./scenes/demoscene.ts";
 import { ItemEntity } from "./ordermanagement/itemEntity.ts";
 import { ItemType } from "./ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventory/inventoryManager.ts";
@@ -30,7 +32,7 @@ if (ctx === null || ctx === undefined) {
 
 const sceneManager = new SceneManager();
 const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
-export export const ASSET_MANAGER = new AssetManager();
+export const ASSET_MANAGER = new AssetManager();
 
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
@@ -45,46 +47,6 @@ ASSET_MANAGER.downloadAll().then(() => {
   const temporaryInventoryDisplayEntity = new TemporaryInventoryDisplayEntity(256, ctx.canvas.height - 96, inventorymgr);
   gameEngine.addEntity(temporaryInventoryDisplayEntity); // temporarily add an entity to display the inventory renderer since the scene manager is still in progress
 
-  // okay, temporarily create a player
-  const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5)
-  gameEngine.addEntity(player);
-  gameEngine.getCollisionSystem().addEntity(player);
-
-  // SHELVES
-
-  // Create shelves TEMPORARILY
-  const shelfPositions = [
-    { x: 100, y: 150 },
-    { x: 400, y: 150 },
-    { x: 700, y: 150 },
-    { x: 100, y: 500 },
-    { x: 400, y: 500 },
-    { x: 700, y: 500 }
-  ];
-
-  const shelfSprite = ASSET_MANAGER.getImageAsset("HShelvesNoVines");
-  if (shelfSprite === null) {
-    throw new Error("Failed to load asset for the horizontal shelves without vines!");
-  }
-
-  for (const pos of shelfPositions) {
-    const shelf = new ShelfController(pos, shelfSprite);
-
-    sceneManager.addEntity(shelf);
-    gameEngine.getCollisionSystem().addEntity(shelf);
-  }
-
-  const item = new ItemEntity(ItemType.TOILETPAPER, {x: 384, y: 72});
-  gameEngine.addEntity(item);
-  gameEngine.getCollisionSystem().addEntity(item);
-
-  const item2 = new ItemEntity(ItemType.BUCKET, {x: 540, y: 72});
-  gameEngine.addEntity(item2);
-  gameEngine.getCollisionSystem().addEntity(item2);
-
-  const item3 = new ItemEntity(ItemType.DETERGENT, {x: 760, y: 72});
-  gameEngine.addEntity(item3);
-  gameEngine.getCollisionSystem().addEntity(item3);
   const demoScene = new DemoScene(gameEngine);
   sceneManager.loadScene(demoScene);
 
