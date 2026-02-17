@@ -3,6 +3,7 @@ import { CollisionSystem } from "../../collisionsys.ts";
 import GameEngine from "../../gameengine.ts";
 import { InputSystem } from "../../inputsys.ts";
 import SceneManager from "../../sceneManager.ts";
+import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { PlayerController } from "../player/playerController.ts";
@@ -12,16 +13,19 @@ export class DemoScene implements IScene {
   private inputSystem: InputSystem;
   private collisionSystem: CollisionSystem;
   private getContext: () => GameContext;
+  private inventoryMgr: InventoryManager;
 
-  constructor(game: GameEngine) {
+  constructor(game: GameEngine, inventoryMgr: InventoryManager) {
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.getContext = game.getGameContext; // store the method for getting the game context
+    this.inventoryMgr = inventoryMgr;
   }
 
   onEnter(sceneManager: SceneManager): void {
     //sceneManager.addEntity(new OrderDeliveryLoop(this.getContext().gameTime, 120, 8, 10))
-    const player = new PlayerController(ASSET_MANAGER, this.inputSystem, {x: 50, y: 50}, 5)
+    const inventoryMgr = new InventoryManager(10)
+    const player = new PlayerController(ASSET_MANAGER, this.inputSystem, {x: 50, y: 50}, 5, this.inventoryMgr);
     sceneManager.addEntity(player);
     this.collisionSystem.addEntity(player);
 
@@ -37,7 +41,7 @@ export class DemoScene implements IScene {
       { x: 550, y: 500 }
     ];
 
-    const shelfSprite = ASSET_MANAGER.getImageAsset("shelf");
+    const shelfSprite = ASSET_MANAGER.getImageAsset("HShelvesNoVines");
     if (shelfSprite === null) {
       throw new Error("Failed to load asset for the player");
     }
