@@ -32,3 +32,4 @@ export class GameState {
     // reset any other state here as you add more fields
   }
 }
+

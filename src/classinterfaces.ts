@@ -86,6 +86,7 @@ export interface ILifecycle {
  */
 export interface IScene {
   onEnter(sceneManager: SceneManager): void;
+  onResume(sceneManager: SceneManager): void;
   onExit(): void;
   update(context: GameContext): void;
   draw(context: GameContext): void;

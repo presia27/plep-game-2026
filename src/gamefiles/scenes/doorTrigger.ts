@@ -46,9 +46,9 @@ export class DoorTrigger extends Entity {
     super.addComponent(this.boundingBox);
   }
 
-  update(context: GameContext): void {
+  override update(context: GameContext): void {
     super.update(context);
-    if (this.boundingBox.overlaps(this.playerBoundingBox)) {
+    if (this.boundingBox.collide(this.playerBoundingBox)) {
       this.sceneManager.loadScene(this.targetSceneId);
     }
   }

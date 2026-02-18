@@ -11,10 +11,6 @@ import { ShelfController } from "../shelves/shelfController.ts";
 import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 
-
-///revise////
-//Luke, Claude
-
 /** Describes a single shelf's position and which sprite to use */
 interface ShelfData {
   position: XY;
@@ -114,7 +110,7 @@ export abstract class BaseRoomScene implements IScene {
         door.size,
         door.targetSceneId,
         sceneManager,
-        playerBoundingBox
+        playerBoundingBox!
       );
       this.entities.push(trigger);
       sceneManager.addEntity(trigger);
