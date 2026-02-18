@@ -5,6 +5,7 @@ import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
 import { DemoScene, BackStorageScene, ColdStorageScene } from "./scenes/complete_level_example.ts";
 import { TemporaryInventoryDisplayEntity } from "./inventory/temporaryInventoryDisplayEntity.ts";
+import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -34,13 +35,24 @@ itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, 
 ASSET_MANAGER.downloadAll().then(() => {
   // Start the game engine and components, pass control to the manager
 
-  // GameState now lives in SceneManager, access inventory from there
+ // ========================================
+ // Level-scoped entities that persist across all rooms should be added here.
+ // ========================================
+
   const temporaryInventoryDisplayEntity = new TemporaryInventoryDisplayEntity(
     256,
     ctx.canvas.height - 96,
     sceneManager.gameState.inventoryManager
   );
-  sceneManager.addEntity(temporaryInventoryDisplayEntity);
+  sceneManager.addLevelEntity(temporaryInventoryDisplayEntity);
+
+  //start the order delivery loop, which is a level-scoped entity that persists across all rooms
+  const orderLoop = new OrderDeliveryLoop(0, 120, 8, 10);
+  sceneManager.addLevelEntity(orderLoop);
+
+  // ========================================
+  // Room-specific entities should be added in the individual scene files, not here.
+  // ========================================
 
   // Pre-register all rooms so they're ready when the player walks through doors
   sceneManager.registerScene("backStorage", new BackStorageScene(gameEngine));

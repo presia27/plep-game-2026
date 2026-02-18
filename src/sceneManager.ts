@@ -9,26 +9,46 @@ import { GameState } from "./gameState.ts";
  * SceneManager is the ruling class of the project, handling
  * transitions, global state, and level changing.
  * 
+ * Entities are divided into two categories:
+ *   1. LEVEL entities - persist across room transitions (OrderDeliveryLoop, UI)
+ *   2. ROOM entities - specific to each room, cached when leaving
+ * 
  * @author Luke Willis, Preston Sia, Claude Sonnet 4.5
  */
 export default class SceneManager {
   private currentScene: IScene | null = null;
-  private entities: IEntity[];  // SceneManager owns entities now
-  private sceneCache: Map<string, IScene> = new Map(); // cache scenes/rooms by id
+  private roomEntities: IEntity[];  // SceneManager owns entities now
+  private levelEntities: IEntity[];  // SceneManager owns entities now
+  private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
   public gameState: GameState; // global state, accessible to all scenes
 
 
   constructor() {
-    this.entities = [];
     this.gameState = new GameState();
+    this.roomEntities = [];
+    this.levelEntities = [];
+    this.sceneCache = new Map();
   }
 
+  /**
+   * Adds an entity to the current ROOM
+   * Cached per-room and restored on re-entry
+   * @param entity 
+   */
   public addEntity(entity: IEntity): void {
-    this.entities.push(entity);
+    this.roomEntities.push(entity);
+  }
+
+   /**
+   * Adds a level-scoped entity that persists across all room transitions.
+   * Use this for: OrderDeliveryLoop, UI elements, persistent effects, etc.
+   */
+  public addLevelEntity(entity: IEntity): void {
+    this.levelEntities.push(entity);
   }
 
   public clearEntities(): void {
-    this.entities = [];
+    this.roomEntities = [];
   }
   
   /**
@@ -57,24 +77,40 @@ export default class SceneManager {
   public update(context: GameContext): void {
     // Update scene logic
     this.currentScene?.update(context);
-    
-    // Update and filter entities
-    this.entities = this.entities.filter((entity) => {
+
+    // Update level entities (these persist across rooms)
+    this.levelEntities = this.levelEntities.filter((entity) => {
       const lifecycle = entity.getComponent(BasicLifecycle);
       return !lifecycle || lifecycle.isAlive();
     });
 
-    this.entities.forEach((entity) => {
+    this.levelEntities.forEach((entity) => {
+      entity.update(context);
+    });
+
+    // Update room entities (these are room-specific)
+    this.roomEntities = this.roomEntities.filter((entity) => {
+      const lifecycle = entity.getComponent(BasicLifecycle);
+      return !lifecycle || lifecycle.isAlive();
+    });
+
+    this.roomEntities.forEach((entity) => {
       entity.update(context);
     });
   }
 
+
   public draw(context: GameContext): void {
     this.currentScene?.draw(context);
-    
-    // Draw entities
-    for (let i = this.entities.length - 1; i >= 0; i--) {
-      this.entities[i]?.draw(context);
+
+    // Draw level entities first (usually UI on top)
+    for (let i = this.levelEntities.length - 1; i >= 0; i--) {
+      this.levelEntities[i]?.draw(context);
+    }
+
+    // Draw room entities
+    for (let i = this.roomEntities.length - 1; i >= 0; i--) {
+      this.roomEntities[i]?.draw(context);
     }
   }
 

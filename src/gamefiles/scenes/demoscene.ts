@@ -11,7 +11,7 @@ import { BaseRoomScene } from "./baseRoomScene.ts";
  * Each room is connected by doors. Walking through a door
  * transitions to the next room while preserving state.
  *
- * @author Preston Sia
+ * @author Luke
  */
 
 // -------------------------------------------------------
