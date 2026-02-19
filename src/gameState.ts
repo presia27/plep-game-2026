@@ -1,35 +1,48 @@
 import { InventoryManager } from "./gamefiles/inventory/inventoryManager.ts";
-
-///revise///
-
+import { Order } from "./gamefiles/ordermanagement/order.ts";
 
 /**
  * Holds all global state that persists across rooms and scenes.
- * Create once inside SceneManager — never instantiate elsewhere.
- *
- * Add new global state here as the game grows rather than
- * threading new constructor parameters through every class.
  *
  * @author Luke Willis, Claude Sonnet 4.5
  */
 export class GameState {
   public inventoryManager: InventoryManager;
-  // Future additions might look like:
-  // public score: number = 0;
-  // public completedOrders: number = 0;
-  // public currentLevel: string = "demo";
+  public pendingOrders: Order[];
+  public activeOrders: Order[];
+  public completedOrders: Order[];
 
   constructor() {
     this.inventoryManager = new InventoryManager(6);
+    this.pendingOrders = [];
+    this.activeOrders = [];
+    this.completedOrders = [];
   }
 
-  /**
-   * Resets all global state back to defaults.
-   * Call this when starting a new level or resetting the game.
-   */
+  public addPendingOrder(order: Order): void {
+    this.pendingOrders.push(order);
+  }
+
+  public activateOrder(order: Order): void {
+    const index = this.pendingOrders.indexOf(order);
+    if (index !== -1) {
+      this.pendingOrders.splice(index, 1);
+      this.activeOrders.push(order);
+    }
+  }
+
+  public completeOrder(order: Order): void {
+    const index = this.activeOrders.indexOf(order);
+    if (index !== -1) {
+      this.activeOrders.splice(index, 1);
+      this.completedOrders.push(order);
+    }
+  }
+
   public reset(): void {
     this.inventoryManager = new InventoryManager(6);
-    // reset any other state here as you add more fields
+    this.pendingOrders = [];
+    this.activeOrders = [];
+    this.completedOrders = [];
   }
 }
-

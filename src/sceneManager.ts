@@ -50,6 +50,10 @@ export default class SceneManager {
   public clearEntities(): void {
     this.roomEntities = [];
   }
+
+  public getLevelEntities(): IEntity[] {
+    return this.levelEntities;
+  }
   
   /**
    * Pre-registers a scene in the cache without loading it.

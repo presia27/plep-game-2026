@@ -10,6 +10,7 @@ import { PlayerController } from "../player/playerController.ts";
 import { ShelfController } from "../shelves/shelfController.ts";
 import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
+import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 
 /** Describes a single shelf's position and which sprite to use */
 interface ShelfData {
@@ -73,50 +74,108 @@ export abstract class BaseRoomScene implements IScene {
   // Common setup logic — no need to touch this in subclasses
   // -------------------------------------------------------
 
-  onEnter(sceneManager: SceneManager): void {
-    // --- Player ---
-    const player = new PlayerController(
+  // onEnter(sceneManager: SceneManager): void {
+  //   // --- Player ---
+  //   const player = new PlayerController(
+  //     ASSET_MANAGER,
+  //     this.inputSystem,
+  //     this.getPlayerSpawnPoint(),
+  //     5,
+  //     sceneManager.gameState.inventoryManager
+  //   );
+  //   this.entities.push(player);
+  //   sceneManager.addEntity(player);
+  //   this.collisionSystem.addEntity(player);
+
+  //   // --- Shelves ---
+  //   for (const shelfData of this.getShelfPositions()) {
+  //     const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
+  //     if (shelfSprite === null) {
+  //       throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
+  //     }
+  //     const shelf = new ShelfController(shelfData.position, shelfSprite);
+  //     this.entities.push(shelf);
+  //     sceneManager.addEntity(shelf);
+  //     this.collisionSystem.addEntity(shelf);
+  //   }
+
+  //   // --- Door triggers ---
+  //   const playerBoundingBox = player.getComponent(BoundingBox);
+  //   if (playerBoundingBox === null) {
+  //     throw new Error("Player is missing a BoundingBox component");
+  //   }
+
+  //   for (const door of this.getDoorTriggers()) {
+  //     const trigger = new DoorTrigger(
+  //       door.position,
+  //       door.size,
+  //       door.targetSceneId,
+  //       sceneManager,
+  //       playerBoundingBox!
+  //     );
+  //     this.entities.push(trigger);
+  //     sceneManager.addEntity(trigger);
+  //   }
+  // }
+onEnter(sceneManager: SceneManager): void {
+  // --- Player (ONLY create if doesn't exist yet) ---
+  let player: PlayerController;
+  
+  // Check if player already exists in level entities
+  const existingPlayer = sceneManager.getLevelEntities().find(
+    entity => entity instanceof PlayerController
+  );
+  
+  if (existingPlayer) {
+    // Reuse existing player, just update spawn point
+    player = existingPlayer as PlayerController;
+    const movementComponent = player.getComponent(MovementComponent);
+    if (movementComponent) {
+      movementComponent.setPosition(this.getPlayerSpawnPoint());
+    }
+  } else {
+    // First time - create player as level entity
+    player = new PlayerController(
       ASSET_MANAGER,
       this.inputSystem,
       this.getPlayerSpawnPoint(),
       5,
       sceneManager.gameState.inventoryManager
     );
-    this.entities.push(player);
-    sceneManager.addEntity(player);
+    sceneManager.addLevelEntity(player);
     this.collisionSystem.addEntity(player);
-
-    // --- Shelves ---
-    for (const shelfData of this.getShelfPositions()) {
-      const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
-      if (shelfSprite === null) {
-        throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
-      }
-      const shelf = new ShelfController(shelfData.position, shelfSprite);
-      this.entities.push(shelf);
-      sceneManager.addEntity(shelf);
-      this.collisionSystem.addEntity(shelf);
-    }
-
-    // --- Door triggers ---
-    const playerBoundingBox = player.getComponent(BoundingBox);
-    if (playerBoundingBox === null) {
-      throw new Error("Player is missing a BoundingBox component");
-    }
-
-    for (const door of this.getDoorTriggers()) {
-      const trigger = new DoorTrigger(
-        door.position,
-        door.size,
-        door.targetSceneId,
-        sceneManager,
-        playerBoundingBox!
-      );
-      this.entities.push(trigger);
-      sceneManager.addEntity(trigger);
-    }
   }
 
+  // --- Shelves ---
+  for (const shelfData of this.getShelfPositions()) {
+    const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
+    if (shelfSprite === null) {
+      throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
+    }
+    const shelf = new ShelfController(shelfData.position, shelfSprite);
+    this.entities.push(shelf);
+    sceneManager.addEntity(shelf);
+    this.collisionSystem.addEntity(shelf);
+  }
+
+  // --- Door triggers ---
+  const playerBoundingBox = player.getComponent(BoundingBox);
+  if (!playerBoundingBox) {
+    throw new Error("Player is missing a BoundingBox component");
+  }
+
+  for (const door of this.getDoorTriggers()) {
+    const trigger = new DoorTrigger(
+      door.position,
+      door.size,
+      door.targetSceneId,
+      sceneManager,
+      playerBoundingBox
+    );
+    this.entities.push(trigger);
+    sceneManager.addEntity(trigger);
+  }
+}
   /**
    * Called when the player returns to this room.
    * Re-registers cached entities with the SceneManager
