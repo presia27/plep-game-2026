@@ -11,7 +11,7 @@ import { BaseRoomScene } from "./baseRoomScene.ts";
  * Each room is connected by doors. Walking through a door
  * transitions to the next room while preserving state.
  *
- * @author Preston Sia
+ * @author Luke Willis, Claude Sonnet 4.5
  */
 
 // -------------------------------------------------------
@@ -29,7 +29,7 @@ export class DemoScene extends BaseRoomScene {
   protected getShelfPositions() {
     return [
       { position: { x: 150, y: 150 }, spriteId: "HShelvesNoVines" },
-      { position: { x: 350, y: 150 }, spriteId: "HShelvesNoVines" },
+      { position: { x: 350, y: 150 }, spriteId: "HShelvesVines" },
       { position: { x: 550, y: 150 }, spriteId: "HShelvesNoVines" },
       { position: { x: 150, y: 500 }, spriteId: "HShelvesNoVines" },
       { position: { x: 350, y: 500 }, spriteId: "HShelvesNoVines" },

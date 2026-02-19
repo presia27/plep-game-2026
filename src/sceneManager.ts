@@ -20,13 +20,16 @@ export default class SceneManager {
   private roomEntities: IEntity[];  // SceneManager owns entities now
   private levelEntities: IEntity[];  // SceneManager owns entities now
   private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
+  private uiEntities: IEntity[]; // entities that belong to the UI layer, drawn on top of everything else
   public gameState: GameState; // global state, accessible to all scenes
 
 
   constructor() {
+    this.currentScene = null;
     this.gameState = new GameState();
     this.roomEntities = [];
     this.levelEntities = [];
+    this.uiEntities = [];
     this.sceneCache = new Map();
   }
 
@@ -45,6 +48,10 @@ export default class SceneManager {
    */
   public addLevelEntity(entity: IEntity): void {
     this.levelEntities.push(entity);
+  }
+
+  public addUIEntity(entity: IEntity): void {
+    this.uiEntities.push(entity);
   }
 
   public clearEntities(): void {
@@ -73,14 +80,25 @@ export default class SceneManager {
   public resetAll(): void {
     this.sceneCache.clear();
     this.clearEntities();
+    this.levelEntities = [];
+    this.uiEntities = [];
     this.currentScene = null;
     this.gameState.reset();
   }
-  
 
   public update(context: GameContext): void {
     // Update scene logic
     this.currentScene?.update(context);
+
+    //update UI entities
+    this.uiEntities = this.uiEntities.filter((entity) => {
+      const lifecycle = entity.getComponent(BasicLifecycle);
+      return !lifecycle || lifecycle.isAlive();
+    });
+
+    this.uiEntities.forEach((entity) => {
+      entity.update(context);
+    });
 
     // Update level entities (these persist across rooms)
     this.levelEntities = this.levelEntities.filter((entity) => {
@@ -107,16 +125,24 @@ export default class SceneManager {
   public draw(context: GameContext): void {
     this.currentScene?.draw(context);
 
-    // Draw level entities first (usually UI on top)
+    //draw in order: shelves --> items/player --> UI
+
+    // 1. Room entities (shelves, doors)
+    for (let i = this.roomEntities.length - 1; i >= 0; i--) {
+      this.roomEntities[i]?.draw(context);
+    }
+  
+    // 2. Level entities (player, items)
     for (let i = this.levelEntities.length - 1; i >= 0; i--) {
       this.levelEntities[i]?.draw(context);
     }
 
-    // Draw room entities
-    for (let i = this.roomEntities.length - 1; i >= 0; i--) {
-      this.roomEntities[i]?.draw(context);
+    // 3. UI entities (drawn on top of everything)
+    for (let i = this.uiEntities.length - 1; i >= 0; i--) {
+      this.uiEntities[i]?.draw(context);
     }
   }
+
 
   /**
    * Loads a scene by id. If the scene has been visited before,
@@ -126,20 +152,49 @@ export default class SceneManager {
    * registerScene() to pre-register scenes ahead of time.
    */
   public loadScene(sceneId: string, scene?: IScene): void {
-    this.currentScene?.onExit();
-    this.clearEntities();
+  this.currentScene?.onExit();
+  this.clearEntities();
 
-    if (this.sceneCache.has(sceneId)) {
-      // restore cached scene — onEnter is NOT called again, state is preserved
-      this.currentScene = this.sceneCache.get(sceneId)!;
-      this.currentScene.onResume(this); // re-add cached entities to sceneManager
-    } else if (scene) {
-      // first visit — cache and enter the scene fresh
-      this.sceneCache.set(sceneId, scene);
-      this.currentScene = scene;
-      scene.onEnter(this);
+  if (this.sceneCache.has(sceneId)) {
+    const cachedScene = this.sceneCache.get(sceneId)!;
+    
+    // Check if this scene has been entered before by checking if it has entities
+    // If this is a BaseRoomScene, it will have entities array
+    const hasBeenEntered = (cachedScene as any).entities?.length > 0;
+    
+    if (hasBeenEntered) {
+      // Scene has been visited before - resume it
+      this.currentScene = cachedScene;
+      cachedScene.onResume(this);
     } else {
-      console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
+      // Scene is registered but never entered - enter it for the first time
+      this.currentScene = cachedScene;
+      cachedScene.onEnter(this);
     }
+  } else if (scene) {
+    // Not registered at all - register and enter
+    this.sceneCache.set(sceneId, scene);
+    this.currentScene = scene;
+    scene.onEnter(this);
+  } else {
+    console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
   }
+}
+  // public loadScene(sceneId: string, scene?: IScene): void {
+  //   this.currentScene?.onExit();
+  //   this.clearEntities();
+
+  //   if (this.sceneCache.has(sceneId)) {
+  //     // restore cached scene — onEnter is NOT called again, state is preserved
+  //     this.currentScene = this.sceneCache.get(sceneId)!;
+  //     this.currentScene.onResume(this); // re-add cached entities to sceneManager
+  //   } else if (scene) {
+  //     // first visit — cache and enter the scene fresh
+  //     this.sceneCache.set(sceneId, scene);
+  //     this.currentScene = scene;
+  //     scene.onEnter(this);
+  //   } else {
+  //     console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
+  //   }
+  // }
 }

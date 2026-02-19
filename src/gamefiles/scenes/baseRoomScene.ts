@@ -118,6 +118,7 @@ export abstract class BaseRoomScene implements IScene {
   //   }
   // }
 onEnter(sceneManager: SceneManager): void {
+  console.log("onEnter called for scene"); // <-- debug
   // --- Player (ONLY create if doesn't exist yet) ---
   let player: PlayerController;
   
@@ -147,6 +148,9 @@ onEnter(sceneManager: SceneManager): void {
   }
 
   // --- Shelves ---
+
+  console.log("Creating shelves, count:", this.getShelfPositions().length); // <-- debug
+
   for (const shelfData of this.getShelfPositions()) {
     const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
     if (shelfSprite === null) {
@@ -154,11 +158,17 @@ onEnter(sceneManager: SceneManager): void {
     }
     const shelf = new ShelfController(shelfData.position, shelfSprite);
     this.entities.push(shelf);
+
+    console.log("Added shelf, entities.length now:", this.entities.length); // <-- debug
+
     sceneManager.addEntity(shelf);
     this.collisionSystem.addEntity(shelf);
   }
 
   // --- Door triggers ---
+
+  console.log("Creating doors, count:", this.getDoorTriggers().length); // <-- debug
+
   const playerBoundingBox = player.getComponent(BoundingBox);
   if (!playerBoundingBox) {
     throw new Error("Player is missing a BoundingBox component");
@@ -175,6 +185,7 @@ onEnter(sceneManager: SceneManager): void {
     this.entities.push(trigger);
     sceneManager.addEntity(trigger);
   }
+  console.log("onEnter complete, total entities:", this.entities.length); // <-- debug
 }
   /**
    * Called when the player returns to this room.
@@ -182,13 +193,44 @@ onEnter(sceneManager: SceneManager): void {
    * so they get updated and drawn again — without
    * recreating them from scratch.
    */
+  // onResume(sceneManager: SceneManager): void {
+  //   for (const entity of this.entities) {
+  //     sceneManager.addEntity(entity);
+  //   }
+  // }
+
+  // debug
   onResume(sceneManager: SceneManager): void {
-    for (const entity of this.entities) {
-      sceneManager.addEntity(entity);
+  console.log("onResume called, entities to restore:", this.entities.length);
+  
+  // Reposition player
+  const existingPlayer = sceneManager.getLevelEntities().find(
+    entity => entity instanceof PlayerController
+  );
+  
+  if (existingPlayer) {
+    const player = existingPlayer as PlayerController;
+    const movementComponent = player.getComponent(MovementComponent);
+    if (movementComponent) {
+      movementComponent.setPosition(this.getPlayerSpawnPoint());
     }
   }
 
+  // Re-add room entities
+  for (const entity of this.entities) {
+    console.log("Re-adding entity:", entity.constructor.name);
+    sceneManager.addEntity(entity);
+    this.collisionSystem.addEntity(entity);
+  }
+  
+  console.log("onResume complete");
+}
+
   onExit(): void {
+    //remove all room entities from collision system when leaving
+    for (const entity of this.entities) {
+      this.collisionSystem.removeEntity(entity);
+    }
     // no teardown needed since we're preserving state via caching
   }
 

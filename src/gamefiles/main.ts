@@ -45,7 +45,7 @@ ASSET_MANAGER.downloadAll().then(() => {
     ctx.canvas.height - 96,
     sceneManager.gameState.inventoryManager
   );
-  sceneManager.addLevelEntity(temporaryInventoryDisplayEntity);
+  sceneManager.addUIEntity(temporaryInventoryDisplayEntity);
 
   //start the order delivery loop, which is a level-scoped entity that persists across all rooms
   const orderLoop = new OrderDeliveryLoop(0, 120, 8, 10, sceneManager.gameState);

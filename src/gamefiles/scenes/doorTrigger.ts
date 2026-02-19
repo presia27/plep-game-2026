@@ -52,4 +52,44 @@ export class DoorTrigger extends Entity {
       this.sceneManager.loadScene(this.targetSceneId);
     }
   }
+
+   override draw(context: GameContext): void {
+    super.draw(context);
+    
+    if (context.debug) {
+      const ctx = context.ctx;
+      ctx.save();
+      
+      // Draw door trigger zone in green with transparency
+      ctx.strokeStyle = "#00FF00";
+      ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
+      ctx.lineWidth = 2;
+      
+      ctx.fillRect(
+        this.boundingBox.getLeft(),
+        this.boundingBox.getTop(),
+        this.boundingBox.getRight() - this.boundingBox.getLeft(),
+        this.boundingBox.getBottom() - this.boundingBox.getTop()
+      );
+      
+      ctx.strokeRect(
+        this.boundingBox.getLeft(),
+        this.boundingBox.getTop(),
+        this.boundingBox.getRight() - this.boundingBox.getLeft(),
+        this.boundingBox.getBottom() - this.boundingBox.getTop()
+      );
+      
+      // Draw label showing target scene
+      ctx.fillStyle = "#00FF00";
+      ctx.font = "12px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(
+        `→ ${this.targetSceneId}`,
+        this.boundingBox.getLeft() + (this.boundingBox.getRight() - this.boundingBox.getLeft()) / 2,
+        this.boundingBox.getTop() + (this.boundingBox.getBottom() - this.boundingBox.getTop()) / 2
+      );
+      
+      ctx.restore();
+    }
+  }
 }
