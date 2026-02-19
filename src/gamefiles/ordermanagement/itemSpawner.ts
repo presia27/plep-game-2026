@@ -16,6 +16,7 @@ export class ItemSpawner extends Entity {
   private sceneManager: SceneManager;
   private collisionSystem: CollisionSystem;
   private roomSpawnConfigs: RoomSpawnConfig[];
+  private itemsByRoom: Map<string, ItemEntity[]> = new Map();
 
   constructor(
     sceneManager: SceneManager,
@@ -26,6 +27,14 @@ export class ItemSpawner extends Entity {
     this.sceneManager = sceneManager;
     this.collisionSystem = collisionSystem;
     this.roomSpawnConfigs = roomSpawnConfigs;
+
+    // Initialize itemsByRoom map
+    for (const config of roomSpawnConfigs) {
+      this.itemsByRoom.set(config.roomId, []);
+    }
+  }
+  public getItemsForRoom(roomId: string): ItemEntity[] {
+    return this.itemsByRoom.get(roomId) || [];
   }
 
   public override update(context: GameContext): void {
@@ -45,28 +54,36 @@ export class ItemSpawner extends Entity {
   private spawnOrderItems(order: any): void {
     const items = this.extractItemsFromOrder(order);
     
-    const allSpawnPoints: XY[] = [];
-    for (const config of this.roomSpawnConfigs) {
-      allSpawnPoints.push(...config.spawnPoints);
+    if (this.roomSpawnConfigs.length === 0) {
+      console.error("No room spawn configs available");
+      return;
     }
-
-    const shuffledPoints = this.shuffleArray([...allSpawnPoints]);
-
-    for (let i = 0; i < items.length && i < shuffledPoints.length; i++) {
-      const itemType = items[i];
-      const position = shuffledPoints[i];
+    
+    // Distribute items across rooms
+    const shuffledConfigs = this.shuffleArray([...this.roomSpawnConfigs]);
+    let configIndex = 0;
+    
+    for (const itemType of items) {
+      const config = shuffledConfigs[configIndex % shuffledConfigs.length];
       
-      if (itemType && position) {
-        this.spawnItem(itemType, position);
+      if (!config) continue;
+      
+      const availablePoints = config.spawnPoints;
+      
+      if (availablePoints.length > 0) {
+        const randomPoint = availablePoints[Math.floor(Math.random() * availablePoints.length)];
+        if (randomPoint) {
+          const item = new ItemEntity(itemType, randomPoint);
+          
+          // Store in our map instead of pushing to scene
+          this.itemsByRoom.get(config.roomId)?.push(item);
+        }
       }
+      
+      configIndex++;
     }
   }
 
-  private spawnItem(itemType: ItemType, position: XY): void {
-    const item = new ItemEntity(itemType, position);
-    this.sceneManager.addLevelEntity(item);
-    this.collisionSystem.addEntity(item);
-  }
 
   private extractItemsFromOrder(order: any): ItemType[] {
     const items: ItemType[] = [];

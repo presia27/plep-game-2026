@@ -185,8 +185,28 @@ onEnter(sceneManager: SceneManager): void {
     this.entities.push(trigger);
     sceneManager.addEntity(trigger);
   }
-  console.log("onEnter complete, total entities:", this.entities.length); // <-- debug
+
+  // --- Items (get from itemSpawner) ---
+  const itemSpawner = sceneManager.getLevelEntities().find(
+    entity => entity.constructor.name === "ItemSpawner"
+  ) as any;
+
+  if (itemSpawner) {
+    const roomId = this.getRoomId();
+    const items = itemSpawner.getItemsForRoom(roomId);
+    console.log("Adding items for room, count:", items.length);
+    for (const item of items) {
+      this.entities.push(item);
+      sceneManager.addEntity(item);
+      this.collisionSystem.addEntity(item);
+    }
+
+    console.log("onEnter complete, total entities:", this.entities.length); // <-- debug
+  }
 }
+
+  protected abstract getRoomId(): string;
+  
   /**
    * Called when the player returns to this room.
    * Re-registers cached entities with the SceneManager
@@ -202,6 +222,7 @@ onEnter(sceneManager: SceneManager): void {
   // debug
   onResume(sceneManager: SceneManager): void {
   console.log("onResume called, entities to restore:", this.entities.length);
+  console.log("Entity types:", this.entities.map(e => e.constructor.name));
   
   // Reposition player
   const existingPlayer = sceneManager.getLevelEntities().find(

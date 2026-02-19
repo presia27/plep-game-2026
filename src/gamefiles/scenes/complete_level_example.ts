@@ -36,6 +36,9 @@ export class DemoScene extends BaseRoomScene {
       { position: { x: 550, y: 500 }, spriteId: "HShelvesNoVines" }
     ];
   }
+  protected getRoomId(): string{
+    return "demo";
+  }
 
   protected getDoorTriggers() {
     return [
@@ -48,6 +51,7 @@ export class DemoScene extends BaseRoomScene {
     ];
   }
 }
+
 
 // -------------------------------------------------------
 // BACK STORAGE ROOM
@@ -70,7 +74,9 @@ export class BackStorageScene extends BaseRoomScene {
       { position: { x: 400, y: 400 }, spriteId: "HShelvesNoVines" },
     ];
   }
-
+  protected getRoomId(): string{
+    return "backStorage";
+  }
   protected getDoorTriggers() {
     return [
       // Door on left wall - back to main floor
@@ -100,6 +106,9 @@ export class ColdStorageScene extends BaseRoomScene {
   protected getPlayerSpawnPoint(): XY {
     // Player enters from the top, so spawn at the top
     return { x: 350, y: 50 };
+  }
+    protected getRoomId(): string{
+    return "coldStorage";
   }
 
   protected getShelfPositions() {
