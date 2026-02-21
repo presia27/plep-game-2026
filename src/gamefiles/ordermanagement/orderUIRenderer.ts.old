@@ -5,7 +5,7 @@
 
 import { GameContext, IRenderer } from "../../classinterfaces.ts";
 import { OrderState } from "../ordermanagement/orderTypes.ts";
-import { getItemMetadata } from "../itemTypes.ts";
+import { getItemMetadata } from "./itemTypes.ts";
 import { getProgressText } from "../ordermanagement/orderSystem.ts";
 
 /**

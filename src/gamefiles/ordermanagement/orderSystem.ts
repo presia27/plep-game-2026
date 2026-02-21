@@ -4,7 +4,7 @@
  * @author pmo
  */
 
-import { ItemType, getItemMetadata } from "../itemTypes.ts";
+import { ItemType, getItemMetadata } from "./itemTypes.ts";
 import { OrderState, PickupResult, ShelfConfig } from "./orderTypes.ts";
 
 /**
