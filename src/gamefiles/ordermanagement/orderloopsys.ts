@@ -22,7 +22,6 @@ export class OrderDeliveryLoop extends Entity {
   private activeOrders: Order[];
   private doneOrders: Order[];
   private lastPromptTime: number | null;
-  private gameState: GameState;
   private promptTimes: number[]; // order prompts times in reverse order (treat as a stack)
 
   /**
@@ -36,11 +35,11 @@ export class OrderDeliveryLoop extends Entity {
     startTime: number, 
     duration: number, 
     promptIntervalFactor: number, 
-    totalOrders: number,
-    gameState: GameState) {
+    totalOrders: number
+  ) {
+
     // explicit call to super
     super();
-    this.gameState = gameState;
 
     if (duration < 60) {
       throw new Error("Duration must be at least 60 seconds, instead got " + duration);
@@ -79,7 +78,6 @@ export class OrderDeliveryLoop extends Entity {
         // load the next order
         const nextOrder: Order | undefined = this.inactiveOrders.shift();
         if (nextOrder !== undefined) {
-          this.gameState.addPendingOrder(nextOrder);
           this.activeOrders.push(nextOrder);
           nextOrder.setArrivalTime(Math.floor(currentTime));
           console.log(nextOrder);

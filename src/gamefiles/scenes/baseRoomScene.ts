@@ -11,6 +11,7 @@ import { ShelfController } from "../shelves/shelfController.ts";
 import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
+import { InventoryManager } from "../inventory/inventoryManager.ts";
 
 /** Describes a single shelf's position and which sprite to use */
 interface ShelfData {
@@ -141,7 +142,8 @@ onEnter(sceneManager: SceneManager): void {
       this.inputSystem,
       this.getPlayerSpawnPoint(),
       5,
-      sceneManager.gameState.inventoryManager
+      sceneManager.gameState?.getInventoryManager() ?? new InventoryManager(6)
+      // ^^^ this is NOT good, but eventually the player will be instantiated elsewhere
     );
     sceneManager.addLevelEntity(player);
     this.collisionSystem.addEntity(player);
