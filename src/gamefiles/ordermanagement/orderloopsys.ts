@@ -152,4 +152,8 @@ export class OrderDeliveryLoop extends Entity {
     const rand = Math.random();
     return rand < 0.5;
   }
+
+  public getActiveOrders(): Order[] {
+    return this.activeOrders;
+  }
 }
