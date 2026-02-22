@@ -1,19 +1,18 @@
 import { XY } from "../../../typeinterfaces.ts";
 import { BaseRoomScene } from "../baseRoomScene.ts";
-import { DoorData, PharmaRoom, ShelfData } from "../roomData";
+import { DoorData, CleaningRoom, ShelfData } from "../roomData";
 
-export class PharmaScene extends BaseRoomScene {
+export class CleaningScene extends BaseRoomScene {
   protected override getPlayerSpawnPoint(): XY {
-    return PharmaRoom.defaultSpawn;
+    return CleaningRoom.defaultSpawn;
   }
   protected override getShelfPositions(): ShelfData[] {
-    return PharmaRoom.shelves;
+    return CleaningRoom.shelves;
   }
   protected override getDoorTriggers(): DoorData[] {
-    return PharmaRoom.doors;
+    return CleaningRoom.doors;
   }
   protected override getRoomId(): string {
-    return "pharma";
+    return CleaningRoom.sceneId;
   }
-  
 }
