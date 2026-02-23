@@ -46,4 +46,8 @@ export class Order {
   public getFulfilTime(): number | null {
     return this.fulfilTime;
   }
+
+  public getItems(): Map<ItemType, number> {
+    return this.items;
+  }
 }
