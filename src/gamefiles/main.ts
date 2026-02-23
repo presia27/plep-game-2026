@@ -34,6 +34,12 @@ ASSET_MANAGER.downloadAll().then(() => {
   // Initialize the game engine and components, pass control to the manager
   const gameState = new GameState(gameEngine, sceneManager, ctx);
 
+  // Temporarily create a boss satisfaction manager (this should be managed by the scene manager)
+  const bossSatisfaction = new BossSatisfaction(order);
+  const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(100, 200, bossSatisfaction);
+  gameEngine.addEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
+
+
   gameEngine.start();
 });
 
