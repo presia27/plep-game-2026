@@ -71,6 +71,14 @@ export class OrderDisplayRenderer implements IRenderer {
       this.posY + 48
     )
 
+    ctx.fillStyle = "black";
+    ctx.font = "bold 24px Arial"
+    ctx.fillText(
+      Math.ceil((this.orderLoop.getStartTime() + this.orderLoop.getLevelDuration()) - context.gameTime).toString(),
+      this.posX + PANELWIDTH,
+      this.posY + PANELHEIGHT - 48
+    );
+
     ctx.restore();
   }
 

@@ -69,7 +69,6 @@ export class OrderDeliveryLoop extends Entity {
     const currentTime = context.gameTime;
 
     if (currentTime < this.startTime + this.duration) {
-      console.log(Math.floor(context.gameTime));
 
       const nextTime = this.promptTimes[this.promptTimes.length - 1];
       if (Math.floor(currentTime) === nextTime) {
@@ -193,5 +192,12 @@ export class OrderDeliveryLoop extends Entity {
    */
   public getLevelDuration(): number {
     return this.duration;
+  }
+
+  /**
+   * return the starting time stamp
+   */
+  public getStartTime(): number {
+    return this.startTime;
   }
 }
