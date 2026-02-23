@@ -35,7 +35,7 @@ export class OrderDisplayRenderer implements IRenderer {
     // Draw title
     ctx.fillStyle = 'white';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText('Your Orders', this.posX + 10, this.posY + 25);
+    ctx.fillText('Next Order', this.posX + 10, this.posY + 25);
 
     // Get orders
     const activeOrders = this.orderLoop.getActiveOrders();
@@ -74,7 +74,7 @@ export class OrderDisplayRenderer implements IRenderer {
     ctx.fillStyle = "black";
     ctx.font = "bold 24px Arial"
     ctx.fillText(
-      Math.ceil((this.orderLoop.getStartTime() + this.orderLoop.getLevelDuration()) - context.gameTime).toString(),
+      Math.max(Math.ceil((this.orderLoop.getStartTime() + this.orderLoop.getLevelDuration()) - context.gameTime), 0).toString(),
       this.posX + PANELWIDTH,
       this.posY + PANELHEIGHT - 48
     );
