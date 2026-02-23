@@ -25,16 +25,16 @@ export abstract class BaseRoomScene implements IScene {
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
 
-  protected abstract getPlayerSpawnPoint(): XY;
-  protected abstract getShelfPositions(): ShelfData[];
-  protected abstract getDoorTriggers(): DoorData[];
-  abstract getRoomId(): string;
-
   constructor(game: GameEngine) {
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
   }
+
+  protected abstract getPlayerSpawnPoint(): XY;
+  protected abstract getShelfPositions(): ShelfData[];
+  protected abstract getDoorTriggers(): DoorData[];
+  abstract getRoomId(): string;
 
   /**
    * Loads scene data and adds them as actual instances
