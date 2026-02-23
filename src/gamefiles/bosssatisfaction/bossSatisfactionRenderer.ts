@@ -29,7 +29,7 @@ export class SatisfactionRenderer implements IRenderer {
 
     // Draw background panel
     // Create linear gradient
-    const grad = ctx.createLinearGradient(0, 0, PANELWIDTH, 0);
+    const grad = ctx.createLinearGradient(this.posX, 0, this.posX + PANELWIDTH, 0);
     grad.addColorStop(0, "#730906");
     grad.addColorStop(1, "#023e2b");
 
@@ -38,7 +38,7 @@ export class SatisfactionRenderer implements IRenderer {
     ctx.fillRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
 
     // Draw border
-    ctx.strokeStyle = 'rgb(0, 0, 0)';
+    ctx.strokeStyle = 'rgb(233, 151, 151)';
     ctx.lineWidth = 1;
     ctx.strokeRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
 
