@@ -27,16 +27,16 @@ export const PharmaRoom: roomData = {
   defaultSpawn: { x: 50, y: 50 },
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 350, y: 150 }, spriteId: "HShelvesVines" },
-    { position: { x: 550, y: 150 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 150, y: 500 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 350, y: 500 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 550, y: 500 }, spriteId: "HShelvesNoVines" }
+    { position: { x: 450, y: 150 }, spriteId: "HShelvesVines" },
+    { position: { x: 750, y: 150 }, spriteId: "HShelvesNoVines" },
+    { position: { x: 150, y: 500 }, spriteId: "HShelvesVines" },
+    { position: { x: 450, y: 500 }, spriteId: "HShelvesNoVines" },
+    { position: { x: 750, y: 500 }, spriteId: "HShelvesNoVines" }
   ],
   doors: [
     {
-      position: { x: 740, y: 300 }, 
-      size: { x: 20, y: 80 }, 
+      position: { x: 1200, y: 300 }, 
+      size: { x: 20, y: 200 }, 
       targetSceneId: "cleaning" 
     }
   ],
@@ -52,19 +52,19 @@ export const CleaningRoom: roomData = {
   defaultSpawn: { x: 50, y: 300 },
   shelves: [
     { position: { x: 200, y: 150 }, spriteId: "HShelvesVines" },
-    { position: { x: 400, y: 150 }, spriteId: "HShelvesVines" },
+    { position: { x: 650, y: 150 }, spriteId: "HShelvesNoVines" },
     { position: { x: 200, y: 400 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 400, y: 400 }, spriteId: "HShelvesNoVines" },
+    { position: { x: 650, y: 400 }, spriteId: "HShelvesVines" },
   ],
   doors: [
     { 
       position: { x: 10, y: 300 }, 
-      size: { x: 20, y: 80 }, 
+      size: { x: 20, y: 200 }, 
       targetSceneId: "pharma" 
     },
     { 
-      position: { x: 350, y: 580 }, 
-      size: { x: 80, y: 20 }, 
+      position: { x: 1200, y: 300 }, 
+      size: { x: 20, y: 200 }, 
       targetSceneId: "food" 
     }
   ],
@@ -80,14 +80,9 @@ export const FoodRoom: roomData = {
   defaultSpawn: { x: 350, y: 50 },
   shelves: [
     { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" },
-    { position: { x: 300, y: 200 }, spriteId: "HShelvesVines" },
-    { position: { x: 500, y: 200 }, spriteId: "HShelvesVines" },
-    { position: { x: 100, y: 350 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 300, y: 350 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 500, y: 350 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 100, y: 500 }, spriteId: "HShelvesVines" },
-    { position: { x: 300, y: 500 }, spriteId: "HShelvesVines" },
-    { position: { x: 500, y: 500 }, spriteId: "HShelvesVines" },
+    { position: { x: 650, y: 200 }, spriteId: "HShelvesVines" },
+    { position: { x: 650, y: 450 }, spriteId: "HShelvesVines" },
+    { position: { x: 100, y: 450 }, spriteId: "HShelvesNoVines" },
   ],
   doors: [
     { 
