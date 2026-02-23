@@ -160,6 +160,14 @@ export class OrderDeliveryLoop extends Entity {
     return rand < 0.5;
   }
 
+  public getTotalOrders(): number {
+    return this.totalOrders;
+  }
+
+  public getNumberOfDoneOrders(): number {
+    return this.doneOrders.length;
+  }
+
   /**
    * Return the list of active orders
    */
