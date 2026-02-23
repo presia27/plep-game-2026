@@ -1,9 +1,14 @@
 import { Entity } from "../../entity.js";
-import { Item } from "./item.js";
+import { ItemType } from "./itemTypes.js";
 import { Order } from "./order.js";
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
 const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed THIS percent of the number of seconds
+/**
+ * The main driver or prompting orders in the game
+ *
+ * @author Preston Sia
+ */
 export class OrderDeliveryLoop extends Entity {
     /**
      *
@@ -55,10 +60,10 @@ export class OrderDeliveryLoop extends Entity {
         for (let i = 0; i < quantity; i++) {
             // THIS IS ALL TEST CODE
             const order = new Order();
-            order.addItem(new Item("Toothpaste"));
-            order.addItem(new Item("Orange"));
-            order.addItem(new Item("Ice Cream"));
-            order.addItem(new Item("Item " + (i + 1)));
+            order.addItem(ItemType.TOILETPAPER);
+            order.addItem(ItemType.SPONGE);
+            order.addItem(ItemType.MOP);
+            order.addItem(ItemType.DETERGENT);
             this.inactiveOrders.push(order);
         }
     }
@@ -112,12 +117,30 @@ export class OrderDeliveryLoop extends Entity {
         const rand = Math.random();
         return rand < 0.5;
     }
-    activateNextOrder() {
-        if (this.inactiveOrders.length > 0) {
-            const nextOrder = this.inactiveOrders.pop();
-            if (nextOrder !== undefined) {
-                this.activeOrders.push(nextOrder);
-            }
+    /**
+     * Return the list of active orders
+     */
+    getActiveOrders() {
+        return this.activeOrders;
+    }
+    /**
+     * Return the current active order, which is the first one in the active orders list
+     * Return null if there is no currently active order
+     */
+    getCurrentActiveOrder() {
+        var _a;
+        if (this.activeOrders.length > 0) {
+            return (_a = this.activeOrders[0]) !== null && _a !== void 0 ? _a : null;
         }
+        else {
+            console.warn("No active orders at the moment");
+            return null;
+        }
+    }
+    /**
+     * return the length of the level in seconds
+     */
+    getLevelDuration() {
+        return this.duration;
     }
 }
