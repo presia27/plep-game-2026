@@ -27,6 +27,13 @@ export class CollisionSystem {
     this.entities.push(entity);
   }
 
+  public removeEntity(entity: IEntity): void {
+    const index = this.entities.indexOf(entity);
+    if (index !== -1) {
+      this.entities.splice(index, 1);
+    }
+  }
+
   /**
    * Performs a narrow phase collision check
    * on all entities registered with the system.
