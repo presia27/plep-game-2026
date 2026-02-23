@@ -28,7 +28,7 @@ export abstract class BaseRoomScene implements IScene {
   protected abstract getPlayerSpawnPoint(): XY;
   protected abstract getShelfPositions(): ShelfData[];
   protected abstract getDoorTriggers(): DoorData[];
-  protected abstract getRoomId(): string;
+  abstract getRoomId(): string;
 
   constructor(game: GameEngine) {
     this.inputSystem = game.getInputSystem();

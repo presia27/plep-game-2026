@@ -1,5 +1,5 @@
 import { XY } from "../../../typeinterfaces.ts";
-import { BaseRoomScene } from "../baseRoomScene.ts";
+import { BaseRoomScene } from "../newBaseRoomScene.ts";
 import { DoorData, FoodRoom, ShelfData } from "../roomData";
 
 export class FoodScene extends BaseRoomScene {
@@ -12,7 +12,7 @@ export class FoodScene extends BaseRoomScene {
   protected override getDoorTriggers(): DoorData[] {
     return FoodRoom.doors;
   }
-  protected override getRoomId(): string {
+  public override getRoomId(): string {
     return FoodRoom.sceneId;
   }
 }
