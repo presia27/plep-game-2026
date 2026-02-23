@@ -93,6 +93,7 @@ export class GameState {
       this.ctx.canvas.height - 96,
       this.inventoryManager
     );
+    this.sceneManager.addUIEntity(inventoryDisplayEntity);
   }
 
   public reset(): void {
