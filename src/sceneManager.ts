@@ -170,7 +170,7 @@ export default class SceneManager {
     
     // Check if this scene has been entered before by checking if it has entities
     // If this is a BaseRoomScene, it will have entities array
-    const hasBeenEntered = (cachedScene as any).entities?.length > 0;
+    const hasBeenEntered = (cachedScene as any).localEntities?.length > 0;
     
     if (hasBeenEntered) {
       // Scene has been visited before - resume it

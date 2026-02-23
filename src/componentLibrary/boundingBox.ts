@@ -64,10 +64,6 @@ export class BoundingBox implements IComponent {
   public getOffsetY(): number {
      return this.offsetY;
   }
-
-  public overlaps(oth: BoundingBox): boolean {
-    return this.collide(oth);
-  }
   
   private applyOffsets(): void {
     this.left = this.left + this.offsetX;

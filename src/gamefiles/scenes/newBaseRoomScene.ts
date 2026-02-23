@@ -93,6 +93,7 @@ export abstract class BaseRoomScene implements IScene {
         );
         this.localEntities.push(trigger);
         sceneManager.addEntity(trigger);
+        this.collisionSystem.addEntity(trigger);
       }
     }
 
@@ -106,6 +107,7 @@ export abstract class BaseRoomScene implements IScene {
    * recreating them from scratch.
    */
   onResume(sceneManager: SceneManager): void {
+    console.log("Resuming " + this.getRoomId());
     // Reposition player
     const existingPlayer = sceneManager.getLevelEntities().find(
       entity => entity instanceof PlayerController
