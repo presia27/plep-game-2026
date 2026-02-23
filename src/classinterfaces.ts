@@ -1,3 +1,4 @@
+import SceneManager from "./sceneManager.ts";
 import { XY } from "./typeinterfaces.ts";
 
 /**
@@ -76,4 +77,17 @@ export interface ILifecycle {
   isAlive(): boolean;
   die(): void;
   revive(): void;
+}
+
+/**
+ * Interface for Scene components
+ * represents the functions that
+ * a scene should have
+ */
+export interface IScene {
+  onEnter(sceneManager: SceneManager): void;
+  onResume(sceneManager: SceneManager): void;
+  onExit(): void;
+  update(context: GameContext): void;
+  draw(context: GameContext): void;
 }

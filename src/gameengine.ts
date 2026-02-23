@@ -9,8 +9,8 @@ import { GameContext, IEntity } from "./classinterfaces.ts";
 import { Timer } from "./timer.ts";
 import { InputSystem } from "./inputsys.ts";
 import { InputMapValue } from "./typeinterfaces.ts";
-import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
 import { CollisionSystem } from "./collisionsys.ts";
+import SceneManager from "./sceneManager.ts";
 
 export default class GameEngine {
   private running: boolean;
@@ -20,7 +20,7 @@ export default class GameEngine {
   private inputMap: InputMapValue[]; // maps input values to actions
   private timer: Timer;
   private clockTick: number; // elapsed time in seconds since the last clock tick
-  private entities: IEntity[];
+  private sceneMgr: SceneManager;  // Game scene manager - added after the game engine is created
 
   private options: any;
 
@@ -30,7 +30,7 @@ export default class GameEngine {
    * @param inputMap A user-defined map of peripheral inputs and intended action when actuated
    * @param options Option parameters to pass to the game
    */
-  constructor(ctx: CanvasRenderingContext2D, inputMap: InputMapValue[], options?: Object) {
+  constructor(ctx: CanvasRenderingContext2D, sceneMgr: SceneManager, inputMap: InputMapValue[], options?: Object) {
     this.running = false;
 
     // What you will use to draw
@@ -44,7 +44,7 @@ export default class GameEngine {
     this.clockTick = 0; // Game delta
 
     // Everything that will be updated and drawn each frame
-    this.entities = [];
+    //this.entities = [];
 
     // Options and the Details
     this.options = options || {
@@ -55,6 +55,7 @@ export default class GameEngine {
     this.inputMap = inputMap;
     this.inputSystem = new InputSystem(ctx, inputMap, this.options.debugging);
     this.collisionSystem = new CollisionSystem();
+    this.sceneMgr = sceneMgr;
   };
 
   /**
@@ -63,7 +64,8 @@ export default class GameEngine {
    */
   public init(ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
-    this.inputSystem = new InputSystem(ctx, this.inputMap, this.options.debug);
+    this.inputSystem = new InputSystem(ctx, this.inputMap, this.options.debugging);
+    this.collisionSystem = new CollisionSystem();
     this.timer = new Timer();
   };
 
@@ -83,32 +85,25 @@ export default class GameEngine {
    * Adds an entity to the game engine entity list
    * @param entity Entity implementing IEntity
    */
-  public addEntity(entity: IEntity) {
-    this.entities.push(entity);
-  };
+  // public addEntity(entity: IEntity) {
+  //   this.entities.push(entity);
+  // };
 
   private draw() {
     if (this.ctx !== null) {
       // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
       this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-      // Draw latest things first
-      for (let i = this.entities.length - 1; i >= 0; i--) {
-        this.entities[i]?.draw(this.getGameContext());
-      }
+      // Update game scenes and entities
+      this.sceneMgr.draw(this.getGameContext());
     }
   };
 
   private update() {
-    this.entities = this.entities.filter((entity) => {
-      const lifecycle = entity.getComponent(BasicLifecycle);
-      return !lifecycle || lifecycle.isAlive();
-    });
+    // First update scenes and entities
+    this.sceneMgr.update(this.getGameContext());
 
-    this.entities.forEach((entity) => {
-      entity.update(this.getGameContext());
-    });
-
+    // Then, update the collision system
     this.collisionSystem.checkCollisions();
     
     // Clear input flags AFTER all entities have had a chance to read them

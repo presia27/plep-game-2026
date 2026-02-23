@@ -1,4 +1,5 @@
-import { GameContext } from "../../classinterfaces";
+import { GameContext } from "../../classinterfaces.ts";
+import { GameState } from "../../gameState.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
@@ -30,7 +31,13 @@ export class OrderDeliveryLoop extends Entity {
    * @param promptIntervalFactor A number that varies the prompting of active orders
    * @param totalOrders Total number of orders in a level (must be less than 80% of the number of seconds)
    */
-  constructor(startTime: number, duration: number, promptIntervalFactor: number, totalOrders: number) {
+  constructor(
+    startTime: number, 
+    duration: number, 
+    promptIntervalFactor: number, 
+    totalOrders: number
+  ) {
+
     // explicit call to super
     super();
 
