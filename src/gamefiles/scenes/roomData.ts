@@ -1,4 +1,5 @@
 import { XY } from "../../typeinterfaces.ts";
+import { ItemType } from "../ordermanagement/itemTypes.ts";
 
 /** Describes a single shelf's position and which sprite to use */
 export interface ShelfData {
@@ -18,6 +19,7 @@ export interface roomData {
   defaultSpawn: XY;
   shelves: ShelfData[];
   doors: DoorData[];
+  allowedItems: ItemType[];
 }
 
 export const PharmaRoom: roomData = {
@@ -37,6 +39,11 @@ export const PharmaRoom: roomData = {
       size: { x: 20, y: 80 }, 
       targetSceneId: "cleaning" 
     }
+  ],
+  allowedItems: [
+    ItemType.TOILETPAPER,
+    ItemType.TISSUES,
+    ItemType.PAPERTOWEL
   ]
 }
 
@@ -60,6 +67,11 @@ export const CleaningRoom: roomData = {
       size: { x: 80, y: 20 }, 
       targetSceneId: "food" 
     }
+  ],
+  allowedItems: [
+    ItemType.SPRAY,
+    ItemType.SPONGE,
+    ItemType.MOP
   ]
 }
 
@@ -83,5 +95,10 @@ export const FoodRoom: roomData = {
       size: { x: 80, y: 20 }, 
       targetSceneId: "cleaning" 
     }
+  ],
+  allowedItems: [
+    ItemType.DUSTER,
+    ItemType.VACUUM,
+    ItemType.DUSTPAN
   ]
 }

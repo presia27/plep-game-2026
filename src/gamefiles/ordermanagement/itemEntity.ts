@@ -1,12 +1,12 @@
 import { GameContext } from "../../classinterfaces.ts";
 import { BasicSize } from "../../componentLibrary/BasicSize.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
-import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 import { Entity } from "../../entity.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { ItemCollisionHandler } from "./itemCollisionHandler.ts";
+import { ItemLifecycle } from "./itemLifecycle.ts";
 import { ItemRenderer } from "./itemRenderer.ts";
 import { getItemMetadata, ItemType } from "./itemTypes.ts";
 
@@ -44,7 +44,7 @@ export class ItemEntity extends Entity {
       -((ITEM_WIDTH * PICKUP_RADIUS_MULTIPLIER - ITEM_WIDTH) / 2),
       -((ITEM_HEIGHT * PICKUP_RADIUS_MULTIPLIER - ITEM_HEIGHT) / 2));
     
-    const lifecycle = new BasicLifecycle();
+    const lifecycle = new ItemLifecycle();
 
     super.addComponent(itemSize);
     super.addComponent(itemPosition);

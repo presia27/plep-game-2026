@@ -1,4 +1,3 @@
-import AssetManager from "../../assetmanager.ts";
 import { GameContext, IEntity, IScene } from "../../classinterfaces.ts";
 import { CollisionSystem } from "../../collisionsys.ts";
 import GameEngine from "../../gameengine.ts";
@@ -7,11 +6,13 @@ import SceneManager from "../../sceneManager.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { PlayerController } from "../player/playerController.ts";
-import { ShelfController } from "../shelves/shelfController.ts";
+import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shelves/shelfController.ts";
 import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { DoorData, ShelfData } from "./roomData.ts";
+import { ItemType } from "../ordermanagement/itemTypes.ts";
+import { ItemEntity } from "../ordermanagement/itemEntity.ts";
 
 /**
  * Altered base class for all room scenes.
@@ -34,6 +35,7 @@ export abstract class BaseRoomScene implements IScene {
   protected abstract getPlayerSpawnPoint(): XY;
   protected abstract getShelfPositions(): ShelfData[];
   protected abstract getDoorTriggers(): DoorData[];
+  protected abstract getAllowedItems(): ItemType[];
   abstract getRoomId(): string;
 
   /**
@@ -63,6 +65,9 @@ export abstract class BaseRoomScene implements IScene {
       console.error("Player not found during scene load");
     }
 
+    /* Allow the adding of items */
+    const allowedItems = this.getAllowedItems();
+    let itemIndex = 0;
     /* Create and load shelving */
     for (const shelfData of this.getShelfPositions()) {
       const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
@@ -70,6 +75,17 @@ export abstract class BaseRoomScene implements IScene {
         throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
       }
       const shelf = new ShelfController(shelfData.position, shelfSprite);
+
+      // add items
+      const item = allowedItems[itemIndex]
+      if (item) {
+        const roomItem = new ItemEntity(item, shelfData.position);
+        sceneManager.addEntity(roomItem);
+        this.collisionSystem.addEntity(roomItem);
+      }
+      if (itemIndex < allowedItems.length) {
+        itemIndex++;
+      }
       
       this.localEntities.push(shelf);
       sceneManager.addEntity(shelf);

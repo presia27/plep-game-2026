@@ -3,7 +3,6 @@ import { InventoryManager } from "./gamefiles/inventory/inventoryManager.ts";
 import SceneManager from "./sceneManager.ts";
 import { ASSET_MANAGER } from "./gamefiles/main.ts";
 import { TemporaryInventoryDisplayEntity } from "./gamefiles/inventory/temporaryInventoryDisplayEntity.ts";
-import { ItemSpawner } from "./gamefiles/ordermanagement/itemSpawner.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
