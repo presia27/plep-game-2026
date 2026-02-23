@@ -3,10 +3,6 @@ import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
 import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
-import { DemoScene, BackStorageScene, ColdStorageScene } from "./scenes/complete_level_example.ts";
-import { TemporaryInventoryDisplayEntity } from "./inventory/temporaryInventoryDisplayEntity.ts";
-import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.ts";
-import { ItemSpawner } from "./ordermanagement/itemSpawner.ts";
 import { GameState } from "../gameState.ts";
 
 /**
