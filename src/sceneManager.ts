@@ -21,12 +21,12 @@ export default class SceneManager {
   private levelEntities: IEntity[];  // SceneManager owns entities now
   private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
   private uiEntities: IEntity[]; // entities that belong to the UI layer, drawn on top of everything else
-  public gameState: GameState; // global state, accessible to all scenes
+  public gameState: GameState | null; // global state, accessible to all scenes
 
 
   constructor() {
     this.currentScene = null;
-    this.gameState = new GameState();
+    this.gameState = null;
     this.roomEntities = [];
     this.levelEntities = [];
     this.uiEntities = [];
@@ -72,6 +72,16 @@ export default class SceneManager {
   public registerScene(sceneId: string, scene: IScene): void {
     this.sceneCache.set(sceneId, scene);
   }
+
+  /**
+   * Register an active game state controller
+   * so that the scene manager may interact with it.
+   * (e.g. reset game state)
+   * @param gs GameState instance
+   */
+  public enrollGameState(gs: GameState) {
+    this.gameState = gs;
+  }
   
   /**
    * Clears the scene cache and resets all global state.
@@ -83,7 +93,7 @@ export default class SceneManager {
     this.levelEntities = [];
     this.uiEntities = [];
     this.currentScene = null;
-    this.gameState.reset();
+    if (this.gameState !== null) this.gameState.reset();
   }
 
   public update(context: GameContext): void {
@@ -160,7 +170,7 @@ export default class SceneManager {
     
     // Check if this scene has been entered before by checking if it has entities
     // If this is a BaseRoomScene, it will have entities array
-    const hasBeenEntered = (cachedScene as any).entities?.length > 0;
+    const hasBeenEntered = (cachedScene as any).localEntities?.length > 0;
     
     if (hasBeenEntered) {
       // Scene has been visited before - resume it

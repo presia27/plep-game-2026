@@ -5,6 +5,8 @@ import { Entity } from "../../entity.ts";
 import SceneManager from "../../sceneManager.ts";
 import { GameContext } from "../../classinterfaces.ts";
 import { XY } from "../../typeinterfaces.ts";
+import { AbstractCollisionHandler } from "../../componentLibrary/AbstractCollisionHandler.ts";
+import { DoorTriggerCollisionHandler } from "./doorTriggerCollisionHandler.ts";
 
 
 ///revise///
@@ -24,6 +26,7 @@ export class DoorTrigger extends Entity {
   private targetSceneId: string;
   private sceneManager: SceneManager;
   private playerBoundingBox: BoundingBox;
+  private collisionHandler: AbstractCollisionHandler;
 
   constructor(
     position: XY,
@@ -41,16 +44,14 @@ export class DoorTrigger extends Entity {
     const movement = new MovementComponent(position);
     const boundSize = new BasicSize(size.x, size.y, 1);
     this.boundingBox = new BoundingBox(movement, boundSize, 0, 0);
+    this.collisionHandler = new DoorTriggerCollisionHandler(sceneManager, targetSceneId);
 
     super.addComponent(movement);
     super.addComponent(this.boundingBox);
+    super.addComponent(this.collisionHandler);
   }
 
   override update(context: GameContext): void {
-    super.update(context);
-    if (this.boundingBox.collide(this.playerBoundingBox)) {
-      this.sceneManager.loadScene(this.targetSceneId);
-    }
   }
 
    override draw(context: GameContext): void {
