@@ -121,13 +121,14 @@ export default class SceneManager {
     });
 
     // Update room entities (these are room-specific)
-    this.roomEntities = this.roomEntities.filter((entity) => {
-      const lifecycle = entity.getComponent(BasicLifecycle);
-      return !lifecycle || lifecycle.isAlive();
-    });
 
     this.roomEntities.forEach((entity) => {
-      entity.update(context);
+      const entityLifecycle = entity.getComponent(BasicLifecycle);
+      if (entityLifecycle && !entityLifecycle.isAlive()) {
+        return;
+      } else {
+        entity.update(context);
+      }
     });
   }
 
@@ -139,7 +140,12 @@ export default class SceneManager {
 
     // 1. Room entities (shelves, doors)
     for (let i = this.roomEntities.length - 1; i >= 0; i--) {
-      this.roomEntities[i]?.draw(context);
+      const entityLifecycle = this.roomEntities[i]?.getComponent(BasicLifecycle);
+      if (entityLifecycle && !entityLifecycle.isAlive()) {
+        continue;
+      } else {
+        this.roomEntities[i]?.draw(context);
+      }
     }
   
     // 2. Level entities (player, items)

@@ -5,7 +5,9 @@ import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRendere
 import { Entity } from "../../entity.ts";
 import { XY } from "../../typeinterfaces.ts";
 
-const SHELF_SCALE: number = 4;
+export const SHELF_SCALE: number = 4;
+export const SHELF_WIDTH: number = 68;
+export const SHELF_HEIGHT: number = 36;
 
 /**
  * Shelf controller entity representing shelf logic and component behavior
@@ -17,7 +19,7 @@ export class ShelfController extends Entity {
 
     // ADD ESSENTIAL LOGIC COMPONENTS
     const posComp = new staticPositionComponent(position);
-    const shelfSize = new BasicSize(68, 36, SHELF_SCALE);
+    const shelfSize = new BasicSize(SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE);
     const shelfBoundingBox = new BoundingBox(posComp, shelfSize);
     super.addComponent(posComp);
     super.addComponent(shelfSize);

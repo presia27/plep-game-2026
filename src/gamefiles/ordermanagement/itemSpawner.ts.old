@@ -5,6 +5,7 @@ import { CollisionSystem } from "../../collisionsys.ts";
 import { ItemEntity } from "../ordermanagement/itemEntity.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { XY } from "../../typeinterfaces.ts";
+import { OrderDeliveryLoop } from "./orderloopsys.ts";
 
 
 interface RoomSpawnConfig {
@@ -40,13 +41,18 @@ export class ItemSpawner extends Entity {
   public override update(context: GameContext): void {
     super.update(context);
 
-    const gameState = this.sceneManager.gameState;
-    
-    // while (gameState.pendingOrders.length > 0) {
-    //   const order = gameState.pendingOrders[0];
-    //   if (order) {
-    //     this.spawnOrderItems(order);
-    //     gameState.activateOrder(order);
+    //const gameState = this.sceneManager.gameState;
+    const orderLoop = this.sceneManager.getLevelEntities().find(
+      entity => entity instanceof OrderDeliveryLoop
+    );
+
+    // if (orderLoop) {
+    //   while (gameState.pendingOrders.length > 0) {
+    //     const order = gameState.pendingOrders[0];
+    //     if (order) {
+    //       this.spawnOrderItems(order);
+    //       gameState.activateOrder(order);
+    //     }
     //   }
     // }
   }
