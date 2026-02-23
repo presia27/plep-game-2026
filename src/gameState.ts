@@ -2,8 +2,7 @@ import GameEngine from "./gameengine.ts";
 import { InventoryManager } from "./gamefiles/inventory/inventoryManager.ts";
 import SceneManager from "./sceneManager.ts";
 import { ASSET_MANAGER } from "./gamefiles/main.ts";
-import { TemporaryInventoryDisplayEntity } from "./gamefiles/inventory/temporaryInventoryDisplayEntity.ts";
-import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
+import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEntity.ts";
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 
@@ -86,7 +85,7 @@ export class GameState {
    * UI display entities
    */
   private initDisplayEntities() {
-    const inventoryDisplayEntity = new TemporaryInventoryDisplayEntity(
+    const inventoryDisplayEntity = new InventoryDisplayEntity(
       256,
       this.ctx.canvas.height - 96,
       this.inventoryManager
