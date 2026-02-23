@@ -11,7 +11,7 @@ import { PlayerCollisionHandler } from "./playerCollisionHandler.ts";
 import { PlayerInputController } from "./playerInputController.ts";
 
 // CONSTANTS
-const PLAYER_SPEED: number = 150;
+const PLAYER_SPEED: number = 300;
 const PLAYER_SIZE_X: number = 20;
 const PLAYER_SIZE_Y: number = 19;
 const PLAYER_BOUND_X: number = 14;

@@ -1,8 +1,8 @@
 import { GameContext, IRenderer } from "../../classinterfaces.ts";
 import { BossSatisfaction } from "./bossSatisfactionController.ts";
 
-const PANELWIDTH = 100;
-const PANELHEIGHT = 25;
+const PANELWIDTH = 300;
+const PANELHEIGHT = 45;
 
 
 export class SatisfactionRenderer implements IRenderer {
@@ -29,7 +29,7 @@ export class SatisfactionRenderer implements IRenderer {
 
     // Draw background panel
     // Create linear gradient
-    const grad = ctx.createLinearGradient(0,0, 100, 0);
+    const grad = ctx.createLinearGradient(0, 0, PANELWIDTH, 0);
     grad.addColorStop(0, "#730906");
     grad.addColorStop(1, "#023e2b");
 
@@ -45,14 +45,25 @@ export class SatisfactionRenderer implements IRenderer {
     // Draw title
     ctx.fillStyle = 'black';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText('Boss Satisfaction', this.posX + 10, this.posY + 25);
+    ctx.fillText('Boss Satisfaction', this.posX, this.posY - 10);
 
     // Get satisfaction state
     const satisfaction = this.bossManager.getSatisfaction();
 
     // Draw satisfaction number
-    ctx.fillText(satisfaction.toString(), this.posX + 20, this.posY + 15);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 18px Arial';
+    ctx.fillText(Math.ceil(satisfaction).toString(), this.posX + PANELWIDTH - 30, this.posY + PANELHEIGHT - 20);
 
+    // Draw background panel
+    if (satisfaction <= 0) {
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, 1200, 900);
+      
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 40px Arial';
+      ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 200, ctx.canvas.height/2);
+    }
     ctx.restore();
   }
 }
