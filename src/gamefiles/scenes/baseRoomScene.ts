@@ -82,6 +82,7 @@ export abstract class BaseRoomScene implements IScene {
         const roomItem = new ItemEntity(item, shelfData.position);
         sceneManager.addEntity(roomItem);
         this.collisionSystem.addEntity(roomItem);
+        this.localEntities.push(roomItem);
       }
       if (itemIndex < allowedItems.length) {
         itemIndex++;
