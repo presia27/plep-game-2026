@@ -1,5 +1,5 @@
 import { XY } from "../../../typeinterfaces.ts";
-import { BaseRoomScene } from "../newBaseRoomScene.ts";
+import { BaseRoomScene } from "../baseRoomScene.ts";
 import { DoorData, PharmaRoom, ShelfData } from "../roomData.ts";
 
 export class PharmaScene extends BaseRoomScene {
