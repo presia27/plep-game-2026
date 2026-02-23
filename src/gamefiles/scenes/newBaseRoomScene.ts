@@ -42,6 +42,7 @@ export abstract class BaseRoomScene implements IScene {
    * @param sceneManager Scene manager
    */
   onEnter(sceneManager: SceneManager): void {
+    console.log("Loading scene " + this.getRoomId());
     // Attempt to find the current player
     let player: PlayerController | null;
     const existingPlayer = sceneManager.getLevelEntities().find(

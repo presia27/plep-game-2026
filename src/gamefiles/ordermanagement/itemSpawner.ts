@@ -42,13 +42,13 @@ export class ItemSpawner extends Entity {
 
     const gameState = this.sceneManager.gameState;
     
-    while (gameState.pendingOrders.length > 0) {
-      const order = gameState.pendingOrders[0];
-      if (order) {
-        this.spawnOrderItems(order);
-        gameState.activateOrder(order);
-      }
-    }
+    // while (gameState.pendingOrders.length > 0) {
+    //   const order = gameState.pendingOrders[0];
+    //   if (order) {
+    //     this.spawnOrderItems(order);
+    //     gameState.activateOrder(order);
+    //   }
+    // }
   }
 
   private spawnOrderItems(order: any): void {

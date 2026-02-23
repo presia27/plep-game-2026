@@ -1,6 +1,6 @@
 import { XY } from "../../../typeinterfaces.ts";
 import { BaseRoomScene } from "../newBaseRoomScene.ts";
-import { DoorData, CleaningRoom, ShelfData } from "../roomData";
+import { DoorData, CleaningRoom, ShelfData } from "../roomData.ts";
 
 export class CleaningScene extends BaseRoomScene {
   protected override getPlayerSpawnPoint(): XY {
