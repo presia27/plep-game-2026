@@ -2,13 +2,15 @@ import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
 import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.ts";
-import { bossAssets, environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
+import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import { PlayerController } from "./player/playerController.ts";
 import { ShelfController } from "./shelves/shelfController.ts";
 import { ItemEntity } from "./ordermanagement/itemEntity.ts";
 import { ItemType } from "./ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventory/inventoryManager.ts";
 import { TemporaryInventoryDisplayEntity } from "./inventory/temporaryInventoryDisplayEntity.ts";
+import { BossSatisfaction } from "./bosssatisfaction/bossSatisfactionController.ts";
+import { TemporarySatisfactionDisplayEntity } from "./bosssatisfaction/temporarySatisfactionDisplayEntity.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -29,13 +31,13 @@ if (ctx === null || ctx === undefined) {
 const gameEngine = new GameEngine(ctx, myInputMap, { debugging: true });
 export const ASSET_MANAGER = new AssetManager();
 
-gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10))
+const order = new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, 120, 8, 10);
+gameEngine.addEntity(order);
 
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
-bossAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 
 ASSET_MANAGER.downloadAll().then(() => {
   // Start the game engine and components, pass control to the manager
@@ -51,7 +53,6 @@ ASSET_MANAGER.downloadAll().then(() => {
   gameEngine.getCollisionSystem().addEntity(player);
   
   // SHELVES
-
   // Create shelves TEMPORARILY
   const shelfPositions = [
     { x: 100, y: 150 },
@@ -85,6 +86,12 @@ ASSET_MANAGER.downloadAll().then(() => {
   const item3 = new ItemEntity(ItemType.DETERGENT, {x: 760, y: 72});
   gameEngine.addEntity(item3);
   gameEngine.getCollisionSystem().addEntity(item3);
+
+  // Temporarily create a boss satisfaction manager (this should be managed by the scene manager)
+  const bossSatisfaction = new BossSatisfaction(order);
+  const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(100, 200, bossSatisfaction);
+  gameEngine.addEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
+
 
   gameEngine.start();
 });

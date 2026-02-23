@@ -1,8 +1,8 @@
 import { GameContext } from "../../classinterfaces";
 import { Entity } from "../../entity.ts";
-import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys";
-import { InventoryManager } from "../inventory/inventoryManager";
-import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
+import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
+import { InventoryManager } from "../inventory/inventoryManager.ts";
+import { Order } from "../ordermanagement/order.ts";
 
 const MAX_SATISFACTION = 100; // If > MIN_SATISFACTION, the player can continue playing
 const MIN_SATISFACTION = 0; // The minimum satisfaction points, if reached, the game is over and the player loses
@@ -21,20 +21,28 @@ export class BossSatisfaction extends Entity {
     private satisfaction: number; // Satisfaction points, if reaches 0, the game is over and the player loses
     private decreaseRate: number; // Satisfaction points lost per second (correlates to level length)
     private errorWeight: number; // Satisfaction points lost per incorrect item delivered
+    private orderLoop: OrderDeliveryLoop;
+    private activeOrder: Order | null;
 
     constructor(orderLoop: OrderDeliveryLoop) {
         super();
+        this.orderLoop = orderLoop;
         this.satisfaction = START_SATISFACTION;
         this.decreaseRate = orderLoop.getLevelDuration() / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
-        this.errorWeight = SUCCESSFUL_ORDER_POINTS / orderLoop.getCurrentActiveOrder()!.getTotalItems();
-        
-        //const renderer = new StaticSpriteRenderer(spritesheet, 86, 8, 68, 36, posComp, shelfSize);
-        //    super.setRenderer(renderer);
+        this.activeOrder = null;
+        this.errorWeight = 0;
+        this.getDecreaseRate(); // log the current decrease rate for testing purposes
     }
 
     public override update(context: GameContext): void {
         super.update(context);
-        this.satisfaction -= this.decreaseRate; // @TODO: multiply by elapsed time since start of level
+        const newActiveOrder = this.orderLoop.getCurrentActiveOrder();
+        if (newActiveOrder !== null && this.activeOrder !== newActiveOrder) { // if there is a new active order, update the active order and error weight
+            this.activeOrder = newActiveOrder;
+            this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
+        }
+        this.satisfaction = this.satisfaction - this.decreaseRate; // @TODO: multiply by elapsed time since start of level
+        this.getSatisfaction(); // log the current satisfaction level for testing purposes
     }
     
     /**
@@ -118,5 +126,15 @@ export class BossSatisfaction extends Entity {
     public getSatisfaction(): number {
         console.log(`Current boss satisfaction: ${this.satisfaction}`);
         return this.satisfaction;
+    }
+
+    /**
+     * Gets the boss's satisfaction decrease rate.
+     * 
+     * @returns the current decrease rate
+     */
+    public getDecreaseRate(): number {
+        console.log(`Current boss satisfaction decrease rate: ${this.decreaseRate}`);
+        return this.decreaseRate;
     }
 }
