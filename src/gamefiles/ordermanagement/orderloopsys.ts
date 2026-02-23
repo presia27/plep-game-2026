@@ -159,4 +159,31 @@ export class OrderDeliveryLoop extends Entity {
     const rand = Math.random();
     return rand < 0.5;
   }
+
+  /**
+   * Return the list of active orders
+   */
+  public getActiveOrders(): Order[] {
+    return this.activeOrders;
+  }
+
+  /**
+   * Return the current active order, which is the first one in the active orders list
+   * Return null if there is no currently active order
+   */
+  public getCurrentActiveOrder(): Order | null {
+    if (this.activeOrders.length > 0) {
+      return this.activeOrders[0] ?? null;
+    } else {
+      console.warn("No active orders at the moment");
+      return null;
+    }
+  }
+
+  /**
+   * return the length of the level in seconds
+   */
+  public getLevelDuration(): number {
+    return this.duration;
+  }
 }
