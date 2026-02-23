@@ -2,7 +2,7 @@ import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
 import { OrderDeliveryLoop } from "./ordermanagement/orderloopsys.ts";
-import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
+import { bossAssets, environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import { PlayerController } from "./player/playerController.ts";
 import { ShelfController } from "./shelves/shelfController.ts";
 import { ItemEntity } from "./ordermanagement/itemEntity.ts";
@@ -35,6 +35,7 @@ gameEngine.addEntity(new OrderDeliveryLoop(gameEngine.getGameContext().gameTime,
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+bossAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 
 ASSET_MANAGER.downloadAll().then(() => {
   // Start the game engine and components, pass control to the manager
@@ -48,7 +49,7 @@ ASSET_MANAGER.downloadAll().then(() => {
   const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 50, y: 50}, 5, inventorymgr)
   gameEngine.addEntity(player);
   gameEngine.getCollisionSystem().addEntity(player);
-
+  
   // SHELVES
 
   // Create shelves TEMPORARILY

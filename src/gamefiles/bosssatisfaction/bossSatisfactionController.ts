@@ -2,6 +2,7 @@ import { GameContext } from "../../classinterfaces";
 import { Entity } from "../../entity.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys";
 import { InventoryManager } from "../inventory/inventoryManager";
+import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
 
 const MAX_SATISFACTION = 100; // If > MIN_SATISFACTION, the player can continue playing
 const MIN_SATISFACTION = 0; // The minimum satisfaction points, if reached, the game is over and the player loses
@@ -26,6 +27,9 @@ export class BossSatisfaction extends Entity {
         this.satisfaction = START_SATISFACTION;
         this.decreaseRate = orderLoop.getLevelDuration() / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
         this.errorWeight = SUCCESSFUL_ORDER_POINTS / orderLoop.getCurrentActiveOrder()!.getTotalItems();
+        
+        //const renderer = new StaticSpriteRenderer(spritesheet, 86, 8, 68, 36, posComp, shelfSize);
+        //    super.setRenderer(renderer);
     }
 
     public override update(context: GameContext): void {
@@ -57,7 +61,7 @@ export class BossSatisfaction extends Entity {
     }
 
     /**
-     * Checks the player's inventory against the current active order and returns the number of incorrect items.
+     * Helper method that checks the player's inventory against the current active order and returns the number of incorrect items.
      * 
      * @param inventory a map representing all the items in the player's inventory
      * @param order a map representing all the items in the current active order
@@ -97,4 +101,22 @@ export class BossSatisfaction extends Entity {
         return false;
     }
 
+    /**
+     * Sets the boss's satisfaction level to a specific value (can be used if the player has unfulfilled orders at the end of the level)
+     * 
+     * @param value the new satisfaction value to set
+     */
+    public setSatisfaction(value: number): void {
+        this.satisfaction = value;
+    }
+
+    /**
+     * Gets the boss's satisfaction level.
+     * 
+     * @returns the current satisfaction level
+     */
+    public getSatisfaction(): number {
+        console.log(`Current boss satisfaction: ${this.satisfaction}`);
+        return this.satisfaction;
+    }
 }
