@@ -164,7 +164,7 @@ export class OrderDeliveryLoop extends Entity {
    * Return the list of active orders
    */
   public getActiveOrders(): Order[] {
-    return this.activeOrders;
+    return this.activeOrders.slice();
   }
 
   /**

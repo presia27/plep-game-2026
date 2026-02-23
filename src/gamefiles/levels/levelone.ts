@@ -2,6 +2,7 @@ import GameEngine from "../../gameengine.ts";
 import SceneManager from "../../sceneManager.ts";
 import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
 import { TemporarySatisfactionDisplayEntity } from "../bosssatisfaction/temporarySatisfactionDisplayEntity.ts";
+import { OrderDisplayEntity } from "../ordermanagement/orderdisplayentity.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
 import { FoodScene } from "../scenes/rooms/foodScene.ts";
@@ -17,7 +18,7 @@ const levelParams = {
   duration: 120
 }
 
-export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager) {
+export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
   // Create rooms
   const pharmaScene = new PharmaScene(gameEngine);
   const cleaningScene = new CleaningScene(gameEngine);
@@ -37,6 +38,13 @@ export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager)
     10
   );
   sceneManager.addLevelEntity(orderLoop);
+
+  const orderDisplayEntity = new OrderDisplayEntity(
+    720,
+    ctx.canvas.height - 96,
+    orderLoop
+  );
+  sceneManager.addUIEntity(orderDisplayEntity);
 
   // Add boss satisfaction manager
   const bossSatisfaction = new BossSatisfaction(orderLoop);

@@ -77,7 +77,7 @@ export class GameState {
     sceneManager.addLevelEntity(player);
     gameEngine.getCollisionSystem().addEntity(player);
 
-    loadLevelOne(gameEngine, sceneManager);
+    loadLevelOne(gameEngine, sceneManager, ctx);
   }
 
   /**
