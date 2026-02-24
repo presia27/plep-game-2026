@@ -20,5 +20,6 @@ export const environmentAssets: IAssetList[] = [
 
 /** Assets for items */
 export const itemAssets: IAssetList[] = [
-  { id: "items", type: "img", location: "./assets/items.png" }
+  { id: "items", type: "img", location: "./assets/items.png" },
+  { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
 ];
