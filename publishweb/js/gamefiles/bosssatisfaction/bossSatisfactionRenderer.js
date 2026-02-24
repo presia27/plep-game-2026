@@ -17,14 +17,14 @@ export class SatisfactionRenderer {
         ctx.save();
         // Draw background panel
         // Create linear gradient
-        const grad = ctx.createLinearGradient(0, 0, PANELWIDTH, 0);
+        const grad = ctx.createLinearGradient(this.posX, 0, this.posX + PANELWIDTH, 0);
         grad.addColorStop(0, "#730906");
         grad.addColorStop(1, "#023e2b");
         // Fill rectangle with gradient
         ctx.fillStyle = grad;
         ctx.fillRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
         // Draw border
-        ctx.strokeStyle = 'rgb(0, 0, 0)';
+        ctx.strokeStyle = 'rgb(233, 151, 151)';
         ctx.lineWidth = 1;
         ctx.strokeRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
         // Draw title
@@ -40,10 +40,10 @@ export class SatisfactionRenderer {
         // Draw background panel
         if (satisfaction <= 0) {
             ctx.fillStyle = 'black';
-            ctx.fillRect(0, 0, 1200, 900);
+            ctx.fillRect(0, 0, 1280, 720);
             ctx.fillStyle = 'white';
             ctx.font = 'bold 40px Arial';
-            ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 200, ctx.canvas.height / 2);
+            ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 150, ctx.canvas.height / 2);
         }
         ctx.restore();
     }
