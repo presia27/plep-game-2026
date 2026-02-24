@@ -2,10 +2,11 @@ import GameEngine from "./gameengine.ts";
 import { InventoryManager } from "./gamefiles/inventory/inventoryManager.ts";
 import SceneManager from "./sceneManager.ts";
 import { ASSET_MANAGER } from "./gamefiles/main.ts";
-import { TemporaryInventoryDisplayEntity } from "./gamefiles/inventory/temporaryInventoryDisplayEntity.ts";
-import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
+import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEntity.ts";
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
+
+export const INVENTORY_MAX_SLOTS = 6;
 
 /**
  * Holds all global state that persists across rooms and scenes.
@@ -23,7 +24,7 @@ export class GameState {
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
     this.ctx = ctx;
-    this.inventoryManager = new InventoryManager(6);
+    this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
 
     this.initDisplayEntities();   // load display entities
 
@@ -78,7 +79,7 @@ export class GameState {
     sceneManager.addLevelEntity(player);
     gameEngine.getCollisionSystem().addEntity(player);
 
-    loadLevelOne(gameEngine, sceneManager);
+    loadLevelOne(gameEngine, sceneManager, ctx);
   }
 
   /**
@@ -86,7 +87,7 @@ export class GameState {
    * UI display entities
    */
   private initDisplayEntities() {
-    const inventoryDisplayEntity = new TemporaryInventoryDisplayEntity(
+    const inventoryDisplayEntity = new InventoryDisplayEntity(
       256,
       this.ctx.canvas.height - 96,
       this.inventoryManager
@@ -95,7 +96,7 @@ export class GameState {
   }
 
   public reset(): void {
-    this.inventoryManager = new InventoryManager(6);
+    this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
   }
 
   public getInventoryManager(): InventoryManager {

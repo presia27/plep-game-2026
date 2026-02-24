@@ -13,7 +13,7 @@ export class PharmaScene extends BaseRoomScene {
   protected override getDoorTriggers(): DoorData[] {
     return PharmaRoom.doors;
   }
-  protected override getAllowedItems(): ItemType[] {
+  public override getAllowedItems(): ItemType[] {
     return PharmaRoom.allowedItems;
   }
   public override getRoomId(): string {

@@ -13,7 +13,7 @@ export class FoodScene extends BaseRoomScene {
   protected override getDoorTriggers(): DoorData[] {
     return FoodRoom.doors;
   }
-  protected override getAllowedItems(): ItemType[] {
+  public override getAllowedItems(): ItemType[] {
     return FoodRoom.allowedItems;
   }
   public override getRoomId(): string {
