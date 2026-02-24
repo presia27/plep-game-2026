@@ -2,21 +2,26 @@ import { ItemType } from "../ordermanagement/itemTypes.ts";
 
 export class InventoryManager {
   /** Hold items */
-  //private items: Map<ItemType, number>;
+  private items: Map<ItemType, number>;
   private maxItems: number;
-  private items: ItemType[];
+  //private items: ItemType[];
 
   constructor(maxItems: number) {
     this.maxItems = maxItems;
-    this.items = [];
+    this.items = new Map<ItemType, number>();
   }
 
-  public addItem(item: ItemType) {
-    if (this.items.length < this.maxItems) {
-      this.items.push(item);
-    } else {
-      console.error("Inventory is full!");
-    }
+  public addItem(item: ItemType): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const currentCount = this.items.get(item) || 0;
+      if (this.items.size < this.maxItems || currentCount > 0) {
+        this.items.set(item, currentCount + 1);
+        resolve(item); // indicate successful insertion
+      } else {
+        console.error("Inventory is full!");
+        reject("Inventory is full!"); // indicate failed insertion
+      }
+    });
   }
 
   public dropItem() {
@@ -33,5 +38,9 @@ export class InventoryManager {
 
   public getMaxItems() {
     return this.maxItems;
+  }
+
+  public hasItem(item: ItemType): boolean {
+    return this.items.has(item) && (this.items.get(item) ?? 0) > 0;
   }
 }

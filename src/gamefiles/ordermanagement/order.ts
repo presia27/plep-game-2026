@@ -31,6 +31,20 @@ export class Order {
     return this.items.has(item);
   }
 
+  // return all items in the order
+  public getAllItems(): Map<ItemType, number> {
+    return this.items;
+  }
+
+  // returns the total number of all items in the order
+  public getTotalItems(): number {
+    let total = 0;
+    for (const count of this.items.values()) {
+      total += count;
+    }
+    return total;
+  }
+
   public setArrivalTime(time: number): void {
     this.arrivalTime = time;
   }

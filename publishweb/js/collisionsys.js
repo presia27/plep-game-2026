@@ -1,5 +1,6 @@
 import { AbstractCollisionHandler } from "./componentLibrary/AbstractCollisionHandler.js";
 import { BoundingBox } from "./componentLibrary/boundingBox.js";
+import { BasicLifecycle } from "./componentLibrary/lifecycle.js";
 /**
  * Collision system which monitors all
  * collidable entities for collisions between
@@ -13,6 +14,12 @@ export class CollisionSystem {
     addEntity(entity) {
         this.entities.push(entity);
     }
+    removeEntity(entity) {
+        const index = this.entities.indexOf(entity);
+        if (index !== -1) {
+            this.entities.splice(index, 1);
+        }
+    }
     /**
      * Performs a narrow phase collision check
      * on all entities registered with the system.
@@ -23,11 +30,19 @@ export class CollisionSystem {
             const entityA = this.entities[i];
             const boundsA = entityA === null || entityA === void 0 ? void 0 : entityA.getComponent(BoundingBox);
             if (!entityA || !boundsA)
+                continue; // move on if its null of undefined
+            // check if component is alive (don't count collisions with dead components, assuming they actually have a lifecycle component)
+            const lifecycleA = entityA.getComponent(BasicLifecycle);
+            if (lifecycleA && !lifecycleA.isAlive())
                 continue;
             for (let j = i + 1; j < this.entities.length; j++) {
                 const entityB = this.entities[j];
                 const boundsB = entityB === null || entityB === void 0 ? void 0 : entityB.getComponent(BoundingBox);
                 if (!entityB || !boundsB)
+                    continue;
+                // check if component is alive (don't count collisions with dead components, assuming they have a lifecycle)
+                const lifecycleB = entityB.getComponent(BasicLifecycle);
+                if (lifecycleB && !lifecycleB.isAlive())
                     continue;
                 if (boundsA.collide(boundsB)) {
                     collisionPairs.push({

@@ -6,7 +6,6 @@
  */
 import { Timer } from "./timer.js";
 import { InputSystem } from "./inputsys.js";
-import { BasicLifecycle } from "./componentLibrary/lifecycle.js";
 import { CollisionSystem } from "./collisionsys.js";
 export default class GameEngine {
     /**
@@ -15,7 +14,7 @@ export default class GameEngine {
      * @param inputMap A user-defined map of peripheral inputs and intended action when actuated
      * @param options Option parameters to pass to the game
      */
-    constructor(ctx, inputMap, options) {
+    constructor(ctx, sceneMgr, inputMap, options) {
         this.running = false;
         // What you will use to draw
         // Documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
@@ -25,7 +24,7 @@ export default class GameEngine {
         this.timer = new Timer();
         this.clockTick = 0; // Game delta
         // Everything that will be updated and drawn each frame
-        this.entities = [];
+        //this.entities = [];
         // Options and the Details
         this.options = options || {
             debugging: false,
@@ -34,6 +33,7 @@ export default class GameEngine {
         this.inputMap = inputMap;
         this.inputSystem = new InputSystem(ctx, inputMap, this.options.debugging);
         this.collisionSystem = new CollisionSystem();
+        this.sceneMgr = sceneMgr;
     }
     ;
     /**
@@ -42,7 +42,8 @@ export default class GameEngine {
      */
     init(ctx) {
         this.ctx = ctx;
-        this.inputSystem = new InputSystem(ctx, this.inputMap, this.options.debug);
+        this.inputSystem = new InputSystem(ctx, this.inputMap, this.options.debugging);
+        this.collisionSystem = new CollisionSystem();
         this.timer = new Timer();
     }
     ;
@@ -62,30 +63,22 @@ export default class GameEngine {
      * Adds an entity to the game engine entity list
      * @param entity Entity implementing IEntity
      */
-    addEntity(entity) {
-        this.entities.push(entity);
-    }
-    ;
+    // public addEntity(entity: IEntity) {
+    //   this.entities.push(entity);
+    // };
     draw() {
-        var _a;
         if (this.ctx !== null) {
             // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
             this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-            // Draw latest things first
-            for (let i = this.entities.length - 1; i >= 0; i--) {
-                (_a = this.entities[i]) === null || _a === void 0 ? void 0 : _a.draw(this.getGameContext());
-            }
+            // Update game scenes and entities
+            this.sceneMgr.draw(this.getGameContext());
         }
     }
     ;
     update() {
-        this.entities = this.entities.filter((entity) => {
-            const lifecycle = entity.getComponent(BasicLifecycle);
-            return !lifecycle || lifecycle.isAlive();
-        });
-        this.entities.forEach((entity) => {
-            entity.update(this.getGameContext());
-        });
+        // First update scenes and entities
+        this.sceneMgr.update(this.getGameContext());
+        // Then, update the collision system
         this.collisionSystem.checkCollisions();
         // Clear input flags AFTER all entities have had a chance to read them
         this.inputSystem.onFrameUpdate();

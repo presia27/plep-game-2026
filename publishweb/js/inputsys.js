@@ -83,15 +83,8 @@ export class InputSystem {
         for (const [key, boundAction] of this.keyBindings) {
             if (boundAction === action) {
                 const state = this.keyStates.get(key);
-                const result = (state === null || state === void 0 ? void 0 : state.justPressed) || false;
-                if (this.debug && result && action === "PICK_UP") {
-                    console.log(`isActionActiveSingle(${action}): key="${key}", state=`, state, "result=", result);
-                }
-                return result;
+                return (state === null || state === void 0 ? void 0 : state.justPressed) || false;
             }
-        }
-        if (this.debug && action === "PICK_UP") {
-            console.log(`isActionActiveSingle(${action}): NO KEY BINDING FOUND`);
         }
         return false;
     }
@@ -101,6 +94,9 @@ export class InputSystem {
             y: e.clientY - this.ctx.canvas.getBoundingClientRect().top
         });
         this.ctx.canvas.addEventListener("mousemove", e => {
+            if (this.debug) {
+                console.log("MOUSE_MOVE", getXandY(e));
+            }
             this.cursor = getXandY(e);
         });
         this.ctx.canvas.addEventListener("click", e => {
@@ -123,14 +119,18 @@ export class InputSystem {
             e.preventDefault(); // Prevent Context Menu
             this.rightClick = getXandY(e);
         });
-        // Keyboard events should be on document/window, not canvas
-        document.addEventListener("keydown", event => {
+        this.ctx.canvas.addEventListener("keydown", event => {
             if (this.debug) {
-                console.log("KEY_DOWN:", event.key);
+                console.log("KEYDOWN", event.key.toLowerCase());
             }
             this.handleKeyDown(event.key.toLowerCase());
         });
-        document.addEventListener("keyup", event => this.handleKeyUp(event.key.toLowerCase()));
+        this.ctx.canvas.addEventListener("keyup", event => {
+            if (this.debug) {
+                console.log("KEYUP", event.key.toLowerCase());
+            }
+            this.handleKeyUp(event.key.toLowerCase());
+        });
     }
     set debugState(dbg) {
         this.debug = dbg;

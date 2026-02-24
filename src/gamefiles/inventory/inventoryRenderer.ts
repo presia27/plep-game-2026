@@ -53,7 +53,8 @@ export class InventoryRenderer implements IRenderer {
       throw new Error("Inventory Renderer: Failed to load spritesheet for items");
     }
 
-    for (let i = 0; i < inventory.length; i++) {
+    // old implementation using array, changed to Map
+    /*for (let i = 0; i < inventory.length; i++) {
       const item = inventory[i];
       if (item === null || item === undefined) continue;
       const itemMeta = getItemMetadata(item);
@@ -68,7 +69,26 @@ export class InventoryRenderer implements IRenderer {
         ITEM_SIDE_WIDTH,
         ITEM_SIDE_WIDTH
       );
-    }
+    }*/
+
+    let i = 0;
+    inventory.forEach((value, key) => {
+      const item = key;
+      const itemMeta = getItemMetadata(item);
+      ctx.drawImage(
+        itemSprite,
+        itemMeta.spriteFrameX,
+        itemMeta.spriteFrameY,
+        ITEM_WIDTH,
+        ITEM_HEIGHT,
+        this.posX + ((i * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER),
+        this.posY + 36,
+        ITEM_SIDE_WIDTH,
+        ITEM_SIDE_WIDTH
+      );
+      ctx.fillText(value.toString(), this.posX + ((i * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER) + 20, this.posY + 36 + 20);
+      i++;
+    });
 
     ctx.restore();
   }
