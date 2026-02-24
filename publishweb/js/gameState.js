@@ -1,8 +1,9 @@
 import { InventoryManager } from "./gamefiles/inventory/inventoryManager.js";
 import { ASSET_MANAGER } from "./gamefiles/main.js";
-import { TemporaryInventoryDisplayEntity } from "./gamefiles/inventory/temporaryInventoryDisplayEntity.js";
+import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEntity.js";
 import { PlayerController } from "./gamefiles/player/playerController.js";
 import { loadLevelOne } from "./gamefiles/levels/levelone.js";
+export const INVENTORY_MAX_SLOTS = 6;
 /**
  * Holds all global state that persists across rooms and scenes.
  * Acts as the main controller class after initialization.
@@ -14,7 +15,7 @@ export class GameState {
         this.gameEngine = gameEngine;
         this.sceneManager = sceneManager;
         this.ctx = ctx;
-        this.inventoryManager = new InventoryManager(6);
+        this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
         this.initDisplayEntities(); // load display entities
         // TEMPORARY STUFF THIS MUST BE CHANGED!!!
         //////////////// item
@@ -61,18 +62,18 @@ export class GameState {
         const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), { x: 0, y: 0 }, 5, this.inventoryManager);
         sceneManager.addLevelEntity(player);
         gameEngine.getCollisionSystem().addEntity(player);
-        loadLevelOne(gameEngine, sceneManager);
+        loadLevelOne(gameEngine, sceneManager, ctx);
     }
     /**
      * Helper method to initialize and add
      * UI display entities
      */
     initDisplayEntities() {
-        const inventoryDisplayEntity = new TemporaryInventoryDisplayEntity(256, this.ctx.canvas.height - 96, this.inventoryManager);
+        const inventoryDisplayEntity = new InventoryDisplayEntity(256, this.ctx.canvas.height - 96, this.inventoryManager);
         this.sceneManager.addUIEntity(inventoryDisplayEntity);
     }
     reset() {
-        this.inventoryManager = new InventoryManager(6);
+        this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
     }
     getInventoryManager() {
         return this.inventoryManager;

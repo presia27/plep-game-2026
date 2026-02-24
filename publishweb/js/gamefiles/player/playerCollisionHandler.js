@@ -18,7 +18,6 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
         this.inventoryMgr = inventoryMgr;
     }
     handleCollision(other, otherBounds) {
-        var _a;
         const pos = this.movementComponent.getPosition();
         const bbWidth = this.boundingBox.getRight() - this.boundingBox.getLeft();
         const bbHeight = this.boundingBox.getBottom() - this.boundingBox.getTop();
@@ -78,8 +77,13 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
             if (this.inputSys.isActionActiveSingle(InputAction.PICK_UP)) {
                 console.log("Picking up " + itemType);
                 // Pickup component and remove the component from the canvas
-                (_a = item.getComponent(BasicLifecycle)) === null || _a === void 0 ? void 0 : _a.die();
-                this.inventoryMgr.addItem(itemType);
+                this.inventoryMgr.addItem(itemType).then(function () {
+                    var _a;
+                    // promise resolved, remove the item from the shelf
+                    (_a = item.getComponent(BasicLifecycle)) === null || _a === void 0 ? void 0 : _a.die();
+                }, function (reject) {
+                    alert(reject);
+                });
             }
         }
     }

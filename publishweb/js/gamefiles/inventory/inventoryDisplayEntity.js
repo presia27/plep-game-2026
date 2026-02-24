@@ -1,14 +1,11 @@
 /**
- * TEMPORARY entity for displaying the inventory renderer.
- * This code must be moved to the scene manager when
- * that becomes ready.
- *
- * AGAIN DO NOT USE IN PRODUCTION!!!!
+ * Entity wrapper to display the inventory
+ * in the scene
  * @author Preston Sia
  */
 import { Entity } from "../../entity.js";
 import { InventoryRenderer } from "./inventoryRenderer.js";
-export class TemporaryInventoryDisplayEntity extends Entity {
+export class InventoryDisplayEntity extends Entity {
     constructor(x, y, inventoryMgr) {
         super();
         const renderer = new InventoryRenderer(x, y, inventoryMgr);

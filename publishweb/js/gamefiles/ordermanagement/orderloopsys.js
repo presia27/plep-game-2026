@@ -1,5 +1,4 @@
 import { Entity } from "../../entity.js";
-import { ItemType } from "./itemTypes.js";
 import { Order } from "./order.js";
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -16,8 +15,11 @@ export class OrderDeliveryLoop extends Entity {
      * @param duration Length of time that the level runs for (MUST be at least 60 seconds)
      * @param promptIntervalFactor A number that varies the prompting of active orders
      * @param totalOrders Total number of orders in a level (must be less than 80% of the number of seconds)
+     * @param totalItemVariety The total number of unique items that can go in an order.
+     *     It should probably match the max number of items allowed in a player's inventory.
+     * @param allowedItems A list of all allowed items to pick from
      */
-    constructor(startTime, duration, promptIntervalFactor, totalOrders) {
+    constructor(startTime, duration, promptIntervalFactor, totalOrders, totalItemVariety, allowedItems) {
         // explicit call to super
         super();
         if (duration < 60) {
@@ -34,6 +36,8 @@ export class OrderDeliveryLoop extends Entity {
         this.activeOrders = [];
         this.doneOrders = [];
         this.lastPromptTime = null;
+        this.totalItemVariety = totalItemVariety;
+        this.allowedItems = allowedItems;
         // Generate orders
         this.generateOrders(totalOrders);
         this.promptTimes = this.generateTimes();
@@ -42,7 +46,6 @@ export class OrderDeliveryLoop extends Entity {
         super.update(context);
         const currentTime = context.gameTime;
         if (currentTime < this.startTime + this.duration) {
-            console.log(Math.floor(context.gameTime));
             const nextTime = this.promptTimes[this.promptTimes.length - 1];
             if (Math.floor(currentTime) === nextTime) {
                 this.promptTimes.pop();
@@ -60,10 +63,13 @@ export class OrderDeliveryLoop extends Entity {
         for (let i = 0; i < quantity; i++) {
             // THIS IS ALL TEST CODE
             const order = new Order();
-            order.addItem(ItemType.TOILETPAPER);
-            order.addItem(ItemType.SPONGE);
-            order.addItem(ItemType.MOP);
-            order.addItem(ItemType.DETERGENT);
+            for (let j = 0; j < this.totalItemVariety; j++) {
+                const randomItemIndex = this.generateRandom(0, this.allowedItems.length - 1);
+                const randomItem = this.allowedItems[randomItemIndex];
+                if (randomItem !== undefined) {
+                    order.addItem(randomItem);
+                }
+            }
             this.inactiveOrders.push(order);
         }
     }
@@ -117,11 +123,17 @@ export class OrderDeliveryLoop extends Entity {
         const rand = Math.random();
         return rand < 0.5;
     }
+    getTotalOrders() {
+        return this.totalOrders;
+    }
+    getNumberOfDoneOrders() {
+        return this.doneOrders.length;
+    }
     /**
      * Return the list of active orders
      */
     getActiveOrders() {
-        return this.activeOrders;
+        return this.activeOrders.slice();
     }
     /**
      * Return the current active order, which is the first one in the active orders list
@@ -142,5 +154,11 @@ export class OrderDeliveryLoop extends Entity {
      */
     getLevelDuration() {
         return this.duration;
+    }
+    /**
+     * return the starting time stamp
+     */
+    getStartTime() {
+        return this.startTime;
     }
 }

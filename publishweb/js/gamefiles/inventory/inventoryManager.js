@@ -5,13 +5,17 @@ export class InventoryManager {
         this.items = new Map();
     }
     addItem(item) {
-        const currentCount = this.items.get(item) || 0;
-        if (this.items.size < this.maxItems || currentCount > 0) {
-            this.items.set(item, currentCount + 1);
-        }
-        else {
-            console.error("Inventory is full!");
-        }
+        return new Promise((resolve, reject) => {
+            const currentCount = this.items.get(item) || 0;
+            if (this.items.size < this.maxItems || currentCount > 0) {
+                this.items.set(item, currentCount + 1);
+                resolve(item); // indicate successful insertion
+            }
+            else {
+                console.error("Inventory is full!");
+                reject("Inventory is full!"); // indicate failed insertion
+            }
+        });
     }
     dropItem() {
     }

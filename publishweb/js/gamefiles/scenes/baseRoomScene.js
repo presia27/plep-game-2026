@@ -1,10 +1,15 @@
 import { ASSET_MANAGER } from "../main.js";
 import { PlayerController } from "../player/playerController.js";
-import { ShelfController } from "../shelves/shelfController.js";
+import { ShelfController, SHELF_SCALE } from "../shelves/shelfController.js";
 import { DoorTrigger } from "./doorTrigger.js";
 import { BoundingBox } from "../../componentLibrary/boundingBox.js";
 import { MovementComponent } from "../../componentLibrary/movementComponent.js";
 import { ItemEntity } from "../ordermanagement/itemEntity.js";
+/** Coordinate on actual shelves describing where items can be placed before scaling  */
+const ITEM_HSHELF_POSITION = [
+    { x: 8, y: 20 },
+    { x: 44, y: 20 }
+];
 /**
  * Altered base class for all room scenes.
  * Handles all common setup logic so individual rooms only
@@ -24,6 +29,7 @@ export class BaseRoomScene {
      * @param sceneManager Scene manager
      */
     onEnter(sceneManager) {
+        var _a, _b, _c, _d;
         console.log("Loading scene " + this.getRoomId());
         // Attempt to find the current player
         let player;
@@ -41,10 +47,9 @@ export class BaseRoomScene {
             player = null;
             console.error("Player not found during scene load");
         }
-        /* Allow the adding of items */
-        const allowedItems = this.getAllowedItems();
-        let itemIndex = 0;
-        /* Create and load shelving */
+        /* Create and load shelving and add items */
+        const allowedItems = this.getAllowedItems().slice(); // using slice to get a shallow copy
+        //let itemIndex = 0;
         for (const shelfData of this.getShelfPositions()) {
             const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
             if (shelfSprite === null) {
@@ -52,14 +57,33 @@ export class BaseRoomScene {
             }
             const shelf = new ShelfController(shelfData.position, shelfSprite);
             // add items
-            const item = allowedItems[itemIndex];
-            if (item) {
-                const roomItem = new ItemEntity(item, shelfData.position);
-                sceneManager.addEntity(roomItem);
-                this.collisionSystem.addEntity(roomItem);
-            }
-            if (itemIndex < allowedItems.length) {
-                itemIndex++;
+            // const item = allowedItems[itemIndex]
+            // if (item) {
+            //   const roomItem = new ItemEntity(item, shelfData.position);
+            //   sceneManager.addEntity(roomItem);
+            //   this.collisionSystem.addEntity(roomItem);
+            //   this.localEntities.push(roomItem);
+            // }
+            // if (itemIndex < allowedItems.length) {
+            //   itemIndex++;
+            // }
+            // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.
+            const numItems = allowedItems.length >= ITEM_HSHELF_POSITION.length ? ITEM_HSHELF_POSITION.length : allowedItems.length;
+            const shelfItems = allowedItems.splice(0, numItems);
+            for (let i = 0; i < shelfItems.length; i++) {
+                const shelfItem = shelfItems[i];
+                if (shelfItem) {
+                    const itemPos = {
+                        x: (_b = (_a = ITEM_HSHELF_POSITION[i]) === null || _a === void 0 ? void 0 : _a.x) !== null && _b !== void 0 ? _b : 0,
+                        y: (_d = (_c = ITEM_HSHELF_POSITION[i]) === null || _c === void 0 ? void 0 : _c.y) !== null && _d !== void 0 ? _d : 0
+                    };
+                    itemPos.x = (itemPos.x * SHELF_SCALE) + shelfData.position.x;
+                    itemPos.y = (itemPos.y * SHELF_SCALE) + shelfData.position.y;
+                    const itemEntity = new ItemEntity(shelfItem, itemPos);
+                    sceneManager.addEntity(itemEntity);
+                    this.collisionSystem.addEntity(itemEntity);
+                    this.localEntities.push(itemEntity);
+                }
             }
             this.localEntities.push(shelf);
             sceneManager.addEntity(shelf);
