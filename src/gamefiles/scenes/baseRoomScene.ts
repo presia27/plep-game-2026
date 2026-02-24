@@ -41,7 +41,7 @@ export abstract class BaseRoomScene implements IScene {
   protected abstract getPlayerSpawnPoint(): XY;
   protected abstract getShelfPositions(): ShelfData[];
   protected abstract getDoorTriggers(): DoorData[];
-  protected abstract getAllowedItems(): ItemType[];
+  abstract getAllowedItems(): ItemType[];
   abstract getRoomId(): string;
 
   /**

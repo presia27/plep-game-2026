@@ -13,7 +13,7 @@ export class CleaningScene extends BaseRoomScene {
   protected override getDoorTriggers(): DoorData[] {
     return CleaningRoom.doors;
   }
-  protected override getAllowedItems(): ItemType[] {
+  public override getAllowedItems(): ItemType[] {
     return CleaningRoom.allowedItems;
   }
   public override getRoomId(): string {

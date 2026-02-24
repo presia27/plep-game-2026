@@ -1,4 +1,5 @@
 import GameEngine from "../../gameengine.ts";
+import { INVENTORY_MAX_SLOTS } from "../../gameState.ts";
 import SceneManager from "../../sceneManager.ts";
 import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
 import { TemporarySatisfactionDisplayEntity } from "../bosssatisfaction/temporarySatisfactionDisplayEntity.ts";
@@ -15,7 +16,9 @@ import { PharmaScene } from "../scenes/rooms/pharmaScene.ts";
  */
 
 const levelParams = {
-  duration: 120
+  duration: 120,
+  orderPromptVariability: 6,
+  totalOrders: 10
 }
 
 export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
@@ -23,6 +26,11 @@ export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager,
   const pharmaScene = new PharmaScene(gameEngine);
   const cleaningScene = new CleaningScene(gameEngine);
   const foodScene = new FoodScene(gameEngine);
+
+  // Get list of all allowed items for the level
+  const allowedItems = pharmaScene.getAllowedItems()
+    .concat(cleaningScene.getAllowedItems())
+    .concat(foodScene.getAllowedItems());
 
   // Pre-register all rooms so they're ready when the player walks through doors
   sceneManager.registerScene(cleaningScene.getRoomId(), cleaningScene);
@@ -34,8 +42,10 @@ export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager,
   const orderLoop = new OrderDeliveryLoop(
     gameEngine.getGameContext().gameTime,
     levelParams.duration,
-    8,
-    10
+    levelParams.orderPromptVariability,
+    levelParams.totalOrders,
+    INVENTORY_MAX_SLOTS,
+    allowedItems
   );
   sceneManager.addLevelEntity(orderLoop);
 

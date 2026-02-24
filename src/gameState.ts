@@ -6,6 +6,8 @@ import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEn
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 
+export const INVENTORY_MAX_SLOTS = 6;
+
 /**
  * Holds all global state that persists across rooms and scenes.
  * Acts as the main controller class after initialization.
@@ -22,7 +24,7 @@ export class GameState {
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
     this.ctx = ctx;
-    this.inventoryManager = new InventoryManager(6);
+    this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
 
     this.initDisplayEntities();   // load display entities
 
@@ -94,7 +96,7 @@ export class GameState {
   }
 
   public reset(): void {
-    this.inventoryManager = new InventoryManager(6);
+    this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
   }
 
   public getInventoryManager(): InventoryManager {
