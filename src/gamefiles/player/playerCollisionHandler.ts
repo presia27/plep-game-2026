@@ -95,8 +95,17 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
       if (this.inputSys.isActionActiveSingle(InputAction.PICK_UP)) {
         console.log("Picking up " + itemType);
         // Pickup component and remove the component from the canvas
-        item.getComponent(BasicLifecycle)?.die();
-        this.inventoryMgr.addItem(itemType);
+        this.inventoryMgr.addItem(itemType).then(
+          function() {
+            // promise resolved, remove the item from the shelf
+            item.getComponent(BasicLifecycle)?.die();
+          },
+          function(reject) {
+            alert(reject);
+          }
+        );
+        
+        
       }
     }
   }
