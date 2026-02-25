@@ -20,6 +20,10 @@ export const environmentAssets: IAssetList[] = [
 
 /** Assets for items */
 export const itemAssets: IAssetList[] = [
-  { id: "items", type: "img", location: "./assets/items.png" },
+  { id: "items", type: "img", location: "./assets/items.png" }, // OLD item image - should not be used unless error with new one
   { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
+];
+
+export const npcAssets: IAssetList[] = [
+  { id: "monster", type: "img", location: "./assets/MonsterSpriteSheet.png"}
 ];
