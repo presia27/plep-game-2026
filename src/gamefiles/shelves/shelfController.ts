@@ -20,7 +20,8 @@ export class ShelfController extends Entity {
     // ADD ESSENTIAL LOGIC COMPONENTS
     const posComp = new staticPositionComponent(position);
     const shelfSize = new BasicSize(SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE);
-    const shelfBoundingBox = new BoundingBox(posComp, shelfSize);
+    const shelfBoundingSize = new BasicSize(SHELF_WIDTH, SHELF_HEIGHT/2, SHELF_SCALE)
+    const shelfBoundingBox = new BoundingBox(posComp, shelfBoundingSize);
     super.addComponent(posComp);
     super.addComponent(shelfSize);
     super.addComponent(shelfBoundingBox);

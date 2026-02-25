@@ -1,7 +1,7 @@
 /**
  * Item type definitions for the order pickup system
  * Each item corresponds to a frame in the items.png spritesheet
- * @author pmo, claude did most of this one, Preston
+ * @author pmo, claude did most of this one, Preston, Emma
  */
 
 /**

@@ -41,9 +41,28 @@ export const PharmaRoom: roomData = {
     }
   ],
   allowedItems: [
-    ItemType.TOILETPAPER,
+    /*ItemType.TOILETPAPER,
     ItemType.TISSUES,
     ItemType.PAPERTOWEL
+    */
+    ItemType.PILL,
+    ItemType.BANDAID,
+    ItemType.MEDICINE,
+    ItemType.BOW,
+    ItemType.HEADBAND,
+    ItemType.FIRSTAID,
+    ItemType.TOOTHBRUSH,
+    ItemType.MIRROR,
+    ItemType.NAILPOLISH,
+    ItemType.NAILCLIPPERS,
+    ItemType.FLOSS,
+    ItemType.TOOTHPASTE,
+    ItemType.RAZOR,
+    ItemType.SOAP,
+    ItemType.QTIP,
+    ItemType.SHAMPOO,
+    ItemType.LOTION,
+    ItemType.MOISTURIZER
   ]
 }
 
@@ -69,9 +88,21 @@ export const CleaningRoom: roomData = {
     }
   ],
   allowedItems: [
+    /*ItemType.SPRAY,
+    ItemType.SPONGE,
+    ItemType.MOP*/
+    ItemType.TOILETPAPER,
+    ItemType.TISSUES,
+    ItemType.PAPERTOWEL,
     ItemType.SPRAY,
     ItemType.SPONGE,
-    ItemType.MOP
+    ItemType.MOP,
+    ItemType.DUSTER,
+    ItemType.VACUUM,
+    ItemType.DUSTPAN,
+    ItemType.CLEANER,
+    ItemType.BUCKET,
+    ItemType.DETERGENT,
   ]
 }
 
