@@ -19,9 +19,11 @@ export class OrderDeliveryLoop extends Entity implements Observer {
   private duration: number;
   private promptIntervalFactor: number;
   private totalOrders: number;
-  private inactiveOrders: Order[];
-  private activeOrders: Order[];
-  private doneOrders: Order[];
+  private inactiveOrders: Order[];  /* Orders waiting in queue */
+  private activeOrders: Order[];    /* Orders active in queue and require fulfilment */
+  private doneOrders: Order[];      /* Orders that have already been fulfilled */
+  /* Track the items in the inventory that match the current active order at the front of the queue */
+  private orderProgress: Map<ItemType, number>;
   private lastPromptTime: number | null;
   private promptTimes: number[]; // order prompts times in reverse order (treat as a stack)
   private totalItemVariety: number;
@@ -67,18 +69,47 @@ export class OrderDeliveryLoop extends Entity implements Observer {
     this.lastPromptTime = null;
     this.totalItemVariety = totalItemVariety;
     this.allowedItems = allowedItems;
+    this.orderProgress = new Map();
 
     // Generate orders
     this.generateOrders(totalOrders);
     this.promptTimes = this.generateTimes();
   }
 
+  /** Receive observer updates on inventory changes */
   public observerUpdate(data: any, propertyName: string): void {
     if (propertyName === OBS_INVENTORY_CHANGE) {
       const dataCast = data as Map<ItemType, number>;
-      console.log("Inventory change: ");
-      console.log(dataCast);
+      const currentOrder = this.activeOrders[0]?.getAllItems();
+      if (currentOrder) {
+        currentOrder.forEach((value, key) => {
+          if (dataCast.has(key)) {
+            this.orderProgress.set(key, dataCast.get(key) ?? 0);
+          }
+        });
+
+        // TEMPORARILY CHECK if their equal and if so move to next order
+        // if (this.mapsAreEqual(this.orderProgress, currentOrder)) {
+        //   const currentlyActive = this.activeOrders.splice(0, 1)[0];
+        //   if (currentlyActive) this.doneOrders.push(currentlyActive);
+        // }
+      }
     }
+  }
+  //TEMPORARY EQUAL FUNCTION
+  // private mapsAreEqual<K, V>(map1: Map<K, V>, map2: Map<K, V>): boolean {
+  //   if (map1.size !== map2.size) return false;
+
+  //   for (const [key, value] of map1) {
+  //     if (!map2.has(key) || map2.get(key) !== value) return false;
+  //   }
+
+  //   return true;
+  // }
+
+  /** Getter method for the user's progress on collecting the current order */
+  public getOrderStatus(): Map<ItemType, number> {
+    return this.orderProgress;
   }
 
   public override update(context: GameContext): void {
@@ -105,7 +136,6 @@ export class OrderDeliveryLoop extends Entity implements Observer {
 
   private generateOrders(quantity: number) {
     for (let i = 0; i < quantity; i++) {
-      // THIS IS ALL TEST CODE
       const order = new Order();
 
       for (let j = 0; j < this.totalItemVariety; j++) {
