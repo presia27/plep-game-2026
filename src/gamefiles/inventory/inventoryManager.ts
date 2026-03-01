@@ -1,4 +1,5 @@
 import { Observer, Observable, OBS_INVENTORY_CHANGE } from "../../observerinterfaces.ts";
+import { MSG_SERVICE } from "../main.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 
 export class InventoryManager implements Observable {
@@ -21,6 +22,7 @@ export class InventoryManager implements Observable {
         resolve(item); // indicate successful insertion
       } else {
         console.error("Inventory is full!");
+        MSG_SERVICE.queueMessage("Inventory is full!");
         reject("Inventory is full!"); // indicate failed insertion
       }
 

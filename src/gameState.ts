@@ -5,6 +5,7 @@ import { ASSET_MANAGER } from "./gamefiles/main.ts";
 import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEntity.ts";
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
+import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -41,6 +42,11 @@ export class GameState {
    * UI display entities
    */
   private initDisplayEntities() {
+    // add message entity and renderer
+    const messageEntity = new MessageEntity();
+    this.sceneManager.addUIEntity(messageEntity);
+
+    // add inventory renderer
     const inventoryDisplayEntity = new InventoryDisplayEntity(
       256,
       this.ctx.canvas.height - 96,

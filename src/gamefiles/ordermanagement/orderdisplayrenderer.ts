@@ -143,7 +143,7 @@ export class OrderDisplayRenderer implements IRenderer {
       }
 
       i++; // increment counter
-    })
+    });
   }
 
 }
