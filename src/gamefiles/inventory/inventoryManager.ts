@@ -2,6 +2,8 @@ import { Observer, Observable, OBS_INVENTORY_CHANGE } from "../../observerinterf
 import { MSG_SERVICE } from "../main.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 
+const MAX_ITEMS_PER_SLOT = 10;
+
 export class InventoryManager implements Observable {
   /** Hold items */
   private items: Map<ItemType, number>;
@@ -17,13 +19,13 @@ export class InventoryManager implements Observable {
   public addItem(item: ItemType): Promise<string> {
     return new Promise((resolve, reject) => {
       const currentCount = this.items.get(item) || 0;
-      if (this.items.size < this.maxItems || currentCount > 0) {
+      if (this.items.size < this.maxItems || (currentCount > 0 && currentCount < MAX_ITEMS_PER_SLOT)) {
         this.items.set(item, currentCount + 1);
         resolve(item); // indicate successful insertion
       } else {
-        console.error("Inventory is full!");
-        MSG_SERVICE.queueMessage("Inventory is full!");
-        reject("Inventory is full!"); // indicate failed insertion
+        const errorText = "No more room!";
+        MSG_SERVICE.queueMessage(errorText);
+        reject(errorText); // indicate failed insertion
       }
 
       this.notifyObservers();
