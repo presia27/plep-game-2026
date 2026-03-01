@@ -3,6 +3,7 @@ import { INVENTORY_MAX_SLOTS } from "../../gameState.ts";
 import SceneManager from "../../sceneManager.ts";
 import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
 import { TemporarySatisfactionDisplayEntity } from "../bosssatisfaction/temporarySatisfactionDisplayEntity.ts";
+import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { OrderDisplayEntity } from "../ordermanagement/orderdisplayentity.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
@@ -21,7 +22,12 @@ const levelParams = {
   totalOrders: 10
 }
 
-export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
+export function loadLevelOne(
+  gameEngine: GameEngine,
+  sceneManager: SceneManager,
+  ctx: CanvasRenderingContext2D,
+  inventoryManager: InventoryManager
+) {
   // Create rooms
   const pharmaScene = new PharmaScene(gameEngine);
   const cleaningScene = new CleaningScene(gameEngine);
@@ -55,6 +61,9 @@ export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager,
     orderLoop
   );
   sceneManager.addUIEntity(orderDisplayEntity);
+
+  // Register the order loop as a listener of the inventory
+  inventoryManager.subscribe(orderLoop);
 
   // Add boss satisfaction manager
   const bossSatisfaction = new BossSatisfaction(orderLoop);

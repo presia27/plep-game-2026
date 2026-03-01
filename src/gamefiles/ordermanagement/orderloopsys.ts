@@ -3,6 +3,7 @@ import { GameState } from "../../gameState.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
+import { OBS_INVENTORY_CHANGE, Observer } from "../../observerinterfaces.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -13,7 +14,7 @@ const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed 
  * 
  * @author Preston Sia
  */
-export class OrderDeliveryLoop extends Entity {
+export class OrderDeliveryLoop extends Entity implements Observer {
   private startTime: number;
   private duration: number;
   private promptIntervalFactor: number;
@@ -70,6 +71,14 @@ export class OrderDeliveryLoop extends Entity {
     // Generate orders
     this.generateOrders(totalOrders);
     this.promptTimes = this.generateTimes();
+  }
+
+  public observerUpdate(data: any, propertyName: string): void {
+    if (propertyName === OBS_INVENTORY_CHANGE) {
+      const dataCast = data as Map<ItemType, number>;
+      console.log("Inventory change: ");
+      console.log(dataCast);
+    }
   }
 
   public override update(context: GameContext): void {
@@ -195,7 +204,6 @@ export class OrderDeliveryLoop extends Entity {
     if (this.activeOrders.length > 0) {
       return this.activeOrders[0] ?? null;
     } else {
-      console.warn("No active orders at the moment");
       return null;
     }
   }
