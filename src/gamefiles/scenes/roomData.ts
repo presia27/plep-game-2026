@@ -20,6 +20,7 @@ export interface roomData {
   shelves: ShelfData[];
   doors: DoorData[];
   allowedItems: ItemType[];
+  deliveryEntityPosition?: XY;
 }
 
 export const PharmaRoom: roomData = {
@@ -106,10 +107,7 @@ export const DeliveryRoom: roomData = {
   sceneId: "delivery",
   defaultSpawn: { x: 350, y: 50 },
   shelves: [
-    { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" },
-    { position: { x: 650, y: 200 }, spriteId: "HShelvesVines" },
-    { position: { x: 650, y: 450 }, spriteId: "HShelvesVines" },
-    { position: { x: 100, y: 450 }, spriteId: "HShelvesNoVines" },
+   // { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" }
   ],
   doors: [
     { 
@@ -118,6 +116,7 @@ export const DeliveryRoom: roomData = {
       targetSceneId: "pharma" 
     }
   ],
-  allowedItems: [
-  ]
+  allowedItems: [],
+  
+  deliveryEntityPosition: { x: 50, y: 300 }
 }

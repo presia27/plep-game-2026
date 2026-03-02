@@ -1,7 +1,7 @@
 import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
-import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
+import { deliveryAssets, environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
 import { GameState } from "../gameState.ts";
 
@@ -29,6 +29,7 @@ export const ASSET_MANAGER = new AssetManager();
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 
 ASSET_MANAGER.downloadAll().then(() => {
   // Initialize the game engine and components, pass control to the manager

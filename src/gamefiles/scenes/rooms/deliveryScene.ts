@@ -19,4 +19,13 @@ export class DeliveryScene extends BaseRoomScene {
   public override getRoomId(): string {
     return DeliveryRoom.sceneId;
   }
+  public override getDeliveryEntityPosition(): XY | null {
+    const coordinates =  DeliveryRoom.deliveryEntityPosition;
+    if (coordinates) {
+      return coordinates;
+    } else {
+      return null;
+    }
+    
+  }
 }

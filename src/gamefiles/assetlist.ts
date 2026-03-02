@@ -22,3 +22,8 @@ export const environmentAssets: IAssetList[] = [
 export const itemAssets: IAssetList[] = [
   { id: "items", type: "img", location: "./assets/items.png" }
 ];
+
+/** Assets for Delivery */
+export const deliveryAssets: IAssetList [] = [
+  { id: "deliveryImage", type: "img", location: "./assets/primoChip.png"}
+];
