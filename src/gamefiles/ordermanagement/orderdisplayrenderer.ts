@@ -120,8 +120,30 @@ export class OrderDisplayRenderer implements IRenderer {
         value.toString(),
         this.posX + ((i * (ITEM_SIDE_LENGTH + BUFFER)) + BUFFER) + 20,
         this.posY + 36 + 20);
-      i++;
-    })
+
+      // Draw colored boxes if the user has some of these items
+      const orderProgress = this.orderLoop.getOrderStatus();
+      const orderItem = orderProgress.get(item);
+      if (orderItem) {
+        let itemStatColor = "yellow";
+        if (orderItem === value) {  // Set color of the box
+          itemStatColor = "green";
+        } else if (orderItem > value) {
+          itemStatColor = "red";
+        }
+
+        ctx.strokeStyle = itemStatColor;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(
+          this.posX + 8 + ((i * (ITEM_SIDE_LENGTH + BUFFER)) + BUFFER),
+          this.posY + 34,
+          ITEM_SIDE_LENGTH,
+          ITEM_SIDE_LENGTH
+        );
+      }
+
+      i++; // increment counter
+    });
   }
 
 }

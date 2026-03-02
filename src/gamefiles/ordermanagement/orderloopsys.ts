@@ -3,6 +3,7 @@ import { GameState } from "../../gameState.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
+import { OBS_INVENTORY_CHANGE, Observer } from "../../observerinterfaces.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -13,14 +14,16 @@ const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed 
  * 
  * @author Preston Sia
  */
-export class OrderDeliveryLoop extends Entity {
+export class OrderDeliveryLoop extends Entity implements Observer {
   private startTime: number;
   private duration: number;
   private promptIntervalFactor: number;
   private totalOrders: number;
-  private inactiveOrders: Order[];
-  private activeOrders: Order[];
-  private doneOrders: Order[];
+  private inactiveOrders: Order[];  /* Orders waiting in queue */
+  private activeOrders: Order[];    /* Orders active in queue and require fulfilment */
+  private doneOrders: Order[];      /* Orders that have already been fulfilled */
+  /* Track the items in the inventory that match the current active order at the front of the queue */
+  private orderProgress: Map<ItemType, number>;
   private lastPromptTime: number | null;
   private promptTimes: number[]; // order prompts times in reverse order (treat as a stack)
   private totalItemVariety: number;
@@ -66,10 +69,47 @@ export class OrderDeliveryLoop extends Entity {
     this.lastPromptTime = null;
     this.totalItemVariety = totalItemVariety;
     this.allowedItems = allowedItems;
+    this.orderProgress = new Map();
 
     // Generate orders
     this.generateOrders(totalOrders);
     this.promptTimes = this.generateTimes();
+  }
+
+  /** Receive observer updates on inventory changes */
+  public observerUpdate(data: any, propertyName: string): void {
+    if (propertyName === OBS_INVENTORY_CHANGE) {
+      const dataCast = data as Map<ItemType, number>;
+      const currentOrder = this.activeOrders[0]?.getAllItems();
+      if (currentOrder) {
+        currentOrder.forEach((value, key) => {
+          if (dataCast.has(key)) {
+            this.orderProgress.set(key, dataCast.get(key) ?? 0);
+          }
+        });
+
+        // TEMPORARILY CHECK if their equal and if so move to next order
+        // if (this.mapsAreEqual(this.orderProgress, currentOrder)) {
+        //   const currentlyActive = this.activeOrders.splice(0, 1)[0];
+        //   if (currentlyActive) this.doneOrders.push(currentlyActive);
+        // }
+      }
+    }
+  }
+  //TEMPORARY EQUAL FUNCTION
+  // private mapsAreEqual<K, V>(map1: Map<K, V>, map2: Map<K, V>): boolean {
+  //   if (map1.size !== map2.size) return false;
+
+  //   for (const [key, value] of map1) {
+  //     if (!map2.has(key) || map2.get(key) !== value) return false;
+  //   }
+
+  //   return true;
+  // }
+
+  /** Getter method for the user's progress on collecting the current order */
+  public getOrderStatus(): Map<ItemType, number> {
+    return this.orderProgress;
   }
 
   public override update(context: GameContext): void {
@@ -88,7 +128,9 @@ export class OrderDeliveryLoop extends Entity {
         if (nextOrder !== undefined) {
           this.activeOrders.push(nextOrder);
           nextOrder.setArrivalTime(Math.floor(currentTime));
-          console.log(nextOrder);
+          if (context.debug) {
+            console.log(nextOrder);
+          }
         }
       }
     }
@@ -96,7 +138,6 @@ export class OrderDeliveryLoop extends Entity {
 
   private generateOrders(quantity: number) {
     for (let i = 0; i < quantity; i++) {
-      // THIS IS ALL TEST CODE
       const order = new Order();
 
       for (let j = 0; j < this.totalItemVariety; j++) {
@@ -195,7 +236,6 @@ export class OrderDeliveryLoop extends Entity {
     if (this.activeOrders.length > 0) {
       return this.activeOrders[0] ?? null;
     } else {
-      console.warn("No active orders at the moment");
       return null;
     }
   }

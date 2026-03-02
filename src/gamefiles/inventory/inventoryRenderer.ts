@@ -3,6 +3,7 @@ import { ASSET_MANAGER } from "../main.ts";
 import { getItemMetadata } from "../ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventoryManager.ts";
 import { ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
+import { InventorySelectorComponent } from "./inventorySelectorComponent.ts";
 
 const PANELWIDTH = 400;
 const PANELHEIGHT = 80;
@@ -89,6 +90,14 @@ export class InventoryRenderer implements IRenderer {
       ctx.fillText(value.toString(), this.posX + ((i * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER) + 20, this.posY + 36 + 20);
       i++;
     });
+
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(
+      this.posX + ((this.inventoryMgr.getSlot() * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER),
+      this.posY + 36,
+      ITEM_SIDE_WIDTH,
+      ITEM_SIDE_WIDTH
+    );
 
     ctx.restore();
   }

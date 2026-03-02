@@ -4,6 +4,7 @@ import { myInputMap } from "./inputmap.ts";
 import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
 import { GameState } from "../gameState.ts";
+import { MessengerService } from "../messengerService.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -24,6 +25,7 @@ if (ctx === null || ctx === undefined) {
 const sceneManager = new SceneManager();
 const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
 export const ASSET_MANAGER = new AssetManager();
+export const MSG_SERVICE = new MessengerService();
 
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
