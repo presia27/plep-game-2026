@@ -7,6 +7,7 @@ import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
+import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -31,6 +32,8 @@ export class GameState {
 
     /* Initialize the order loop (levels will initialize them) */
     this.orderLoop = new OrderDeliveryLoop();
+    // Register the order loop as a listener of the inventory
+    this.inventoryManager.subscribe(this.orderLoop);
 
     this.initDisplayEntities();   // load display entities
 
@@ -39,7 +42,8 @@ export class GameState {
       ASSET_MANAGER,
       gameEngine.getInputSystem(),
       {x: 0, y: 0}, 5,
-      this.inventoryManager
+      this.inventoryManager,
+      this.orderLoop
     );
     sceneManager.addLevelEntity(player);
     gameEngine.getCollisionSystem().addEntity(player);
@@ -65,13 +69,25 @@ export class GameState {
       this.gameEngine.getInputSystem()
     );
     this.sceneManager.addUIEntity(inventoryDisplayEntity);
+
+    const orderDisplayEntity = new OrderDisplayEntity(
+      720,
+      this.ctx.canvas.height - 96,
+      this.orderLoop
+    );
+    this.sceneManager.addUIEntity(orderDisplayEntity);
   }
 
   public reset(): void {
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
+    this.orderLoop = new OrderDeliveryLoop();
   }
 
   public getInventoryManager(): InventoryManager {
     return this.inventoryManager;
+  }
+
+  public getOrderLoop(): OrderDeliveryLoop {
+    return this.orderLoop;
   }
 }

@@ -57,16 +57,6 @@ export function loadLevelOne(
   );
   sceneManager.addLevelEntity(orderLoop);
 
-  const orderDisplayEntity = new OrderDisplayEntity(
-    720,
-    ctx.canvas.height - 96,
-    orderLoop
-  );
-  sceneManager.addUIEntity(orderDisplayEntity);
-
-  // Register the order loop as a listener of the inventory
-  inventoryManager.subscribe(orderLoop);
-
   // Add boss satisfaction manager
   const bossSatisfaction = new BossSatisfaction(orderLoop);
   sceneManager.addLevelEntity(bossSatisfaction);

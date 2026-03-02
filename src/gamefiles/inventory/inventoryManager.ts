@@ -63,6 +63,13 @@ export class InventoryManager implements Observable {
     }
   }
 
+  /**
+   * Clear all items
+   */
+  public clearItems(): void {
+    this.items = new Map();
+  }
+
   public getItemAtIndex(index: number): ItemType | undefined {
     return [...this.items.keys()][index];
   }

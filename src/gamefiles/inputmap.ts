@@ -8,6 +8,7 @@ export const myInputMap: InputMapValue[] = [
   { type: "key", value: "d", action: InputAction.MOVE_RIGHT },
   { type: "key", value: "e", action: InputAction.PICK_UP },
   { type: "key", value: "q", action: InputAction.DROP },
+  { type: "key", value: "f", action: InputAction.FULFIL },
   { type: "key", value: "space", action: InputAction.JUMP },
   { type: "key", value: "1", action: InputAction.INVENTORY1 },
   { type: "key", value: "2", action: InputAction.INVENTORY2 },

@@ -9,6 +9,7 @@ export enum InputAction {
   MOVE_RIGHT = "MOVE_RIGHT",
   PICK_UP = "PICK_UP",
   DROP = "DROP",
+  FULFIL = "FULFIL",
   JUMP = "JUMP",
   SPRINT = "SPRINT",
   ATTACK = "ATTACK",
