@@ -9,11 +9,13 @@ export class InventoryManager implements Observable {
   private items: Map<ItemType, number>;
   private maxItems: number;
   private observers: Observer[];
+  private slotNumber: number;
 
   constructor(maxItems: number) {
     this.maxItems = maxItems;
     this.items = new Map<ItemType, number>();
     this.observers = [];
+    this.slotNumber = 0;
   }
 
   public addItem(item: ItemType): Promise<string> {
@@ -32,12 +34,41 @@ export class InventoryManager implements Observable {
     });
   }
 
-  public dropItem() {
+  /**
+   * Drop a single item of the specified item type.
+   * Does nothing if it does not exist.
+   * If there are 5 toilet paper rolls,
+   * it will drop 1 to become 4 rolls.
+   */
+  public dropItem(item: ItemType): void {
+    const currentCount = this.items.get(item) || 0;
+
+    if (currentCount > 1) {
+      this.items.set(item, currentCount - 1);
+    } else if (currentCount === 1) {
+      this.items.delete(item);
+    }
+
     this.notifyObservers();
   }
 
-  public getItem() {
+  /**
+   * Drop a single item currently located
+   * in the specified slot
+   */
+  public dropItemInHand(): void {
+    const toDrop = this.getItemAtIndex(this.slotNumber)
+    if (toDrop) {
+      this.dropItem(toDrop);
+    }
+  }
 
+  public getItemAtIndex(index: number): ItemType | undefined {
+    return [...this.items.keys()][index];
+  }
+
+  public getItemQuantity(item: ItemType) {
+    return this.items.get(item);
   }
 
   public getAllItems() {
@@ -50,6 +81,18 @@ export class InventoryManager implements Observable {
 
   public hasItem(item: ItemType): boolean {
     return this.items.has(item) && (this.items.get(item) ?? 0) > 0;
+  }
+
+  public getSlot(): number {
+    return this.slotNumber
+  }
+
+  public setSlot(slotNum: number): void {
+    if (slotNum < 0) {
+      this.slotNumber = 0;
+    } else {
+      this.slotNumber = Math.min(slotNum, this.maxItems);
+    }
   }
 
   public subscribe(observer: Observer): void {

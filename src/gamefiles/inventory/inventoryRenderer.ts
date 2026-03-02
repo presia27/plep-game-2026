@@ -14,7 +14,6 @@ export class InventoryRenderer implements IRenderer {
   private posX: number;
   private posY: number;
   private inventoryMgr: InventoryManager;
-  private selectorComponent: InventorySelectorComponent;
 
   /**
    * 
@@ -26,7 +25,6 @@ export class InventoryRenderer implements IRenderer {
     this.posX = posX;
     this.posY = posY;
     this.inventoryMgr = inventoryManager;
-    this.selectorComponent = selectorComponent;
   }
 
   draw(context: GameContext): void {
@@ -95,7 +93,7 @@ export class InventoryRenderer implements IRenderer {
 
     ctx.strokeStyle = "white";
     ctx.strokeRect(
-      this.posX + ((this.selectorComponent.getCurrentSlot() * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER),
+      this.posX + ((this.inventoryMgr.getSlot() * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER),
       this.posY + 36,
       ITEM_SIDE_WIDTH,
       ITEM_SIDE_WIDTH

@@ -13,7 +13,7 @@ import { InventorySelectorComponent } from "./inventorySelectorComponent.ts";
 export class InventoryDisplayEntity extends Entity {
   constructor(x: number, y: number, inventoryMgr: InventoryManager, inputSys: InputSystem) {
     super();
-    const selectorComponent = new InventorySelectorComponent(inputSys);
+    const selectorComponent = new InventorySelectorComponent(inputSys, inventoryMgr);
     super.addComponent(selectorComponent);
 
     const renderer = new InventoryRenderer(x, y, inventoryMgr, selectorComponent);
