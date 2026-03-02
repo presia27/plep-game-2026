@@ -16,7 +16,7 @@ export class InventoryDisplayEntity extends Entity {
     const selectorComponent = new InventorySelectorComponent(inputSys, inventoryMgr);
     super.addComponent(selectorComponent);
 
-    const renderer = new InventoryRenderer(x, y, inventoryMgr, selectorComponent);
+    const renderer = new InventoryRenderer(x, y, inventoryMgr);
     this.setRenderer(renderer);
   }
 }

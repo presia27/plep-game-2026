@@ -21,7 +21,7 @@ export class InventoryRenderer implements IRenderer {
    * @param posY Y position to draw on the canvas
    * @param inventoryManager Instance of InventoryManager holding the inventory state from which to draw from
    */
-  constructor(posX: number, posY: number, inventoryManager: InventoryManager, selectorComponent: InventorySelectorComponent) {
+  constructor(posX: number, posY: number, inventoryManager: InventoryManager) {
     this.posX = posX;
     this.posY = posY;
     this.inventoryMgr = inventoryManager;
