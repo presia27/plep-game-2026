@@ -128,7 +128,9 @@ export class OrderDeliveryLoop extends Entity implements Observer {
         if (nextOrder !== undefined) {
           this.activeOrders.push(nextOrder);
           nextOrder.setArrivalTime(Math.floor(currentTime));
-          console.log(nextOrder);
+          if (context.debug) {
+            console.log(nextOrder);
+          }
         }
       }
     }
