@@ -24,7 +24,7 @@ export class OrderDeliveryLoop extends Entity implements Observer {
   private doneOrders: Order[];      /* Orders that have already been fulfilled */
   /* Track the items in the inventory that match the current active order at the front of the queue */
   private orderProgress: Map<ItemType, number>;
-  private lastPromptTime: number | null;
+  private lastClockTime: number;
   private promptTimes: number[]; // order prompts times in reverse order (treat as a stack)
   private totalItemVariety: number;
   private allowedItems: ItemType[];
@@ -47,7 +47,7 @@ export class OrderDeliveryLoop extends Entity implements Observer {
     this.activeOrders = [];
     this.doneOrders = [];
     this.orderProgress = new Map();
-    this.lastPromptTime = null;
+    this.lastClockTime = 0;
     this.promptTimes = [];
     this.totalItemVariety = 0;
     this.allowedItems = [];
@@ -87,7 +87,7 @@ export class OrderDeliveryLoop extends Entity implements Observer {
     this.inactiveOrders = [];
     this.activeOrders = [];
     this.doneOrders = [];
-    this.lastPromptTime = null;
+    this.lastClockTime = 0;
     this.totalItemVariety = totalItemVariety;
     this.allowedItems = allowedItems;
     this.orderProgress = new Map();
@@ -101,6 +101,7 @@ export class OrderDeliveryLoop extends Entity implements Observer {
   public observerUpdate(data: any, propertyName: string): void {
     if (propertyName === OBS_INVENTORY_CHANGE) {
       const dataCast = data as Map<ItemType, number>;
+      this.orderProgress = new Map(); // use new map to ensure data freshness
       const currentOrder = this.activeOrders[0]?.getAllItems();
       if (currentOrder) {
         currentOrder.forEach((value, key) => {
@@ -118,21 +119,43 @@ export class OrderDeliveryLoop extends Entity implements Observer {
     }
   }
 
-  private checkItemsEqual<K, V>(map1: Map<K, V>, map2: Map<K, V>): boolean {
-    if (map1.size !== map2.size) return false;
+  private calculateAccuracy(correctOrder: Order, itemsToEvaluate: Map<ItemType, number>): number {
+    /** Calculate correctness */
+      let biggerMap;
+      let smallerMap;
+      if (correctOrder.getAllItems().size >= itemsToEvaluate.size) {
+        biggerMap = correctOrder.getAllItems();
+        smallerMap = itemsToEvaluate;
+      } else {
+        biggerMap = itemsToEvaluate;
+        smallerMap = correctOrder.getAllItems();
+      }
 
-    for (const [key, value] of map1) {
-      if (!map2.has(key) || map2.get(key) !== value) return false;
-    }
+      let totalCorrectCount = 0;
+      let incorrectCount = 0;
 
-    return true;
+      for (const [key, value] of biggerMap) {
+        totalCorrectCount += value;
+        if (!smallerMap.has(key)) {
+          incorrectCount += value;
+        } else if (smallerMap.has(key) && smallerMap.get(key) !== value) {
+          incorrectCount = incorrectCount + (Math.abs(value - (smallerMap.get(key) ?? 0)));
+        }
+      }
+
+      return(Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount;
   }
 
   public deliverOrder(items: Map<ItemType, number>): void {
     const currentlyActive = this.activeOrders.splice(0, 1)[0];
-    if (currentlyActive) this.doneOrders.push(currentlyActive);
-
+    if (currentlyActive) {
+      this.doneOrders.push(currentlyActive);
+      currentlyActive.setFulfillTime(this.lastClockTime);
     
+      /* Check accuracy */
+      currentlyActive.setFulfillAccuracy(this.calculateAccuracy(currentlyActive, items));
+      console.log(currentlyActive.getFulfillAccuracy());
+    }
   }
 
   /** Getter method for the user's progress on collecting the current order */
@@ -144,6 +167,7 @@ export class OrderDeliveryLoop extends Entity implements Observer {
     super.update(context);
 
     const currentTime = context.gameTime;
+    this.lastClockTime = currentTime;   // update field so that time is accessible
 
     if (currentTime < this.startTime + this.duration) {
 

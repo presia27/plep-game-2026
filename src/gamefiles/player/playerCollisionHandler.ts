@@ -123,8 +123,8 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
       if (this.inputSys.isActionActiveSingle(InputAction.FULFIL)) {
         const currentItems = this.inventoryMgr.getAllItems();
         if (currentItems.size > 0 && this.orderLoop.getCurrentActiveOrder()) {
-          this.inventoryMgr.clearItems();
           this.orderLoop.deliverOrder(currentItems);
+          this.inventoryMgr.clearItems();
         }
       }
     }
