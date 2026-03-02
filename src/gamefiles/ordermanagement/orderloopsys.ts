@@ -30,6 +30,31 @@ export class OrderDeliveryLoop extends Entity implements Observer {
   private allowedItems: ItemType[];
 
   /**
+   * Initialize everything to null or 0.
+   * Use init to initialize with proper values.
+   */
+  constructor() {
+
+    // explicit call to super
+    super();
+
+    // Set to null or 0; init logic moved to the init method
+    this.startTime = 0;
+    this.duration = 0;
+    this.promptIntervalFactor = 0;
+    this.totalOrders = 0;
+    this.inactiveOrders = [];
+    this.activeOrders = [];
+    this.doneOrders = [];
+    this.orderProgress = new Map();
+    this.lastPromptTime = null;
+    this.promptTimes = [];
+    this.totalItemVariety = 0;
+    this.allowedItems = [];
+  }
+
+  /**
+   * Initialize and start the order loop with a new set of parameters.
    * 
    * @param startTime Timestamp of the start of the level
    * @param duration Length of time that the level runs for (MUST be at least 60 seconds)
@@ -39,18 +64,14 @@ export class OrderDeliveryLoop extends Entity implements Observer {
    *     It should probably match the max number of items allowed in a player's inventory.
    * @param allowedItems A list of all allowed items to pick from
    */
-  constructor(
+  public init(
     startTime: number, 
     duration: number, 
     promptIntervalFactor: number, 
     totalOrders: number,
     totalItemVariety: number,
     allowedItems: ItemType[]
-  ) {
-
-    // explicit call to super
-    super();
-
+  ): void {
     if (duration < 60) {
       throw new Error("Duration must be at least 60 seconds, instead got " + duration);
     }

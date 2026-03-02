@@ -9,6 +9,7 @@ import { ItemEntity } from "../ordermanagement/itemEntity.ts";
 import { InputAction } from "../../inputactionlist.ts";
 import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
+import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -102,9 +103,13 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
           },
           function(reject) {}
         );
-        
-        
       }
+    }
+
+    // Handle item delivery
+    if (other instanceof DeliveryController) {
+      const customer = other as DeliveryController;
+      this.inventoryMgr
     }
   }
 }

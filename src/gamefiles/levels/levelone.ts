@@ -26,7 +26,8 @@ export function loadLevelOne(
   gameEngine: GameEngine,
   sceneManager: SceneManager,
   ctx: CanvasRenderingContext2D,
-  inventoryManager: InventoryManager
+  inventoryManager: InventoryManager,
+  orderLoop: OrderDeliveryLoop
 ) {
   // Create rooms
   const pharmaScene = new PharmaScene(gameEngine);
@@ -46,7 +47,7 @@ export function loadLevelOne(
   sceneManager.loadScene(pharmaScene.getRoomId(), pharmaScene);
   
   // Add order loop
-  const orderLoop = new OrderDeliveryLoop(
+  orderLoop.init(
     gameEngine.getGameContext().gameTime,
     levelParams.duration,
     levelParams.orderPromptVariability,
