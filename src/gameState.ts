@@ -6,6 +6,8 @@ import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEn
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
+import { Camera } from "./camera.ts";
+import { MovementComponent } from "./componentLibrary/movementComponent.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -18,12 +20,14 @@ export const INVENTORY_MAX_SLOTS = 6;
 export class GameState {
   private gameEngine: GameEngine;
   private sceneManager: SceneManager;
+  private camera: Camera;
   private ctx: CanvasRenderingContext2D;
   private inventoryManager: InventoryManager;
 
-  constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
+  constructor(gameEngine: GameEngine, sceneManager: SceneManager, camera: Camera, ctx: CanvasRenderingContext2D) {
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
+    this.camera = camera;
     this.ctx = ctx;
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
 
@@ -33,6 +37,12 @@ export class GameState {
     const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 0, y: 0}, 5, this.inventoryManager);
     sceneManager.addLevelEntity(player);
     gameEngine.getCollisionSystem().addEntity(player);
+
+    // Register player to the camera for tracking
+    const playerPosition = player.getComponent(MovementComponent);
+    if (playerPosition) {
+      this.camera.registerPosition(playerPosition);
+    }
 
     loadLevelOne(gameEngine, sceneManager, ctx, this.inventoryManager);
   }
