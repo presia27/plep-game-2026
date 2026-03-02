@@ -63,6 +63,8 @@ export class InventoryRenderer {
             ctx.fillText(value.toString(), this.posX + ((i * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER) + 20, this.posY + 36 + 20);
             i++;
         });
+        ctx.strokeStyle = "white";
+        ctx.strokeRect(this.posX + ((this.inventoryMgr.getSlot() * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER), this.posY + 36, ITEM_SIDE_WIDTH, ITEM_SIDE_WIDTH);
         ctx.restore();
     }
 }
