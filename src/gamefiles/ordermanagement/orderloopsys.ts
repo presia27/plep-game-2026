@@ -113,12 +113,6 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
             this.orderProgress.set(key, dataCast.get(key) ?? 0);
           }
         });
-
-        // TEMPORARILY CHECK if their equal and if so move to next order
-        // if (this.mapsAreEqual(this.orderProgress, currentOrder)) {
-        //   const currentlyActive = this.activeOrders.splice(0, 1)[0];
-        //   if (currentlyActive) this.doneOrders.push(currentlyActive);
-        // }
       }
     }
   }
@@ -155,6 +149,10 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     if (currentlyActive) {
       this.doneOrders.push(currentlyActive);
       currentlyActive.setFulfillTime(this.lastClockTime);
+      // send alert
+      this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
+      if (this.getCurrentActiveOrder() !== null)
+        this.notifyObservers(this.getCurrentActiveOrder(), OBS_NEW_ACTIVE_ORDER);
     
       /* Check accuracy */
       currentlyActive.setFulfillAccuracy(this.calculateAccuracy(currentlyActive, items));
@@ -182,6 +180,11 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
         // load the next order
         const nextOrder: Order | undefined = this.inactiveOrders.shift();
         if (nextOrder !== undefined) {
+          // notify if the pushed order will end up at the front of the queue
+          if (this.activeOrders.length === 0) {
+            this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);
+          }
+
           this.activeOrders.push(nextOrder);
           nextOrder.setArrivalTime(Math.floor(currentTime));
           if (context.debug) {
