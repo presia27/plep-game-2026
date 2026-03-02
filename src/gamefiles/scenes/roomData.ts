@@ -38,6 +38,11 @@ export const PharmaRoom: roomData = {
       position: { x: 1200, y: 300 }, 
       size: { x: 20, y: 200 }, 
       targetSceneId: "cleaning" 
+    },
+    {
+      position: { x: 10 , y: 300 },
+      size: { x: 20 , y: 200},
+      targetSceneId: "delivery"
     }
   ],
   allowedItems: [
@@ -95,5 +100,24 @@ export const FoodRoom: roomData = {
     ItemType.DUSTER,
     ItemType.VACUUM,
     ItemType.DUSTPAN
+  ]
+}
+export const DeliveryRoom: roomData = {
+  sceneId: "delivery",
+  defaultSpawn: { x: 350, y: 50 },
+  shelves: [
+    { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" },
+    { position: { x: 650, y: 200 }, spriteId: "HShelvesVines" },
+    { position: { x: 650, y: 450 }, spriteId: "HShelvesVines" },
+    { position: { x: 100, y: 450 }, spriteId: "HShelvesNoVines" },
+  ],
+  doors: [
+    { 
+      position: { x: 350, y: 10 }, 
+      size: { x: 80, y: 20 }, 
+      targetSceneId: "pharma" 
+    }
+  ],
+  allowedItems: [
   ]
 }

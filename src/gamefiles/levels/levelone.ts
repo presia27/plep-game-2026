@@ -8,7 +8,7 @@ import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
 import { FoodScene } from "../scenes/rooms/foodScene.ts";
 import { PharmaScene } from "../scenes/rooms/pharmaScene.ts";
-
+import { DeliveryScene } from "../scenes/rooms/deliveryScene.ts";
 
 /**
  * Represents concrete level data/parameters
@@ -26,6 +26,7 @@ export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager,
   const pharmaScene = new PharmaScene(gameEngine);
   const cleaningScene = new CleaningScene(gameEngine);
   const foodScene = new FoodScene(gameEngine);
+  const deliveryScene = new DeliveryScene(gameEngine);
 
   // Get list of all allowed items for the level
   const allowedItems = pharmaScene.getAllowedItems()
@@ -35,7 +36,7 @@ export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager,
   // Pre-register all rooms so they're ready when the player walks through doors
   sceneManager.registerScene(cleaningScene.getRoomId(), cleaningScene);
   sceneManager.registerScene(foodScene.getRoomId(), foodScene);
-
+  sceneManager.registerScene(deliveryScene.getRoomId(), deliveryScene);
   sceneManager.loadScene(pharmaScene.getRoomId(), pharmaScene);
   
   // Add order loop
