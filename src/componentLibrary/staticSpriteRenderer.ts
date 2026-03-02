@@ -59,8 +59,8 @@ export class StaticSpriteRenderer implements IRenderer {
       this.yStart,
       this.spriteWidth,
       this.spriteHeight,
-      pos.x,
-      pos.y,
+      pos.x - context.cameraPosition.x,
+      pos.y - context.cameraPosition.y,
       width,
       height
     );
@@ -71,8 +71,8 @@ export class StaticSpriteRenderer implements IRenderer {
       // draw the full extent of the entity
       context.ctx.strokeStyle = "#0000cd";
       context.ctx.strokeRect(
-        this.positionComponent.getPosition().x,
-        this.positionComponent.getPosition().y,
+        this.positionComponent.getPosition().x - context.cameraPosition.x,
+        this.positionComponent.getPosition().y - context.cameraPosition.y,
         width,
         height,
       );
@@ -81,8 +81,8 @@ export class StaticSpriteRenderer implements IRenderer {
       context.ctx.strokeStyle = "#ff0000";
       if (this.boundingBox) {
         context.ctx.strokeRect(
-          this.boundingBox.getLeft(),
-          this.boundingBox.getTop(),
+          this.boundingBox.getLeft() - context.cameraPosition.x,
+          this.boundingBox.getTop() - context.cameraPosition.y,
           this.boundingBox.getRight() - this.boundingBox.getLeft(),
           this.boundingBox.getBottom() - this.boundingBox.getTop()
         )

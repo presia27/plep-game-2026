@@ -67,15 +67,15 @@ export class DoorTrigger extends Entity {
       ctx.lineWidth = 2;
       
       ctx.fillRect(
-        this.boundingBox.getLeft(),
-        this.boundingBox.getTop(),
+        this.boundingBox.getLeft() - context.cameraPosition.x,
+        this.boundingBox.getTop() - context.cameraPosition.y,
         this.boundingBox.getRight() - this.boundingBox.getLeft(),
         this.boundingBox.getBottom() - this.boundingBox.getTop()
       );
       
       ctx.strokeRect(
-        this.boundingBox.getLeft(),
-        this.boundingBox.getTop(),
+        this.boundingBox.getLeft() - context.cameraPosition.x,
+        this.boundingBox.getTop() - context.cameraPosition.y,
         this.boundingBox.getRight() - this.boundingBox.getLeft(),
         this.boundingBox.getBottom() - this.boundingBox.getTop()
       );
@@ -86,8 +86,8 @@ export class DoorTrigger extends Entity {
       ctx.textAlign = "center";
       ctx.fillText(
         `→ ${this.targetSceneId}`,
-        this.boundingBox.getLeft() + (this.boundingBox.getRight() - this.boundingBox.getLeft()) / 2,
-        this.boundingBox.getTop() + (this.boundingBox.getBottom() - this.boundingBox.getTop()) / 2
+        this.boundingBox.getLeft() + (this.boundingBox.getRight() - this.boundingBox.getLeft()) / 2 - context.cameraPosition.x,
+        this.boundingBox.getTop() + (this.boundingBox.getBottom() - this.boundingBox.getTop()) / 2 - context.cameraPosition.y
       );
       
       ctx.restore();
