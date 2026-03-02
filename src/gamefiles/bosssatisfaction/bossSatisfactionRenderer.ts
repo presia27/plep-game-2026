@@ -56,14 +56,14 @@ export class SatisfactionRenderer implements IRenderer {
     ctx.fillText(Math.ceil(satisfaction).toString(), this.posX + PANELWIDTH - 30, this.posY + PANELHEIGHT - 20);
 
     // Draw background panel
-    if (satisfaction <= 0) {
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, 1280, 720);
+    // if (satisfaction <= 0) {
+    //   ctx.fillStyle = 'black';
+    //   ctx.fillRect(0, 0, 1280, 720);
       
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 40px Arial';
-      ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 150, ctx.canvas.height/2);
-    }
+    //   ctx.fillStyle = 'white';
+    //   ctx.font = 'bold 40px Arial';
+    //   ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 150, ctx.canvas.height/2);
+    // }
     ctx.restore();
   }
 }

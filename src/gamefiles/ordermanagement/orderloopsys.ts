@@ -3,7 +3,7 @@ import { GameState } from "../../gameState.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
-import { OBS_INVENTORY_CHANGE, Observer } from "../../observerinterfaces.ts";
+import { OBS_INVENTORY_CHANGE, OBS_ORDER_COMPLETE, OBS_NEW_ACTIVE_ORDER, Observable, Observer } from "../../observerinterfaces.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -14,7 +14,7 @@ const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed 
  * 
  * @author Preston Sia
  */
-export class OrderDeliveryLoop extends Entity implements Observer {
+export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   private startTime: number;
   private duration: number;
   private promptIntervalFactor: number;
@@ -28,6 +28,8 @@ export class OrderDeliveryLoop extends Entity implements Observer {
   private promptTimes: number[]; // order prompts times in reverse order (treat as a stack)
   private totalItemVariety: number;
   private allowedItems: ItemType[];
+
+  private observers: Observer[];
 
   /**
    * Initialize everything to null or 0.
@@ -51,6 +53,8 @@ export class OrderDeliveryLoop extends Entity implements Observer {
     this.promptTimes = [];
     this.totalItemVariety = 0;
     this.allowedItems = [];
+
+    this.observers = [];
   }
 
   /**
@@ -185,6 +189,18 @@ export class OrderDeliveryLoop extends Entity implements Observer {
           }
         }
       }
+    }
+  }
+
+  public subscribe(observer: Observer): void {
+    this.observers.push(observer);
+  }
+  public unsubscribe(observer: Observer): void {
+    this.observers = this.observers.filter(obs => obs !== observer);
+  }
+  public notifyObservers(data: any, notificationType: string): void {
+    for (const observer of this.observers) {
+      observer.observerUpdate(data, notificationType);
     }
   }
 

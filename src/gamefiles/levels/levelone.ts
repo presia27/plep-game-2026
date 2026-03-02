@@ -10,6 +10,7 @@ import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
 import { FoodScene } from "../scenes/rooms/foodScene.ts";
 import { PharmaScene } from "../scenes/rooms/pharmaScene.ts";
 import { DeliveryScene } from "../scenes/rooms/deliveryScene.ts";
+import { MSG_SERVICE } from "../main.ts";
 
 /**
  * Represents concrete level data/parameters
@@ -62,6 +63,9 @@ export function loadLevelOne(
   sceneManager.addLevelEntity(bossSatisfaction);
   const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(900, 30, bossSatisfaction);
   sceneManager.addUIEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
+
+  MSG_SERVICE.queueMessage("SHIFT 1");
+  MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }
   
 
