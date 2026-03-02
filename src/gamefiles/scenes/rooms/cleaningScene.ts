@@ -7,6 +7,12 @@ export class CleaningScene extends BaseRoomScene {
   protected override getPlayerSpawnPoint(): XY {
     return CleaningRoom.defaultSpawn;
   }
+  protected override getMonsterSpawnPoints(): XY[] {
+    return CleaningRoom.monsterSpawns;
+  }
+  protected override getUpdatePoints(): XY[] {
+    return CleaningRoom.updatePoints;
+  }
   protected override getShelfPositions(): ShelfData[] {
     return CleaningRoom.shelves;
   }

@@ -3,6 +3,7 @@ import { Animator } from "../../animator.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { InputAction } from "../../inputactionlist.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
+import { MonsterMovementSystem } from "./monsterMovementSystem.ts";
 
 const X_START: number = 0;
 const Y_START: number = 0;
@@ -11,7 +12,7 @@ const FRAME_COUNT: number = 4;
 const FRAME_DUR: number = 0.4; // was set to 0.2 for player
 const WIDTH: number = 20
 const HEIGHT: number = 19;
-const MONSTER_SCALE: number = 4;
+const MONSTER_SCALE: number = 5;
 
 
 /**
@@ -27,7 +28,7 @@ export class MonsterSpriteRenderer implements IRenderer {
   private spritesheet: HTMLImageElement;
   private positionComponent: IPosition;
   private sizeComponent: ISize;
-  private inputSystem: InputSystem;
+  private movementSys: MonsterMovementSystem;
   private boundingBox: BoundingBox | null;
   private animations: Animator[];
   private currentDirection: number;
@@ -40,19 +41,19 @@ export class MonsterSpriteRenderer implements IRenderer {
    *                      regardless of its bounding box. This is what is used to draw the sprite.
    * @param boundingBox Bounding box component representing the corners of the actual bounding box.
    *    This is used for debugging, hence it is optional
-   * @param inputSystem The input system to detect movement direction
+   * @param movementSys The movement system to update movement direction
    */
   constructor(
     spritesheet: HTMLImageElement, 
     positionComponent: IPosition, 
     sizeComponent: ISize,
-    inputSystem: InputSystem,
+    movementSys: MonsterMovementSystem,
     boundingBox?: BoundingBox | null
   ) {
     this.spritesheet = spritesheet;
     this.positionComponent = positionComponent;
     this.sizeComponent = sizeComponent;
-    this.inputSystem = inputSystem;
+    this.movementSys = movementSys;
     this.animations = [];
     this.currentDirection = 0; // default facing down
 
@@ -112,10 +113,10 @@ export class MonsterSpriteRenderer implements IRenderer {
    * Update the current direction based on input and return if moving
    */
   private updateDirection(): boolean {
-    const up = this.inputSystem.isActionActive(InputAction.MOVE_UP);
-    const down = this.inputSystem.isActionActive(InputAction.MOVE_DOWN);
-    const left = this.inputSystem.isActionActive(InputAction.MOVE_LEFT);
-    const right = this.inputSystem.isActionActive(InputAction.MOVE_RIGHT);
+    const up = this.movementSys.isMovingUp();
+    const down = this.movementSys.isMovingDown();
+    const left = this.movementSys.isMovingLeft();
+    const right = this.movementSys.isMovingRight();
 
     const isMoving = up || down || left || right;
 

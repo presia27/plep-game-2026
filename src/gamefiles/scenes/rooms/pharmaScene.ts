@@ -7,6 +7,12 @@ export class PharmaScene extends BaseRoomScene {
   protected override getPlayerSpawnPoint(): XY {
     return PharmaRoom.defaultSpawn;
   }
+  protected override getMonsterSpawnPoints(): XY[] {
+    return PharmaRoom.monsterSpawns;
+  }
+  protected override getUpdatePoints(): XY[] {
+    return PharmaRoom.updatePoints;
+  }
   protected override getShelfPositions(): ShelfData[] {
     return PharmaRoom.shelves;
   }

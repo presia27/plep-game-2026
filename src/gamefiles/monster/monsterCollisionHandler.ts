@@ -6,6 +6,7 @@ import { ISize } from "../../classinterfaces.ts";
 import { ShelfController } from "../shelves/shelfController.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { PlayerController } from "../player/playerController.ts";
+import { MonsterMovementSystem } from "./monsterMovementSystem.ts";
 
 /**
  * Monster collision handler that prevents the monster from moving through solid objects
@@ -16,7 +17,7 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
   private boundingBox: BoundingBox;
   private movementComponent: MovementComponent;
   private sizeComponent: ISize;
-  private inputSys: InputSystem;
+  private movementSys: MonsterMovementSystem;
 
   /**
    * A monster collision handler that deals with moving around the room
@@ -24,14 +25,14 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
    * @param boundingBox the bounding box for the monster
    * @param movementComponent movement system
    * @param sizeComponent size of monster
-   * @param inputSys input system
+   * @param movementSys movement system
    */
-  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, inputSys: InputSystem) {
+  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, movementSys: MonsterMovementSystem) {
     super();
     this.boundingBox = boundingBox;
     this.movementComponent = movementComponent;
     this.sizeComponent = sizeComponent;
-    this.inputSys = inputSys;
+    this.movementSys = movementSys;
   }
 
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {
@@ -87,7 +88,6 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
           pos.y = shelfBottom - yOffset;
         }
       }
-
       this.movementComponent.setPosition(pos);
     }
 

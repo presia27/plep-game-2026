@@ -3,10 +3,11 @@ import { BasicSize } from "../../componentLibrary/BasicSize.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { Entity } from "../../entity.ts";
-import { InputSystem } from "../../inputsys.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { MonsterSpriteRenderer } from "./monsterSpriteRenderer.ts";
 import { MonsterCollisionHandler } from "./monsterCollisionHandler.ts";
+import { MonsterMovementSystem } from "./monsterMovementSystem.ts";
+import { IPosition } from "../../classinterfaces.ts";
 
 // CONSTANTS
 const MONSTER_SPEED: number = 200;
@@ -29,18 +30,19 @@ const MONSTER_BOUND_OFFSET_Y: number = 11;
 export class MonsterEntity extends Entity {
   constructor(
     assetManager: AssetManager,
-    inputSystem: InputSystem,
     defaultXY: XY,
     scale: number,
+    playerPos: IPosition
   ) {
     super();
 
     // ADD ESSENTIAL LOGIC COMPONENTS
     const monsterMovementAndPosition = new MovementComponent(defaultXY);
+    const monsterMovementSys = new MonsterMovementSystem(monsterMovementAndPosition, MONSTER_SPEED, playerPos)
     const monsterSize = new BasicSize(MONSTER_WIDTH, MONSTER_HEIGHT, scale);
     const monsterBoundSize = new BasicSize(MONSTER_BOUND_X, MONSTER_BOUND_Y, scale);
     const monsterBoundingBox = new BoundingBox(monsterMovementAndPosition, monsterBoundSize, MONSTER_BOUND_OFFSET_X, MONSTER_BOUND_OFFSET_Y);
-    const monsterCollisionHandler = new MonsterCollisionHandler(monsterBoundingBox, monsterMovementAndPosition, monsterSize, inputSystem);
+    const monsterCollisionHandler = new MonsterCollisionHandler(monsterBoundingBox, monsterMovementAndPosition, monsterSize, monsterMovementSys);
     super.addComponent(monsterMovementAndPosition)
     // super.addComponent(monsterSize);
     // super.addComponent(monsterBoundSize);
@@ -51,7 +53,7 @@ export class MonsterEntity extends Entity {
     if (monsterSprite === null) {
       throw new Error("Failed to load asset for the monster");
     }
-    const renderer = new MonsterSpriteRenderer(monsterSprite, monsterMovementAndPosition, monsterSize, inputSystem, monsterBoundingBox);
+    const renderer = new MonsterSpriteRenderer(monsterSprite, monsterMovementAndPosition, monsterSize, monsterMovementSys, monsterBoundingBox);
     super.setRenderer(renderer);
   }
 }

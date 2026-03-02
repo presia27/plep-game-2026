@@ -4,7 +4,7 @@ import { IAssetList } from "../typeinterfaces.ts";
  * Please put all assets that need to be loaded here in this file
  * (pretty please, don't put them in main or the scene manager  :-)  )
  * 
- * @author Preston Sia
+ * @author Preston Sia, Emma Szebenyi
  */
 
 /** All player related assets */
@@ -12,18 +12,20 @@ export const playerAssets: IAssetList[] = [
   { id: "player", type: "img", location: "./assets/EmployeeFullSpriteSheet.png" }
 ];
 
+/** All monster assets */
+export const monsterAssets: IAssetList[] = [
+  { id: "monster", type: "img", location: "./assets/MonsterSpriteSheet.png" }
+];
+
 /** All environment assets, such as shelves, desks, obstacles, background music, and more */
 export const environmentAssets: IAssetList[] = [
-  { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" },
-  { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }
+  { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
+  { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
+  { id: "AllHShelves", type: "img", location: "./assets/AllHShelves.png" },
 ];
 
 /** Assets for items */
 export const itemAssets: IAssetList[] = [
   { id: "items", type: "img", location: "./assets/items.png" }, // OLD item image - should not be used unless error with new one
   { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
-];
-
-export const npcAssets: IAssetList[] = [
-  { id: "monster", type: "img", location: "./assets/MonsterSpriteSheet.png"}
 ];
