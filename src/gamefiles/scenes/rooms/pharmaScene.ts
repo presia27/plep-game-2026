@@ -19,4 +19,7 @@ export class PharmaScene extends BaseRoomScene {
   public override getRoomId(): string {
     return PharmaRoom.sceneId;
   }
+  public override getDeliveryEntityPosition(): XY | null {
+    return null;
+  }
 }

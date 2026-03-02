@@ -19,4 +19,7 @@ export class CleaningScene extends BaseRoomScene {
   public override getRoomId(): string {
     return CleaningRoom.sceneId;
   }
+  public override getDeliveryEntityPosition(): XY | null {
+    return null;
+  }
 }
