@@ -50,7 +50,8 @@ export class GameState {
     const inventoryDisplayEntity = new InventoryDisplayEntity(
       256,
       this.ctx.canvas.height - 96,
-      this.inventoryManager
+      this.inventoryManager,
+      this.gameEngine.getInputSystem()
     );
     this.sceneManager.addUIEntity(inventoryDisplayEntity);
   }

@@ -3,6 +3,7 @@ import { ASSET_MANAGER } from "../main.ts";
 import { getItemMetadata } from "../ordermanagement/itemTypes.ts";
 import { InventoryManager } from "./inventoryManager.ts";
 import { ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
+import { InventorySelectorComponent } from "./inventorySelectorComponent.ts";
 
 const PANELWIDTH = 400;
 const PANELHEIGHT = 80;
@@ -13,6 +14,7 @@ export class InventoryRenderer implements IRenderer {
   private posX: number;
   private posY: number;
   private inventoryMgr: InventoryManager;
+  private selectorComponent: InventorySelectorComponent;
 
   /**
    * 
@@ -20,10 +22,11 @@ export class InventoryRenderer implements IRenderer {
    * @param posY Y position to draw on the canvas
    * @param inventoryManager Instance of InventoryManager holding the inventory state from which to draw from
    */
-  constructor(posX: number, posY: number, inventoryManager: InventoryManager) {
+  constructor(posX: number, posY: number, inventoryManager: InventoryManager, selectorComponent: InventorySelectorComponent) {
     this.posX = posX;
     this.posY = posY;
     this.inventoryMgr = inventoryManager;
+    this.selectorComponent = selectorComponent;
   }
 
   draw(context: GameContext): void {
@@ -89,6 +92,14 @@ export class InventoryRenderer implements IRenderer {
       ctx.fillText(value.toString(), this.posX + ((i * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER) + 20, this.posY + 36 + 20);
       i++;
     });
+
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(
+      this.posX + ((this.selectorComponent.getCurrentSlot() * (ITEM_SIDE_WIDTH + BUFFER)) + BUFFER),
+      this.posY + 36,
+      ITEM_SIDE_WIDTH,
+      ITEM_SIDE_WIDTH
+    );
 
     ctx.restore();
   }
