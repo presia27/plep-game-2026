@@ -46,10 +46,6 @@ export const PharmaRoom: roomData = {
     }
   ],
   allowedItems: [
-    /*ItemType.TOILETPAPER,
-    ItemType.TISSUES,
-    ItemType.PAPERTOWEL
-    */
     ItemType.PILL,
     ItemType.BANDAID,
     ItemType.MEDICINE,
@@ -95,9 +91,6 @@ export const CleaningRoom: roomData = {
     }
   ],
   allowedItems: [
-    /*ItemType.SPRAY,
-    ItemType.SPONGE,
-    ItemType.MOP*/
     ItemType.TOILETPAPER,
     ItemType.TISSUES,
     ItemType.PAPERTOWEL,
@@ -132,8 +125,52 @@ export const FoodRoom: roomData = {
     }
   ],
   allowedItems: [
-    ItemType.DUSTER,
-    ItemType.VACUUM,
-    ItemType.DUSTPAN
+    ItemType.STRAWBERRY,
+    ItemType.BANANA,
+    ItemType.APPLE,
+    ItemType.BROCCOLI,
+    ItemType.STEAK,
+    ItemType.FISH,
+    ItemType.CHEESE,
+    ItemType.MILK,
+    ItemType.BUTTER,
+    ItemType.CHIPS,
+    ItemType.COOKIES,
+    ItemType.SODA,
+    ItemType.PASTA,
+    ItemType.BREAD,
+    ItemType.PIZZA,
+    ItemType.ICECREAM
   ]
 }
+
+// housing allowed items
+/*
+allowedItems: [
+    ItemType.LAMP,
+    ItemType.CHAIR,
+    ItemType.PILLOW,
+    ItemType.FLOORMIRROR,
+    ItemType.PLANT,
+    ItemType.PAINTING,
+    ItemType.CANDLE,
+    ItemType.SPOON,
+    ItemType.FORK,
+    ItemType.KNIFE
+  ]
+*/
+
+// electronics allowed items
+/*
+allowedItems: [
+    ItemType.MOUSE,
+    ItemType.LAPTOP,
+    ItemType.MONITOR,
+    ItemType.TV,
+    ItemType.HEADPHONES,
+    ItemType.CONTROLLER,
+    ItemType.SPEAKER,
+    ItemType.MICROPHONE,
+    ItemType.PHONE
+  ]
+*/
