@@ -5,6 +5,7 @@ import { myInputMap } from "./inputmap.js";
 import { environmentAssets, itemAssets, playerAssets } from "./assetlist.js";
 import SceneManager from "../sceneManager.js";
 import { GameState } from "../gameState.js";
+import { MessengerService } from "../messengerService.js";
 /**
  * This file bootstraps the game engine and loads
  * the core systems needed for the game. This script
@@ -21,6 +22,7 @@ if (ctx === null || ctx === undefined) {
 const sceneManager = new SceneManager();
 const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
 export const ASSET_MANAGER = new AssetManager();
+export const MSG_SERVICE = new MessengerService();
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));

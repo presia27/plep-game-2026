@@ -1,9 +1,10 @@
 import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
-import { environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
+import { deliveryAssets, environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
 import { GameState } from "../gameState.ts";
+import { MessengerService } from "../messengerService.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -24,11 +25,13 @@ if (ctx === null || ctx === undefined) {
 const sceneManager = new SceneManager();
 const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
 export const ASSET_MANAGER = new AssetManager();
+export const MSG_SERVICE = new MessengerService();
 
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 
 ASSET_MANAGER.downloadAll().then(() => {
   // Initialize the game engine and components, pass control to the manager
@@ -40,3 +43,14 @@ ASSET_MANAGER.downloadAll().then(() => {
 document.getElementById("btnDebug")?.addEventListener("click", () => {
   gameEngine.toggleDebugging();
 });
+
+document.getElementById("btnMusic")?.addEventListener("click", () => {
+  const bgAudio = ASSET_MANAGER.getAudioAsset("YMCAMusic");
+  if (bgAudio) {
+    if (bgAudio.paused) {
+      bgAudio.play();
+    } else {
+      bgAudio.pause();
+    }
+  }
+})

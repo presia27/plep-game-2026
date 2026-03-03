@@ -19,4 +19,8 @@ export class FoodScene extends BaseRoomScene {
   public override getRoomId(): string {
     return FoodRoom.sceneId;
   }
+
+  public override getDeliveryEntityPosition(): XY | null {
+    return null;
+  }
 }

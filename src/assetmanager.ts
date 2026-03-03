@@ -156,4 +156,16 @@ export default class AssetManager {
       return audio;
     }
   }
+
+  public muteAllAudio(): void {
+    for (let audio of this.audioCache.values()) {
+      audio.muted = true;
+    }
+  }
+
+  public unmuteAllAudio(): void {
+    for (let audio of this.audioCache.values()) {
+      audio.muted = false;
+    }
+  }
 };

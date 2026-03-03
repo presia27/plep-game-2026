@@ -15,7 +15,7 @@ const levelParams = {
     orderPromptVariability: 6,
     totalOrders: 10
 };
-export function loadLevelOne(gameEngine, sceneManager, ctx) {
+export function loadLevelOne(gameEngine, sceneManager, ctx, inventoryManager) {
     // Create rooms
     const pharmaScene = new PharmaScene(gameEngine);
     const cleaningScene = new CleaningScene(gameEngine);
@@ -33,6 +33,8 @@ export function loadLevelOne(gameEngine, sceneManager, ctx) {
     sceneManager.addLevelEntity(orderLoop);
     const orderDisplayEntity = new OrderDisplayEntity(720, ctx.canvas.height - 96, orderLoop);
     sceneManager.addUIEntity(orderDisplayEntity);
+    // Register the order loop as a listener of the inventory
+    inventoryManager.subscribe(orderLoop);
     // Add boss satisfaction manager
     const bossSatisfaction = new BossSatisfaction(orderLoop);
     sceneManager.addLevelEntity(bossSatisfaction);

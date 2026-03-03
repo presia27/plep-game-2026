@@ -87,7 +87,6 @@ export class BossSatisfaction extends Entity {
      */
     isGameOver() {
         if (this.satisfaction <= MIN_SATISFACTION) {
-            console.log("Game over! Boss satisfaction has reached 0.");
             return true;
         }
         return false;
@@ -106,7 +105,6 @@ export class BossSatisfaction extends Entity {
      * @returns the current satisfaction level
      */
     getSatisfaction() {
-        console.log(`Current boss satisfaction: ${this.satisfaction}`);
         return this.satisfaction;
     }
     /**
@@ -115,7 +113,6 @@ export class BossSatisfaction extends Entity {
      * @returns the current decrease rate
      */
     getDecreaseRate() {
-        console.log(`Current boss satisfaction decrease rate: ${this.decreaseRate}`);
         return this.decreaseRate;
     }
 }
