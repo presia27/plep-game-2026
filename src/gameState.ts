@@ -6,6 +6,8 @@ import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEn
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
+import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
+import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -20,6 +22,7 @@ export class GameState {
   private sceneManager: SceneManager;
   private ctx: CanvasRenderingContext2D;
   private inventoryManager: InventoryManager;
+  private orderLoop: OrderDeliveryLoop;
 
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
     this.gameEngine = gameEngine;
@@ -27,14 +30,26 @@ export class GameState {
     this.ctx = ctx;
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
 
+    /* Initialize the order loop (levels will initialize them) */
+    this.orderLoop = new OrderDeliveryLoop();
+    // Register the order loop as a listener of the inventory
+    this.inventoryManager.subscribe(this.orderLoop);
+
     this.initDisplayEntities();   // load display entities
 
     /* Add the player */
-    const player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), {x: 0, y: 0}, 5, this.inventoryManager);
+    const player = new PlayerController(
+      ASSET_MANAGER,
+      gameEngine.getInputSystem(),
+      {x: 0, y: 0}, 5,
+      this.inventoryManager,
+      this.orderLoop
+    );
     sceneManager.addLevelEntity(player);
     gameEngine.getCollisionSystem().addEntity(player);
 
-    loadLevelOne(gameEngine, sceneManager, ctx, this.inventoryManager);
+    /* Load level */
+    loadLevelOne(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
   }
 
   /**
@@ -54,13 +69,25 @@ export class GameState {
       this.gameEngine.getInputSystem()
     );
     this.sceneManager.addUIEntity(inventoryDisplayEntity);
+
+    const orderDisplayEntity = new OrderDisplayEntity(
+      720,
+      this.ctx.canvas.height - 96,
+      this.orderLoop
+    );
+    this.sceneManager.addUIEntity(orderDisplayEntity);
   }
 
   public reset(): void {
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
+    this.orderLoop = new OrderDeliveryLoop();
   }
 
   public getInventoryManager(): InventoryManager {
     return this.inventoryManager;
+  }
+
+  public getOrderLoop(): OrderDeliveryLoop {
+    return this.orderLoop;
   }
 }

@@ -10,6 +10,7 @@ import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
 import { FoodScene } from "../scenes/rooms/foodScene.ts";
 import { PharmaScene } from "../scenes/rooms/pharmaScene.ts";
 import { DeliveryScene } from "../scenes/rooms/deliveryScene.ts";
+import { ASSET_MANAGER, MSG_SERVICE } from "../main.ts";
 
 /**
  * Represents concrete level data/parameters
@@ -26,7 +27,8 @@ export function loadLevelOne(
   gameEngine: GameEngine,
   sceneManager: SceneManager,
   ctx: CanvasRenderingContext2D,
-  inventoryManager: InventoryManager
+  inventoryManager: InventoryManager,
+  orderLoop: OrderDeliveryLoop
 ) {
   // Create rooms
   const pharmaScene = new PharmaScene(gameEngine);
@@ -46,7 +48,7 @@ export function loadLevelOne(
   sceneManager.loadScene(pharmaScene.getRoomId(), pharmaScene);
   
   // Add order loop
-  const orderLoop = new OrderDeliveryLoop(
+  orderLoop.init(
     gameEngine.getGameContext().gameTime,
     levelParams.duration,
     levelParams.orderPromptVariability,
@@ -56,21 +58,14 @@ export function loadLevelOne(
   );
   sceneManager.addLevelEntity(orderLoop);
 
-  const orderDisplayEntity = new OrderDisplayEntity(
-    720,
-    ctx.canvas.height - 96,
-    orderLoop
-  );
-  sceneManager.addUIEntity(orderDisplayEntity);
-
-  // Register the order loop as a listener of the inventory
-  inventoryManager.subscribe(orderLoop);
-
   // Add boss satisfaction manager
   const bossSatisfaction = new BossSatisfaction(orderLoop);
   sceneManager.addLevelEntity(bossSatisfaction);
   const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(900, 30, bossSatisfaction);
   sceneManager.addUIEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
+
+  MSG_SERVICE.queueMessage("SHIFT 1");
+  MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }
   
 
