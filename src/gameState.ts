@@ -4,7 +4,8 @@ import SceneManager from "./sceneManager.ts";
 import { ASSET_MANAGER, MSG_SERVICE } from "./gamefiles/main.ts";
 import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEntity.ts";
 import { PlayerController } from "./gamefiles/player/playerController.ts";
-import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
+//import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
+import { levelLoaders } from "./gamefiles/levels/levelLoaders.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
@@ -27,8 +28,14 @@ export class GameState {
   private orderLoop: OrderDeliveryLoop;
   private player: PlayerController;
 
+  private levelNumber: number;
+  private levelActive: boolean;
+
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
     this.gsEventTrigger = new GameStateEventTrigger(this);
+
+    this.levelNumber = 0; // 0 based level number to load
+    this.levelActive = false;
     
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
@@ -51,7 +58,12 @@ export class GameState {
     this.loadState();
 
     /* Load level */
-    loadLevelOne(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
+    // Load the function reference from the list of levels, then call it to load the level
+    const levelLoadProcedure = levelLoaders[0];
+    if (levelLoadProcedure) {
+      levelLoadProcedure(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
+      this.levelActive = true;
+    }
   }
 
   /**
@@ -125,10 +137,30 @@ export class GameState {
     if (eventType === LEVEL_OVER) {
       console.log("Received state change assertion: ", eventType);
       MSG_SERVICE.queueMessage("LEVEL OVER");
+
+      // Update level state (move to next level, but set it to false untila after load)
+      this.levelNumber = this.levelNumber + 1;
+      this.levelActive = false;
+
       const loadStuff = () => {
         this.cleanState();
         this.loadState();
-        loadLevelOne(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop);
+
+        // Load the function reference from the list of levels, then call it to load the level
+        if (!this.levelActive) {
+          if (this.levelNumber < levelLoaders.length) {
+            const levelLoadProcedure = levelLoaders[this.levelNumber];
+            if (levelLoadProcedure) {
+              levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop);
+              this.levelActive = true;
+            }
+          } else {
+            MSG_SERVICE.queueMessage("The game is over.");
+            setTimeout(() => {
+              this.cleanState();
+            }, 3000);
+          }
+        }
       }
 
       setTimeout(() => {
