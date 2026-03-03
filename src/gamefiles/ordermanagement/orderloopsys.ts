@@ -1,5 +1,5 @@
 import { GameContext } from "../../classinterfaces.ts";
-import { GameState } from "../../gameState.ts";
+import { GameStateEventTrigger, LEVEL_OVER } from "../../gameStateEventTrigger.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
@@ -37,12 +37,13 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   private allowedItems: ItemType[];
 
   private observers: Observer[];
+  private sceneTrigger: GameStateEventTrigger;
 
   /**
    * Initialize everything to null or 0.
    * Use init to initialize with proper values.
    */
-  constructor() {
+  constructor(sceneTrigger: GameStateEventTrigger) {
 
     // explicit call to super
     super();
@@ -63,6 +64,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     this.allowedItems = [];
 
     this.observers = [];
+    this.sceneTrigger = sceneTrigger;
   }
 
   /**
@@ -205,6 +207,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       } else {
         // stop the loop system, fire level end event
         this.isRunning = false;
+        this.sceneTrigger.assertChange(null, LEVEL_OVER);
       }
     }
   }

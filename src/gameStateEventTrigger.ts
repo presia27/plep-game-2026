@@ -1,3 +1,4 @@
+import { GameState } from "./gameState.ts";
 
 /**
  * Allows inverted control-flow
@@ -15,17 +16,21 @@
  * @author Preston Sia (presia27)
  */
 export class GameStateEventTrigger {
-  private actionHandler: (data: any, eventType: string) => void;
+  private gameState: GameState;
 
   /**
    * 
    * @param actionFunction Reference to a function that should handle the change
    */
-  constructor(actionFunction: (data: any, eventType: string) => void) {
-    this.actionHandler = actionFunction;
+  constructor(gameState: GameState) {
+    this.gameState = gameState;
   }
 
   public assertChange(data: any, eventType: string) {
-    this.actionHandler(data, eventType);
+    this.gameState.stateChangeHandler(data, eventType);
   }
 }
+
+/* Event types */
+export const LEVEL_OVER = "LEVEL_OVER";
+export const NEXT_SCENE = "NEXT_SCENE";

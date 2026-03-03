@@ -1,14 +1,14 @@
 import GameEngine from "./gameengine.ts";
 import { InventoryManager } from "./gamefiles/inventory/inventoryManager.ts";
 import SceneManager from "./sceneManager.ts";
-import { ASSET_MANAGER } from "./gamefiles/main.ts";
+import { ASSET_MANAGER, MSG_SERVICE } from "./gamefiles/main.ts";
 import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEntity.ts";
 import { PlayerController } from "./gamefiles/player/playerController.ts";
 import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
-import { GameStateEventTrigger } from "./gameStateEventTrigger.ts";
+import { GameStateEventTrigger, LEVEL_OVER } from "./gameStateEventTrigger.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -19,6 +19,7 @@ export const INVENTORY_MAX_SLOTS = 6;
  * @author Luke Willis, Claude Sonnet 4.5, Preston Sia
  */
 export class GameState {
+  private gsEventTrigger: GameStateEventTrigger;
   private gameEngine: GameEngine;
   private sceneManager: SceneManager;
   private ctx: CanvasRenderingContext2D;
@@ -26,7 +27,7 @@ export class GameState {
   private orderLoop: OrderDeliveryLoop;
 
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
-    const gsEventTrigger = new GameStateEventTrigger(this.stateChangeHandler);
+    this.gsEventTrigger = new GameStateEventTrigger(this);
     
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
@@ -34,7 +35,7 @@ export class GameState {
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
 
     /* Initialize the order loop (levels will initialize them) */
-    this.orderLoop = new OrderDeliveryLoop();
+    this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
     // Register the order loop as a listener of the inventory
     this.inventoryManager.subscribe(this.orderLoop);
 
@@ -82,12 +83,24 @@ export class GameState {
   }
 
   public stateChangeHandler(data: any, eventType: string) {
+    if (eventType === LEVEL_OVER) {
+      console.log("Received state change assertion: The level is over");
+      MSG_SERVICE.queueMessage("LEVEL OVER");
+      const loadStuff = () => {
+        this.inventoryManager.clearItems();
+        loadLevelOne(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop);
+      }
 
+      setTimeout(() => {
+        loadStuff();
+      }, 3000);
+    }
   }
 
   public reset(): void {
+    console.log("from gs reset: this should not be called");
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
-    this.orderLoop = new OrderDeliveryLoop();
+    this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
   }
 
   public getInventoryManager(): InventoryManager {
