@@ -71,7 +71,10 @@ export class BaseRoomScene implements IScene {
       player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition(this.roomData.defaultSpawn);
+        movementComponent.setPosition({
+          x: this.roomData.defaultSpawn.x,
+          y: this.roomData.defaultSpawn.y
+        });
       }
     } else {
       player = null;
@@ -165,7 +168,10 @@ export class BaseRoomScene implements IScene {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition(this.roomData.defaultSpawn);
+        movementComponent.setPosition({
+          x: this.roomData.defaultSpawn.x,
+          y: this.roomData.defaultSpawn.y
+        });
       }
     }
 
