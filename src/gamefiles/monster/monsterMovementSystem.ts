@@ -34,14 +34,14 @@ export class MonsterMovementSystem implements IComponent {
         */
        this.moveToward(playerPos.x, playerPos.y, direction);
         
-        if (this.isMovingUp())
-            direction.y -= 1;
-        else if (this.isMovingDown())
-            direction.y +=1;
-        else if (this.isMovingRight())
-            direction.x += 1;
-        else if (this.isMovingLeft())
-            direction.x -=1;
+        // if (this.isMovingUp())
+        //     direction.y -= 1;
+        // else if (this.isMovingDown())
+        //     direction.y +=1;
+        // else if (this.isMovingRight())
+        //     direction.x += 1;
+        // else if (this.isMovingLeft())
+        //     direction.x -=1;
     }
 
     public moveToward(targetX: number, targetY: number, direction: {x: number, y: number}): void{
@@ -64,13 +64,13 @@ export class MonsterMovementSystem implements IComponent {
 
     // NOTE: NOT SURE IF THIS IS THE RIGHT WAY TO DO THIS
     public isMovingUp(): boolean {
-        if (this.movementComponent.getCurrentDirection().y > 0)
+        if (this.movementComponent.getCurrentDirection().y < 0)
             return true;
         else
             return false;
     }
     public isMovingDown(): boolean {
-        if (this.movementComponent.getCurrentDirection().y < 0)
+        if (this.movementComponent.getCurrentDirection().y > 0)
             return true;
         else
             return false;

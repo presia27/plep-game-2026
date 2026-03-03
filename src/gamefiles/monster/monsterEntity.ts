@@ -48,6 +48,7 @@ export class MonsterEntity extends Entity {
     // super.addComponent(monsterBoundSize);
     super.addComponent(monsterBoundingBox);
     super.addComponent(monsterCollisionHandler);
+    super.addComponent(monsterMovementSys);
 
     const monsterSprite = assetManager.getImageAsset("monster");
     if (monsterSprite === null) {

@@ -9,7 +9,7 @@ const X_START: number = 0;
 const Y_START: number = 0;
 const Y_OFFSET: number = 20;
 const FRAME_COUNT: number = 4;
-const FRAME_DUR: number = 0.4; // was set to 0.2 for player
+const FRAME_DUR: number = 0.2; // was set to 0.2 for player
 const WIDTH: number = 20
 const HEIGHT: number = 19;
 const MONSTER_SCALE: number = 5;
@@ -124,12 +124,12 @@ export class MonsterSpriteRenderer implements IRenderer {
     if (isMoving) {
       if (down) {
         this.currentDirection = 0; // DOWN
+      } else if (left) {
+        this.currentDirection = 3; // LEFT
       } else if (right) {
         this.currentDirection = 1; // RIGHT
       } else if (up) {
         this.currentDirection = 2; // UP
-      } else if (left) {
-        this.currentDirection = 3; // LEFT
       }
     }
     
