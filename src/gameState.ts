@@ -8,6 +8,7 @@ import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
+import { GameStateEventTrigger } from "./gameStateEventTrigger.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -25,6 +26,8 @@ export class GameState {
   private orderLoop: OrderDeliveryLoop;
 
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
+    const gsEventTrigger = new GameStateEventTrigger(this.stateChangeHandler);
+    
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
     this.ctx = ctx;
@@ -76,6 +79,10 @@ export class GameState {
       this.orderLoop
     );
     this.sceneManager.addUIEntity(orderDisplayEntity);
+  }
+
+  public stateChangeHandler(data: any, eventType: string) {
+
   }
 
   public reset(): void {

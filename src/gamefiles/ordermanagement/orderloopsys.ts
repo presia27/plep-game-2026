@@ -3,7 +3,13 @@ import { GameState } from "../../gameState.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
-import { OBS_INVENTORY_CHANGE, OBS_ORDER_COMPLETE, OBS_NEW_ACTIVE_ORDER, Observable, Observer } from "../../observerinterfaces.ts";
+import {
+  OBS_INVENTORY_CHANGE,
+  OBS_ORDER_COMPLETE,
+  OBS_NEW_ACTIVE_ORDER,
+  Observable,
+  Observer
+} from "../../observerinterfaces.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -15,6 +21,7 @@ const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed 
  * @author Preston Sia
  */
 export class OrderDeliveryLoop extends Entity implements Observer, Observable {
+  private isRunning: boolean;
   private startTime: number;
   private duration: number;
   private promptIntervalFactor: number;
@@ -41,6 +48,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     super();
 
     // Set to null or 0; init logic moved to the init method
+    this.isRunning = false;
     this.startTime = 0;
     this.duration = 0;
     this.promptIntervalFactor = 0;
@@ -84,6 +92,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       throw new Error("The number of orders must be less than " + (MAX_ORDERS_PERCENT_OF_TIME * 100) + "% of the number of seconds passed in")
     }
 
+    this.isRunning = true;
     this.startTime = startTime;
     this.duration = duration;
     this.promptIntervalFactor = Math.min(promptIntervalFactor, MAX_ORDER_PROMPT_FREQ);
@@ -168,29 +177,34 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   public override update(context: GameContext): void {
     super.update(context);
 
-    const currentTime = context.gameTime;
-    this.lastClockTime = currentTime;   // update field so that time is accessible
+    if (this.isRunning) {
+      const currentTime = context.gameTime;
+      this.lastClockTime = currentTime;   // update field so that time is accessible
 
-    if (currentTime < this.startTime + this.duration) {
+      if (currentTime < this.startTime + this.duration) {
 
-      const nextTime = this.promptTimes[this.promptTimes.length - 1];
-      if (Math.floor(currentTime) === nextTime) {
-        this.promptTimes.pop();
+        const nextTime = this.promptTimes[this.promptTimes.length - 1];
+        if (Math.floor(currentTime) === nextTime) {
+          this.promptTimes.pop();
 
-        // load the next order
-        const nextOrder: Order | undefined = this.inactiveOrders.shift();
-        if (nextOrder !== undefined) {
-          // notify if the pushed order will end up at the front of the queue
-          if (this.activeOrders.length === 0) {
-            this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);
-          }
+          // load the next order
+          const nextOrder: Order | undefined = this.inactiveOrders.shift();
+          if (nextOrder !== undefined) {
+            // notify if the pushed order will end up at the front of the queue
+            if (this.activeOrders.length === 0) {
+              this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);
+            }
 
-          this.activeOrders.push(nextOrder);
-          nextOrder.setArrivalTime(Math.floor(currentTime));
-          if (context.debug) {
-            console.log(nextOrder);
+            this.activeOrders.push(nextOrder);
+            nextOrder.setArrivalTime(Math.floor(currentTime));
+            if (context.debug) {
+              console.log(nextOrder);
+            }
           }
         }
+      } else {
+        // stop the loop system, fire level end event
+        this.isRunning = false;
       }
     }
   }
