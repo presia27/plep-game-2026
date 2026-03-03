@@ -120,7 +120,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
     if (other instanceof DeliveryController) {
       const customer = other as DeliveryController;
 
-      if (this.inputSys.isActionActiveSingle(InputAction.FULFIL)) {
+      if (this.inputSys.isActionActiveSingle(InputAction.FULFILL)) {
         const currentItems = this.inventoryMgr.getAllItems();
         if (currentItems.size > 0 && this.orderLoop.getCurrentActiveOrder()) {
           this.orderLoop.deliverOrder(currentItems);
