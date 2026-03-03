@@ -112,6 +112,24 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     this.promptTimes = this.generateTimes();
   }
 
+  public reset() {
+    this.isRunning = false;
+    this.startTime = 0;
+    this.duration = 0;
+    this.promptIntervalFactor = 0;
+    this.totalOrders = 0;
+    this.inactiveOrders = [];
+    this.activeOrders = [];
+    this.doneOrders = [];
+    this.orderProgress = new Map();
+    this.lastClockTime = 0;
+    this.promptTimes = [];
+    this.totalItemVariety = 0;
+    this.allowedItems = [];
+
+    this.observers = [];
+  }
+
   /** Receive observer updates on inventory changes */
   public observerUpdate(data: any, propertyName: string): void {
     if (propertyName === OBS_INVENTORY_CHANGE) {

@@ -25,6 +25,7 @@ export class GameState {
   private ctx: CanvasRenderingContext2D;
   private inventoryManager: InventoryManager;
   private orderLoop: OrderDeliveryLoop;
+  private player: PlayerController;
 
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
     this.gsEventTrigger = new GameStateEventTrigger(this);
@@ -34,23 +35,20 @@ export class GameState {
     this.ctx = ctx;
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
 
-    /* Initialize the order loop (levels will initialize them) */
+    /* Initialize the order loop */
     this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
-    // Register the order loop as a listener of the inventory
-    this.inventoryManager.subscribe(this.orderLoop);
 
-    this.initDisplayEntities();   // load display entities
-
-    /* Add the player */
-    const player = new PlayerController(
+    /* Initialize the player */
+    this.player = new PlayerController(
       ASSET_MANAGER,
       gameEngine.getInputSystem(),
       {x: 0, y: 0}, 5,
       this.inventoryManager,
       this.orderLoop
     );
-    sceneManager.addLevelEntity(player);
-    gameEngine.getCollisionSystem().addEntity(player);
+
+    // Load the initialized classes into their respective places
+    this.loadState();
 
     /* Load level */
     loadLevelOne(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
@@ -82,12 +80,54 @@ export class GameState {
     this.sceneManager.addUIEntity(orderDisplayEntity);
   }
 
+  /**
+   * Prepare for a level or screen transition by clearing
+   * out scenes and entities.
+   * 
+   * Scenes and entities need to be cleared out, but this clears
+   * out the player, order loop, and display entities as well.
+   * They need to be reloaded after being cleared, but not
+   * re-instantiated.
+   */
+  public cleanState() {
+    this.inventoryManager.clearItems();
+    this.sceneManager.resetAll();
+    this.orderLoop.reset();
+    this.gameEngine.getCollisionSystem().clearEntities();
+  }
+
+  /**
+   * Prepares for a level or screen transition by loading existing
+   * entities such as the player and order loop.
+   * 
+   * Scenes and entities need to be cleared out, but this clears
+   * out the player, order loop, and display entities as well.
+   * They need to be reloaded after being cleared, but not
+   * re-instantiated.
+   */
+  public loadState() {
+    this.inventoryManager.subscribe(this.orderLoop);
+    this.initDisplayEntities();   // load display entities
+    this.sceneManager.addLevelEntity(this.player);
+    this.gameEngine.getCollisionSystem().addEntity(this.player);
+  }
+
+  /**
+   * Perform a hard reset of the game state system.
+   */
+  public reset(): void {
+    this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
+    this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
+    this.sceneManager.resetAll();
+  }
+
   public stateChangeHandler(data: any, eventType: string) {
     if (eventType === LEVEL_OVER) {
-      console.log("Received state change assertion: The level is over");
+      console.log("Received state change assertion: ", eventType);
       MSG_SERVICE.queueMessage("LEVEL OVER");
       const loadStuff = () => {
-        this.inventoryManager.clearItems();
+        this.cleanState();
+        this.loadState();
         loadLevelOne(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop);
       }
 
@@ -95,12 +135,6 @@ export class GameState {
         loadStuff();
       }, 3000);
     }
-  }
-
-  public reset(): void {
-    console.log("from gs reset: this should not be called");
-    this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
-    this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
   }
 
   public getInventoryManager(): InventoryManager {
