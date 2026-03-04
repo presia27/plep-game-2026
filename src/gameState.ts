@@ -13,6 +13,7 @@ import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.t
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
+import { StartScreenScene } from "./gamefiles/scenes/startScreen/startScreenScene.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -60,13 +61,19 @@ export class GameState {
     // Load the initialized classes into their respective places
     this.loadState();
 
-    /* Load level */
+    /* Load level or scene */
     // Load the function reference from the list of levels, then call it to load the level
-    const levelLoadProcedure = levelLoaders[0];
-    if (levelLoadProcedure) {
-      levelLoadProcedure(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
-      this.levelActive = true;
-    }
+    // const levelLoadProcedure = levelLoaders[0];
+    // if (levelLoadProcedure) {
+    //   levelLoadProcedure(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
+    //   this.levelActive = true;
+    // }
+    this.sceneManager.loadScene("start", new StartScreenScene(
+      this.gsEventTrigger,
+      this.gameEngine.getInputSystem(),
+      this.ctx.canvas.width,
+      this.ctx.canvas.height
+    ));
   }
 
   /**

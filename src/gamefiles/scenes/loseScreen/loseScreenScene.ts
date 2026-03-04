@@ -20,7 +20,7 @@ export class LoseScreenScene implements IScene {
   }
 
   onResume(sceneManager: SceneManager): void {
-    throw new Error("Method not implemented.");
+    
   }
 
   onExit(): void {
