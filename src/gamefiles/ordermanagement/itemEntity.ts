@@ -10,8 +10,9 @@ import { ItemLifecycle } from "./itemLifecycle.ts";
 import { ItemRenderer } from "./itemRenderer.ts";
 import { getItemMetadata, ItemType } from "./itemTypes.ts";
 
-export const ITEM_WIDTH = 60;
-export const ITEM_HEIGHT = 58;
+export const ITEM_WIDTH = 8; //60;
+export const ITEM_HEIGHT = 8; //58;
+export const ITEM_SCALE = 5;
 /** 
  * multiplies the with and height by this number to determine the bounds within
  * which a player can pickup items
@@ -35,14 +36,14 @@ export class ItemEntity extends Entity {
 
     this.itemType = itemType;
 
-    const itemSize = new BasicSize(ITEM_WIDTH, ITEM_HEIGHT, 1);
+    const itemSize = new BasicSize(ITEM_WIDTH, ITEM_HEIGHT, ITEM_SCALE);
     const itemPosition = new staticPositionComponent(positionXY);
-    const pickupSize = new BasicSize(ITEM_WIDTH, ITEM_HEIGHT, PICKUP_RADIUS_MULTIPLIER);
+    const pickupSize = new BasicSize(ITEM_WIDTH * ITEM_SCALE, ITEM_HEIGHT * ITEM_SCALE, PICKUP_RADIUS_MULTIPLIER);
     const pickupBounds = new BoundingBox(
       itemPosition,
       pickupSize,
-      -((ITEM_WIDTH * PICKUP_RADIUS_MULTIPLIER - ITEM_WIDTH) / 2),
-      -((ITEM_HEIGHT * PICKUP_RADIUS_MULTIPLIER - ITEM_HEIGHT) / 2));
+      -(((ITEM_WIDTH * ITEM_SCALE) * PICKUP_RADIUS_MULTIPLIER - (ITEM_WIDTH * ITEM_SCALE)) / 2),
+      -(((ITEM_HEIGHT * ITEM_SCALE) * PICKUP_RADIUS_MULTIPLIER - (ITEM_HEIGHT * ITEM_SCALE)) / 2));
     
     const lifecycle = new ItemLifecycle();
 
@@ -53,7 +54,7 @@ export class ItemEntity extends Entity {
 
     super.addComponent(lifecycle);
 
-    const itemSprite = ASSET_MANAGER.getImageAsset("items");
+    const itemSprite = ASSET_MANAGER.getImageAsset("items2");
     if (itemSprite === null) {
       throw new Error("Failed to load spritesheet for items");
     }

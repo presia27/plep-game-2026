@@ -49,7 +49,7 @@ export class InventoryRenderer implements IRenderer {
     const totalSize = this.inventoryMgr.getMaxItems();
 
     // Get inventory sprites
-    const itemSprite = ASSET_MANAGER.getImageAsset("items");
+    const itemSprite = ASSET_MANAGER.getImageAsset("items2");
     if (itemSprite === null) {
       throw new Error("Inventory Renderer: Failed to load spritesheet for items");
     }

@@ -1,69 +1,179 @@
 import { GameContext, IRenderer } from "../../classinterfaces.ts";
 import { BossSatisfaction } from "./bossSatisfactionController.ts";
 
-const PANELWIDTH = 300;
-const PANELHEIGHT = 45;
-
+const PANELWIDTH: number = 300;
+const PANELHEIGHT: number = 37;
+const BOSS_ICON_WIDTH: number = 20;
+const BOSS_ICON_HEIGHT: number = 23;
 
 export class SatisfactionRenderer implements IRenderer {
   private posX: number;
   private posY: number;
   private bossManager: BossSatisfaction;
-
+  private bossIcons: HTMLImageElement;
+  private bossBarSprite: HTMLImageElement;
+  private arrow: HTMLImageElement;
   /**
    * 
    * @param posX X position to draw on the canvas
    * @param posY Y position to draw on the canvas
    * @param bossManager Instance of BossSatisfaction holding the satisfaction state from which to draw from
    */
-  constructor(posX: number, posY: number, bossManager: BossSatisfaction) {
+  constructor(posX: number, posY: number, bossManager: BossSatisfaction, bossIcons: HTMLImageElement, bossBarSprite: HTMLImageElement, arrow: HTMLImageElement) {
     this.posX = posX;
     this.posY = posY;
     this.bossManager = bossManager;
+    this.bossIcons = bossIcons;
+    this.bossBarSprite = bossBarSprite;
+    this.arrow = arrow;
   }
 
   draw(context: GameContext): void {
     const ctx = context.ctx;
-
     ctx.save();
 
-    // Draw background panel
-    // Create linear gradient
-    const grad = ctx.createLinearGradient(this.posX, 0, this.posX + PANELWIDTH, 0);
-    grad.addColorStop(0, "#730906");
-    grad.addColorStop(1, "#023e2b");
+    // draw boss sprite bar
+    ctx.drawImage(
+      this.bossBarSprite,
+      0, 0,
+      PANELWIDTH, PANELHEIGHT,
+      this.posX, this.posY + 7,
+      PANELWIDTH, PANELHEIGHT
+    )
 
-    // Fill rectangle with gradient
-    ctx.fillStyle = grad;
-    ctx.fillRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
-
-    // Draw border
-    ctx.strokeStyle = 'rgb(233, 151, 151)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(this.posX, this.posY, PANELWIDTH, PANELHEIGHT);
-
+    // use custom font
+    const pixelFont = new FontFace(
+      "Jersey-20",
+      'url("../../../assets/Jersey20-Regular.ttf")'
+    );
+    document.fonts.add(pixelFont);
+    pixelFont.load().then(
+      () => {
+        console.log("Custom font loaded");
+      },
+      (err) => {
+        console.error("Font not loaded properly.", err);
+      }
+    );
+    
     // Draw title
     ctx.fillStyle = 'black';
-    ctx.font = 'bold 16px Arial';
-    ctx.fillText('Boss Satisfaction', this.posX, this.posY - 10);
+    ctx.font = 'bold 16px "Jersey-20", Arial';
+    ctx.fillText('Boss Satisfaction', this.posX + 5, this.posY + 2);
 
     // Get satisfaction state
     const satisfaction = this.bossManager.getSatisfaction();
 
-    // Draw satisfaction number
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 18px Arial';
-    ctx.fillText(Math.ceil(satisfaction).toString(), this.posX + PANELWIDTH - 30, this.posY + PANELHEIGHT - 20);
+    
+
+    // Draw arrow displaying current satisfaction
+    if (satisfaction > 0) {
+      ctx.drawImage(
+        this.arrow,
+        34, 1,
+        9, 9,
+        (this.posX + PANELWIDTH) - 3 * (100 - satisfaction), this.posY + PANELHEIGHT + 7,
+        9, 9
+      )
+      // Draw satisfaction number
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 18px "Jersey-20", Arial';
+      ctx.fillText(Math.ceil(satisfaction).toString(), (this.posX + PANELWIDTH) - 3 * (100 - satisfaction), this.posY + PANELHEIGHT - 5);
+    }
+
+    // Draw boss icon next to satisfaction bar
+    // note: ik this is very redundant but idc i am tired ill fix it later (maybe)
+    if (satisfaction >= 90) { // pleased
+      ctx.drawImage(
+      this.bossIcons,
+      1, 1,
+      BOSS_ICON_WIDTH,
+      BOSS_ICON_HEIGHT,
+      this.posX - 50,
+      this.posY,
+      BOSS_ICON_WIDTH * 2,
+      BOSS_ICON_HEIGHT * 2,
+    );
+    } else if (satisfaction >= 80) { // neutral
+      ctx.drawImage(
+      this.bossIcons,
+      23, 1,
+      BOSS_ICON_WIDTH,
+      BOSS_ICON_HEIGHT,
+      this.posX - 50,
+      this.posY,
+      BOSS_ICON_WIDTH * 2,
+      BOSS_ICON_HEIGHT * 2,
+    );
+    } else if (satisfaction >= 60) { // annoyed
+      ctx.drawImage(
+      this.bossIcons,
+      45, 1,
+      BOSS_ICON_WIDTH,
+      BOSS_ICON_HEIGHT,
+      this.posX - 50,
+      this.posY,
+      BOSS_ICON_WIDTH * 2,
+      BOSS_ICON_HEIGHT * 2,
+    );
+    } else if (satisfaction >= 40) { // angry
+      ctx.drawImage(
+      this.bossIcons,
+      67, 1,
+      BOSS_ICON_WIDTH,
+      BOSS_ICON_HEIGHT,
+      this.posX - 50,
+      this.posY,
+      BOSS_ICON_WIDTH * 2,
+      BOSS_ICON_HEIGHT * 2,
+    );
+    } else if (satisfaction >= 20) { // rage
+      ctx.drawImage(
+      this.bossIcons,
+      89, 1,
+      BOSS_ICON_WIDTH,
+      BOSS_ICON_HEIGHT,
+      this.posX - 50,
+      this.posY,
+      BOSS_ICON_WIDTH * 2,
+      BOSS_ICON_HEIGHT * 2,
+    );
+    } else { // furious
+      ctx.drawImage(
+      this.bossIcons,
+      111, 1,
+      BOSS_ICON_WIDTH,
+      BOSS_ICON_HEIGHT,
+      this.posX - 50,
+      this.posY,
+      BOSS_ICON_WIDTH * 2,
+      BOSS_ICON_HEIGHT * 2,
+    );
+    }
 
     // Draw background panel
     if (satisfaction <= 0) {
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, 1280, 720);
-      
+
+      ctx.globalAlpha = 0.5; // lower opacity for image
+      ctx.drawImage(
+      this.bossIcons,
+      111, 1,
+      BOSS_ICON_WIDTH,
+      BOSS_ICON_HEIGHT,
+      510,
+      125,
+      BOSS_ICON_WIDTH * 17,
+      BOSS_ICON_HEIGHT * 17,
+      );
+      ctx.globalAlpha = 1; // restore global opacity
+
       ctx.fillStyle = 'white';
-      ctx.font = 'bold 40px Arial';
-      ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 150, ctx.canvas.height/2);
+        ctx.font = '40px "Jersey-20", Arial';
+        ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 250, ctx.canvas.height / 2 + 10);
     }
+
     ctx.restore();
   }
 }

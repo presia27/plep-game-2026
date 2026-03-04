@@ -4,6 +4,8 @@ import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { Order } from "../ordermanagement/order.ts";
 import { OBS_NEW_ACTIVE_ORDER, OBS_ORDER_COMPLETE, Observer } from "../../observerinterfaces.ts";
+import { SatisfactionRenderer } from "./bossSatisfactionRenderer.ts";
+import { ASSET_MANAGER } from "../main.ts";
 
 const MAX_SATISFACTION = 100; // If > MIN_SATISFACTION, the player can continue playing
 const MIN_SATISFACTION = 0; // The minimum satisfaction points, if reached, the game is over and the player loses
@@ -25,7 +27,9 @@ export class BossSatisfaction extends Entity implements Observer {
     private orderLoop: OrderDeliveryLoop;
     private activeOrder: Order | null;
 
-    constructor(orderLoop: OrderDeliveryLoop) {
+    constructor(
+        orderLoop: OrderDeliveryLoop
+    ) {
         super();
         this.orderLoop = orderLoop;
         this.satisfaction = START_SATISFACTION;
@@ -36,6 +40,17 @@ export class BossSatisfaction extends Entity implements Observer {
 
         // Register observer
         orderLoop.subscribe(this);
+        const bossSpritesheet = ASSET_MANAGER.getImageAsset("bossIcons");
+        const satisfactionBar = ASSET_MANAGER.getImageAsset("satisfactionBar");
+        const arrow = ASSET_MANAGER.getImageAsset("arrow");
+        if (bossSpritesheet === null) 
+            throw new Error("Failed to load asset for the boss icons");
+        if (satisfactionBar === null) 
+            throw new Error("Failed to load asset for the satisfaction bar sprite");
+        if (arrow === null) 
+            throw new Error("Failed to load asset for the arrow sprite");
+        const renderer = new SatisfactionRenderer(950, 20, this, bossSpritesheet, satisfactionBar, arrow);
+        super.setRenderer(renderer);
     }
 
     public override update(context: GameContext): void {
