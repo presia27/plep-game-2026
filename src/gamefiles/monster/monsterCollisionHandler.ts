@@ -7,6 +7,7 @@ import { ShelfController } from "../shelves/shelfController.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { PlayerController } from "../player/playerController.ts";
 import { MonsterMovementSystem } from "./monsterMovementSystem.ts";
+import { UpdatePoint } from "./updatePointEntity.ts";
 
 /**
  * Monster collision handler that prevents the monster from moving through solid objects
@@ -95,6 +96,11 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
     if (other instanceof PlayerController) {
       const player = other as PlayerController;
       console.log("Monster ran into player");
+    }
+
+    if (other instanceof UpdatePoint) {
+      const updatePoint = other as UpdatePoint;
+      console.log("Monster hit update point");
     }
   }
 }

@@ -17,6 +17,7 @@ import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
+import { UpdatePoint } from "../monster/updatePointEntity.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -78,6 +79,14 @@ export class BaseRoomScene implements IScene {
           sceneManager.addEntity(monster);
           this.localEntities.push(monster);
           this.collisionSystem.addEntity(monster);
+        }
+        for (const updatePoint of this.roomData.updatePoints) {
+          const pointTrigger = new UpdatePoint(
+            updatePoint
+          );
+          this.localEntities.push(pointTrigger);
+          sceneManager.addEntity(pointTrigger);
+          this.collisionSystem.addEntity(pointTrigger);
         }
       }
     } else {

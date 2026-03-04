@@ -17,31 +17,7 @@ export class MonsterMovementSystem implements IComponent {
         const direction = {x: 0, y: 0};
         const playerPos = this.playerPosition.getPosition();
 
-        
-        /*
-        let opposite: number = playerPos.y - this.movementComponent.getPosition().y;
-        let adjacent: number = playerPos.x - this.movementComponent.getPosition().x;
-        let angle: number = Math.atan(opposite/adjacent) * 180 / Math.PI;
-        if (this.movementComponent.getPosition().x > playerPos.x)
-            angle += 180;
-
-        let vx = this.movementComponent.getVelocity().x * Math.cos(angle);
-        let vy = this.movementComponent.getVelocity().y * Math.sin(angle);
-
-        let magnitude = Math.sqrt(vx * vx + vy * vy);
-        direction.x += vx/magnitude;
-        direction.y += vy/magnitude;
-        */
        this.moveToward(playerPos.x, playerPos.y, direction);
-        
-        // if (this.isMovingUp())
-        //     direction.y -= 1;
-        // else if (this.isMovingDown())
-        //     direction.y +=1;
-        // else if (this.isMovingRight())
-        //     direction.x += 1;
-        // else if (this.isMovingLeft())
-        //     direction.x -=1;
     }
 
     public moveToward(targetX: number, targetY: number, direction: {x: number, y: number}): void{
