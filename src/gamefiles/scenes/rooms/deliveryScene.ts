@@ -4,6 +4,12 @@ import { BaseRoomScene } from "../baseRoomScene.ts";
 import { DoorData, DeliveryRoom, ShelfData } from "../roomData.ts";
 
 export class DeliveryScene extends BaseRoomScene {
+  protected override getMonsterSpawnPoints(): XY[] {
+    return DeliveryRoom.monsterSpawns;
+  }
+  protected override getUpdatePoints(): XY[] {
+    return DeliveryRoom.updatePoints;
+  }
   protected override getPlayerSpawnPoint(): XY {
     return DeliveryRoom.defaultSpawn;
   }
