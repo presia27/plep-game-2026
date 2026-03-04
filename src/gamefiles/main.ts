@@ -1,7 +1,7 @@
 import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
-import { deliveryAssets, environmentAssets, itemAssets, playerAssets } from "./assetlist.ts";
+import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
 import { GameState } from "../gameState.ts";
 import { MessengerService } from "../messengerService.ts";
@@ -29,6 +29,8 @@ export const MSG_SERVICE = new MessengerService();
 
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+monsterAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+bossAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
