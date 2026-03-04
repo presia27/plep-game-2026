@@ -13,6 +13,7 @@ import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { DoorData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
+import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
@@ -49,6 +50,7 @@ export abstract class BaseRoomScene implements IScene {
   protected abstract getDoorTriggers(): DoorData[];
   abstract getAllowedItems(): ItemType[];
   abstract getRoomId(): string;
+  abstract getDeliveryEntityPosition(): XY | null;
 
   /**
    * Loads scene data and adds them as actual instances
@@ -94,17 +96,7 @@ export abstract class BaseRoomScene implements IScene {
       }
       const shelf = new ShelfController(shelfData.position, shelfSprite, shelfData.shelfNum);
 
-      // add items
-      // const item = allowedItems[itemIndex]
-      // if (item) {
-      //   const roomItem = new ItemEntity(item, shelfData.position);
-      //   sceneManager.addEntity(roomItem);
-      //   this.collisionSystem.addEntity(roomItem);
-      //   this.localEntities.push(roomItem);
-      // }
-      // if (itemIndex < allowedItems.length) {
-      //   itemIndex++;
-      // }
+     
       // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.
       const numItems = allowedItems.length >= ITEM_HSHELF_POSITION.length ? ITEM_HSHELF_POSITION.length : allowedItems.length;
       const shelfItems = allowedItems.splice(0, numItems);
@@ -152,7 +144,16 @@ export abstract class BaseRoomScene implements IScene {
       }
     }
 
-    /* Place items */
+    /* Delivery Entity */
+    const deliveryPOS = this.getDeliveryEntityPosition();
+    if (deliveryPOS) {
+      const deliveryEntity = new DeliveryController(deliveryPOS, 1);
+      
+      this.localEntities.push(deliveryEntity);
+      sceneManager.addEntity(deliveryEntity);
+      this.collisionSystem.addEntity(deliveryEntity);
+
+    }
   }
 
   /**
@@ -199,5 +200,6 @@ export abstract class BaseRoomScene implements IScene {
 
   update(context: GameContext): void {}
   draw(context: GameContext): void {}
+  
   
 }

@@ -25,6 +25,7 @@ export const bossAssets: IAssetList[] = [
 
 /** All environment assets, such as shelves, desks, obstacles, background music, and more */
 export const environmentAssets: IAssetList[] = [
+  { id: "YMCAMusic", type: "audio", location: "./assets/YMCA_MIDI2.ogg" },
   { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "AllHShelves", type: "img", location: "./assets/AllHShelves.png" },
@@ -37,4 +38,7 @@ export const itemAssets: IAssetList[] = [
   { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
 ];
 
-
+/** Assets for Delivery */
+export const deliveryAssets: IAssetList [] = [
+  { id: "deliveryImage", type: "img", location: "./assets/primoChip.png"}
+];

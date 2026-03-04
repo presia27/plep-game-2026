@@ -3,6 +3,7 @@ import { Entity } from "../../entity.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { Order } from "../ordermanagement/order.ts";
+import { OBS_NEW_ACTIVE_ORDER, OBS_ORDER_COMPLETE, Observer } from "../../observerinterfaces.ts";
 import { SatisfactionRenderer } from "./bossSatisfactionRenderer.ts";
 import { ASSET_MANAGER } from "../main.ts";
 
@@ -19,7 +20,7 @@ const SUCCESSFUL_ORDER_POINTS = 10; // Satisfaction points gained per successful
  * 
  * @author Emma Szebenyi
  */
-export class BossSatisfaction extends Entity {
+export class BossSatisfaction extends Entity implements Observer {
     private satisfaction: number; // Satisfaction points, if reaches 0, the game is over and the player loses
     private decreaseRate: number; // Satisfaction points lost per second (correlates to level length)
     private errorWeight: number; // Satisfaction points lost per incorrect item delivered
@@ -37,6 +38,8 @@ export class BossSatisfaction extends Entity {
         this.errorWeight = 0;
         this.getDecreaseRate(); // log the current decrease rate for testing purposes
 
+        // Register observer
+        orderLoop.subscribe(this);
         const bossSpritesheet = ASSET_MANAGER.getImageAsset("bossIcons");
         const satisfactionBar = ASSET_MANAGER.getImageAsset("satisfactionBar");
         const arrow = ASSET_MANAGER.getImageAsset("arrow");
@@ -52,11 +55,11 @@ export class BossSatisfaction extends Entity {
 
     public override update(context: GameContext): void {
         super.update(context);
-        const newActiveOrder = this.orderLoop.getCurrentActiveOrder();
-        if (newActiveOrder !== null && this.activeOrder !== newActiveOrder) { // if there is a new active order, update the active order and error weight
-            this.activeOrder = newActiveOrder;
-            this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
-        }
+        // const newActiveOrder = this.orderLoop.getCurrentActiveOrder();
+        // if (newActiveOrder !== null && this.activeOrder !== newActiveOrder) { // if there is a new active order, update the active order and error weight
+        //     this.activeOrder = newActiveOrder;
+        //     this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
+        // }
         if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
             this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
         this.getSatisfaction(); // log the current satisfaction level for testing purposes
@@ -83,6 +86,18 @@ export class BossSatisfaction extends Entity {
             this.satisfaction = MAX_SATISFACTION;
         } else if (this.satisfaction < MIN_SATISFACTION) {
             this.satisfaction = MIN_SATISFACTION;
+        }
+    }
+
+    /** Receive observer updates from order loop */
+    public observerUpdate(data: any, propertyName: string): void {
+        if (OBS_NEW_ACTIVE_ORDER === propertyName) {
+            const newOrderDataCast = data as Order;
+            this.activeOrder = newOrderDataCast;
+            this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
+        }
+        if (OBS_ORDER_COMPLETE === propertyName) {
+            
         }
     }
 
@@ -121,7 +136,6 @@ export class BossSatisfaction extends Entity {
      */
     public isGameOver(): boolean {
         if (this.satisfaction <= MIN_SATISFACTION) {
-            //console.log("Game over! Boss satisfaction has reached 0.");
             return true;
         }
         return false;
@@ -142,7 +156,6 @@ export class BossSatisfaction extends Entity {
      * @returns the current satisfaction level
      */
     public getSatisfaction(): number {
-        //console.log(`Current boss satisfaction: ${this.satisfaction}`);
         return this.satisfaction;
     }
 
@@ -152,7 +165,6 @@ export class BossSatisfaction extends Entity {
      * @returns the current decrease rate
      */
     public getDecreaseRate(): number {
-        //console.log(`Current boss satisfaction decrease rate: ${this.decreaseRate}`);
         return this.decreaseRate;
     }
 }

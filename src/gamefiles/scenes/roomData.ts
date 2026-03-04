@@ -23,6 +23,7 @@ export interface roomData {
   shelves: ShelfData[];
   doors: DoorData[];
   allowedItems: ItemType[];
+  deliveryEntityPosition?: XY;
 }
 
 export const PharmaRoom: roomData = {
@@ -43,6 +44,11 @@ export const PharmaRoom: roomData = {
       position: { x: 1200, y: 300 }, 
       size: { x: 20, y: 200 }, 
       targetSceneId: "cleaning" 
+    },
+    {
+      position: { x: 10 , y: 300 },
+      size: { x: 20 , y: 200},
+      targetSceneId: "delivery"
     }
   ],
   allowedItems: [
@@ -142,6 +148,25 @@ export const FoodRoom: roomData = {
     ItemType.PIZZA,
     ItemType.ICECREAM
   ]
+}
+export const DeliveryRoom: roomData = {
+  sceneId: "delivery",
+  defaultSpawn: { x: 350, y: 50 },
+  monsterSpawns: [],
+  updatePoints: [],
+  shelves: [
+   // { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" }
+  ],
+  doors: [
+    { 
+      position: { x: 350, y: 10 }, 
+      size: { x: 80, y: 20 }, 
+      targetSceneId: "pharma" 
+    }
+  ],
+  allowedItems: [],
+  
+  deliveryEntityPosition: { x: 50, y: 300 }
 }
 
 // housing allowed items

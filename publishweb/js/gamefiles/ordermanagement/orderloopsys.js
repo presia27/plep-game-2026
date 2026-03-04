@@ -1,5 +1,6 @@
 import { Entity } from "../../entity.js";
 import { Order } from "./order.js";
+import { OBS_INVENTORY_CHANGE } from "../../observerinterfaces.js";
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
 const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed THIS percent of the number of seconds
@@ -38,9 +39,43 @@ export class OrderDeliveryLoop extends Entity {
         this.lastPromptTime = null;
         this.totalItemVariety = totalItemVariety;
         this.allowedItems = allowedItems;
+        this.orderProgress = new Map();
         // Generate orders
         this.generateOrders(totalOrders);
         this.promptTimes = this.generateTimes();
+    }
+    /** Receive observer updates on inventory changes */
+    observerUpdate(data, propertyName) {
+        var _a;
+        if (propertyName === OBS_INVENTORY_CHANGE) {
+            const dataCast = data;
+            const currentOrder = (_a = this.activeOrders[0]) === null || _a === void 0 ? void 0 : _a.getAllItems();
+            if (currentOrder) {
+                currentOrder.forEach((value, key) => {
+                    var _a;
+                    if (dataCast.has(key)) {
+                        this.orderProgress.set(key, (_a = dataCast.get(key)) !== null && _a !== void 0 ? _a : 0);
+                    }
+                });
+                // TEMPORARILY CHECK if their equal and if so move to next order
+                // if (this.mapsAreEqual(this.orderProgress, currentOrder)) {
+                //   const currentlyActive = this.activeOrders.splice(0, 1)[0];
+                //   if (currentlyActive) this.doneOrders.push(currentlyActive);
+                // }
+            }
+        }
+    }
+    //TEMPORARY EQUAL FUNCTION
+    // private mapsAreEqual<K, V>(map1: Map<K, V>, map2: Map<K, V>): boolean {
+    //   if (map1.size !== map2.size) return false;
+    //   for (const [key, value] of map1) {
+    //     if (!map2.has(key) || map2.get(key) !== value) return false;
+    //   }
+    //   return true;
+    // }
+    /** Getter method for the user's progress on collecting the current order */
+    getOrderStatus() {
+        return this.orderProgress;
     }
     update(context) {
         super.update(context);
@@ -54,14 +89,15 @@ export class OrderDeliveryLoop extends Entity {
                 if (nextOrder !== undefined) {
                     this.activeOrders.push(nextOrder);
                     nextOrder.setArrivalTime(Math.floor(currentTime));
-                    console.log(nextOrder);
+                    if (context.debug) {
+                        console.log(nextOrder);
+                    }
                 }
             }
         }
     }
     generateOrders(quantity) {
         for (let i = 0; i < quantity; i++) {
-            // THIS IS ALL TEST CODE
             const order = new Order();
             for (let j = 0; j < this.totalItemVariety; j++) {
                 const randomItemIndex = this.generateRandom(0, this.allowedItems.length - 1);
@@ -145,7 +181,6 @@ export class OrderDeliveryLoop extends Entity {
             return (_a = this.activeOrders[0]) !== null && _a !== void 0 ? _a : null;
         }
         else {
-            console.warn("No active orders at the moment");
             return null;
         }
     }

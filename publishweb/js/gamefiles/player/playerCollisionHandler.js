@@ -81,9 +81,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
                     var _a;
                     // promise resolved, remove the item from the shelf
                     (_a = item.getComponent(BasicLifecycle)) === null || _a === void 0 ? void 0 : _a.die();
-                }, function (reject) {
-                    alert(reject);
-                });
+                }, function (reject) { });
             }
         }
     }

@@ -3,6 +3,7 @@ import { GameState } from "../../gameState.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
+import { OBS_INVENTORY_CHANGE, OBS_ORDER_COMPLETE, OBS_NEW_ACTIVE_ORDER, Observable, Observer } from "../../observerinterfaces.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -13,20 +14,51 @@ const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed 
  * 
  * @author Preston Sia
  */
-export class OrderDeliveryLoop extends Entity {
+export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   private startTime: number;
   private duration: number;
   private promptIntervalFactor: number;
   private totalOrders: number;
-  private inactiveOrders: Order[];
-  private activeOrders: Order[];
-  private doneOrders: Order[];
-  private lastPromptTime: number | null;
+  private inactiveOrders: Order[];  /* Orders waiting in queue */
+  private activeOrders: Order[];    /* Orders active in queue and require fulfilment */
+  private doneOrders: Order[];      /* Orders that have already been fulfilled */
+  /* Track the items in the inventory that match the current active order at the front of the queue */
+  private orderProgress: Map<ItemType, number>;
+  private lastClockTime: number;
   private promptTimes: number[]; // order prompts times in reverse order (treat as a stack)
   private totalItemVariety: number;
   private allowedItems: ItemType[];
 
+  private observers: Observer[];
+
   /**
+   * Initialize everything to null or 0.
+   * Use init to initialize with proper values.
+   */
+  constructor() {
+
+    // explicit call to super
+    super();
+
+    // Set to null or 0; init logic moved to the init method
+    this.startTime = 0;
+    this.duration = 0;
+    this.promptIntervalFactor = 0;
+    this.totalOrders = 0;
+    this.inactiveOrders = [];
+    this.activeOrders = [];
+    this.doneOrders = [];
+    this.orderProgress = new Map();
+    this.lastClockTime = 0;
+    this.promptTimes = [];
+    this.totalItemVariety = 0;
+    this.allowedItems = [];
+
+    this.observers = [];
+  }
+
+  /**
+   * Initialize and start the order loop with a new set of parameters.
    * 
    * @param startTime Timestamp of the start of the level
    * @param duration Length of time that the level runs for (MUST be at least 60 seconds)
@@ -36,18 +68,14 @@ export class OrderDeliveryLoop extends Entity {
    *     It should probably match the max number of items allowed in a player's inventory.
    * @param allowedItems A list of all allowed items to pick from
    */
-  constructor(
+  public init(
     startTime: number, 
     duration: number, 
     promptIntervalFactor: number, 
     totalOrders: number,
     totalItemVariety: number,
     allowedItems: ItemType[]
-  ) {
-
-    // explicit call to super
-    super();
-
+  ): void {
     if (duration < 60) {
       throw new Error("Duration must be at least 60 seconds, instead got " + duration);
     }
@@ -63,19 +91,85 @@ export class OrderDeliveryLoop extends Entity {
     this.inactiveOrders = [];
     this.activeOrders = [];
     this.doneOrders = [];
-    this.lastPromptTime = null;
+    this.lastClockTime = 0;
     this.totalItemVariety = totalItemVariety;
     this.allowedItems = allowedItems;
+    this.orderProgress = new Map();
 
     // Generate orders
     this.generateOrders(totalOrders);
     this.promptTimes = this.generateTimes();
   }
 
+  /** Receive observer updates on inventory changes */
+  public observerUpdate(data: any, propertyName: string): void {
+    if (propertyName === OBS_INVENTORY_CHANGE) {
+      const dataCast = data as Map<ItemType, number>;
+      this.orderProgress = new Map(); // use new map to ensure data freshness
+      const currentOrder = this.activeOrders[0]?.getAllItems();
+      if (currentOrder) {
+        currentOrder.forEach((value, key) => {
+          if (dataCast.has(key)) {
+            this.orderProgress.set(key, dataCast.get(key) ?? 0);
+          }
+        });
+      }
+    }
+  }
+
+  private calculateAccuracy(correctOrder: Order, itemsToEvaluate: Map<ItemType, number>): number {
+    /** Calculate correctness */
+      let biggerMap;
+      let smallerMap;
+      if (correctOrder.getAllItems().size >= itemsToEvaluate.size) {
+        biggerMap = correctOrder.getAllItems();
+        smallerMap = itemsToEvaluate;
+      } else {
+        biggerMap = itemsToEvaluate;
+        smallerMap = correctOrder.getAllItems();
+      }
+
+      let totalCorrectCount = 0;
+      let incorrectCount = 0;
+
+      for (const [key, value] of biggerMap) {
+        totalCorrectCount += value;
+        if (!smallerMap.has(key)) {
+          incorrectCount += value;
+        } else if (smallerMap.has(key) && smallerMap.get(key) !== value) {
+          incorrectCount = incorrectCount + (Math.abs(value - (smallerMap.get(key) ?? 0)));
+        }
+      }
+
+      return(Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount;
+  }
+
+  public deliverOrder(items: Map<ItemType, number>): void {
+    const currentlyActive = this.activeOrders.splice(0, 1)[0];
+    if (currentlyActive) {
+      this.doneOrders.push(currentlyActive);
+      currentlyActive.setFulfillTime(this.lastClockTime);
+      // send alert
+      this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
+      if (this.getCurrentActiveOrder() !== null)
+        this.notifyObservers(this.getCurrentActiveOrder(), OBS_NEW_ACTIVE_ORDER);
+    
+      /* Check accuracy */
+      currentlyActive.setFulfillAccuracy(this.calculateAccuracy(currentlyActive, items));
+      console.log(currentlyActive.getFulfillAccuracy());
+    }
+  }
+
+  /** Getter method for the user's progress on collecting the current order */
+  public getOrderStatus(): Map<ItemType, number> {
+    return this.orderProgress;
+  }
+
   public override update(context: GameContext): void {
     super.update(context);
 
     const currentTime = context.gameTime;
+    this.lastClockTime = currentTime;   // update field so that time is accessible
 
     if (currentTime < this.startTime + this.duration) {
 
@@ -86,17 +180,35 @@ export class OrderDeliveryLoop extends Entity {
         // load the next order
         const nextOrder: Order | undefined = this.inactiveOrders.shift();
         if (nextOrder !== undefined) {
+          // notify if the pushed order will end up at the front of the queue
+          if (this.activeOrders.length === 0) {
+            this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);
+          }
+
           this.activeOrders.push(nextOrder);
           nextOrder.setArrivalTime(Math.floor(currentTime));
-          console.log(nextOrder);
+          if (context.debug) {
+            console.log(nextOrder);
+          }
         }
       }
     }
   }
 
+  public subscribe(observer: Observer): void {
+    this.observers.push(observer);
+  }
+  public unsubscribe(observer: Observer): void {
+    this.observers = this.observers.filter(obs => obs !== observer);
+  }
+  public notifyObservers(data: any, notificationType: string): void {
+    for (const observer of this.observers) {
+      observer.observerUpdate(data, notificationType);
+    }
+  }
+
   private generateOrders(quantity: number) {
     for (let i = 0; i < quantity; i++) {
-      // THIS IS ALL TEST CODE
       const order = new Order();
 
       for (let j = 0; j < this.totalItemVariety; j++) {
@@ -195,7 +307,6 @@ export class OrderDeliveryLoop extends Entity {
     if (this.activeOrders.length > 0) {
       return this.activeOrders[0] ?? null;
     } else {
-      console.warn("No active orders at the moment");
       return null;
     }
   }
