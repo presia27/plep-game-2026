@@ -1,18 +1,18 @@
 import { GameContext, IScene } from "../../../classinterfaces.ts";
-import { GameStateEventTrigger, NEXT_SCENE } from "../../../gameStateEventTrigger.ts";
+import { GameStateEventTrigger } from "../../../gameStateEventTrigger.ts";
 import SceneManager from "../../../sceneManager.ts";
-import { StatScreenRender } from "./statScreenRender.ts";
+import { LoseScreenRender } from "./loseScreenRender.ts";
 
-export class StatScreenScene implements IScene {
+export class LoseScreenScene implements IScene {
   private sceneTrigger: GameStateEventTrigger;
-
+  
   constructor(sceneTrigger: GameStateEventTrigger) {
     this.sceneTrigger = sceneTrigger;
   }
-
+    
   onEnter(sceneManager: SceneManager): void {
-    const screenRenderer = new StatScreenRender();
-    sceneManager.addUIEntity(screenRenderer);
+    const screenRenderer = new LoseScreenRender();
+    sceneManager.addEntity(screenRenderer);
 
     setTimeout(() => {
       this.onExit();
@@ -20,14 +20,15 @@ export class StatScreenScene implements IScene {
   }
 
   onResume(sceneManager: SceneManager): void {
-    
+    throw new Error("Method not implemented.");
   }
 
   onExit(): void {
-    this.sceneTrigger.assertChange(null, NEXT_SCENE);
+    // Game ends, do nothing for noe
   }
 
   update(context: GameContext): void {}
+
   draw(context: GameContext): void {}
   
 }

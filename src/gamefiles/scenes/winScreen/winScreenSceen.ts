@@ -1,9 +1,9 @@
 import { GameContext, IScene } from "../../../classinterfaces.ts";
 import { GameStateEventTrigger, NEXT_SCENE } from "../../../gameStateEventTrigger.ts";
 import SceneManager from "../../../sceneManager.ts";
-import { StatScreenRender } from "./statScreenRender.ts";
+import { WinScreenRender } from "./winScreenRender.ts";
 
-export class StatScreenScene implements IScene {
+export class WinScreenScene implements IScene {
   private sceneTrigger: GameStateEventTrigger;
 
   constructor(sceneTrigger: GameStateEventTrigger) {
@@ -11,7 +11,7 @@ export class StatScreenScene implements IScene {
   }
 
   onEnter(sceneManager: SceneManager): void {
-    const screenRenderer = new StatScreenRender();
+    const screenRenderer = new WinScreenRender();
     sceneManager.addUIEntity(screenRenderer);
 
     setTimeout(() => {
@@ -24,7 +24,7 @@ export class StatScreenScene implements IScene {
   }
 
   onExit(): void {
-    this.sceneTrigger.assertChange(null, NEXT_SCENE);
+    // Nothing for now, end the game
   }
 
   update(context: GameContext): void {}

@@ -11,6 +11,8 @@ import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayenti
 import { GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE } from "./gameStateEventTrigger.ts";
 import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.ts";
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
+import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
+import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -139,6 +141,7 @@ export class GameState {
     if (LEVEL_OVER === eventType) {
       // Evaluate win/lose state
       const levelState = data as LevelResult;
+
       if (levelState.success) {
         MSG_SERVICE.queueMessage("YOUR SHIFT IS OVER");
         setTimeout(() => {
@@ -148,12 +151,13 @@ export class GameState {
           this.levelActive = false;
           // Load stat screen
           this.sceneManager.loadScene("statScreen", new StatScreenScene(this.gsEventTrigger));
-        }, 2000);
+        }, 3000);
       } else {
         MSG_SERVICE.queueMessage(levelState.reason ?? "YOU FAILED");
         setTimeout(() => {
           this.cleanState();
-        }, 2000);
+          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger));
+        }, 3000);
       }
     }
 
@@ -172,6 +176,7 @@ export class GameState {
         MSG_SERVICE.queueMessage("The game is over.");
         setTimeout(() => {
           this.cleanState();
+          this.sceneManager.loadScene("winScreen", new WinScreenScene(this.gsEventTrigger));
         }, 3000);
       }
     }
