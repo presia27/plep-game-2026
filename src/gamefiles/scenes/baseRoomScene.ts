@@ -14,6 +14,9 @@ import { DoorData, roomData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
+import { monsterAssets } from "../assetlist.ts";
+import { MonsterEntity } from "../monster/monsterEntity.ts";
+import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -41,6 +44,7 @@ export class BaseRoomScene implements IScene {
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
+    
   }
 
   /**
@@ -68,6 +72,13 @@ export class BaseRoomScene implements IScene {
           x: this.roomData.defaultSpawn.x,
           y: this.roomData.defaultSpawn.y
         });
+        /* Create and load monsters */
+        for (const monsterSpawn of this.roomData.monsterSpawns) {
+          const monster = new MonsterEntity(ASSET_MANAGER, monsterSpawn, 4, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          sceneManager.addEntity(monster);
+          this.localEntities.push(monster);
+          this.collisionSystem.addEntity(monster);
+        }
       }
     } else {
       player = null;
@@ -82,7 +93,7 @@ export class BaseRoomScene implements IScene {
       if (shelfSprite === null) {
         throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
       }
-      const shelf = new ShelfController(shelfData.position, shelfSprite);
+      const shelf = new ShelfController(shelfData.position, shelfSprite, shelfData.shelfNum);
 
      
       // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.
