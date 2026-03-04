@@ -43,13 +43,6 @@ export class BaseRoomScene implements IScene {
     this.localEntities = [];
   }
 
-  // protected abstract getPlayerSpawnPoint(): XY;
-  // protected abstract getShelfPositions(): ShelfData[];
-  // protected abstract getDoorTriggers(): DoorData[];
-  // abstract getAllowedItems(): ItemType[];
-  // abstract getRoomId(): string;
-  // abstract getDeliveryEntityPosition(): XY | null;
-
   /**
    * Loads scene data and adds them as actual instances
    * to the scene manager.

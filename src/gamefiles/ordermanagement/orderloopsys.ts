@@ -10,6 +10,7 @@ import {
   Observable,
   Observer
 } from "../../observerinterfaces.ts";
+import { LevelResult } from "../levels/levelinterfaces.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -225,7 +226,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       } else {
         // stop the loop system, fire level end event
         this.isRunning = false;
-        this.sceneTrigger.assertChange(null, LEVEL_OVER);
+        this.sceneTrigger.assertChange(this.evaluateLevelResult(), LEVEL_OVER);
       }
     }
   }
@@ -233,12 +234,27 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   public subscribe(observer: Observer): void {
     this.observers.push(observer);
   }
+
   public unsubscribe(observer: Observer): void {
     this.observers = this.observers.filter(obs => obs !== observer);
   }
+
   public notifyObservers(data: any, notificationType: string): void {
     for (const observer of this.observers) {
       observer.observerUpdate(data, notificationType);
+    }
+  }
+
+  private evaluateLevelResult(): LevelResult {
+    if (this.getNumberOfDoneOrders() < this.totalOrders) {
+      return {
+        success: false,
+        reason: "Failed to meet quota"
+      }
+    } else {
+      return {
+        success: true
+      }
     }
   }
 

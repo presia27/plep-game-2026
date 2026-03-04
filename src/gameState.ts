@@ -4,12 +4,13 @@ import SceneManager from "./sceneManager.ts";
 import { ASSET_MANAGER, MSG_SERVICE } from "./gamefiles/main.ts";
 import { InventoryDisplayEntity } from "./gamefiles/inventory/inventoryDisplayEntity.ts";
 import { PlayerController } from "./gamefiles/player/playerController.ts";
-//import { loadLevelOne } from "./gamefiles/levels/levelone.ts";
 import { levelLoaders } from "./gamefiles/levels/levelLoaders.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
-import { GameStateEventTrigger, LEVEL_OVER } from "./gameStateEventTrigger.ts";
+import { GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE } from "./gameStateEventTrigger.ts";
+import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.ts";
+import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -134,38 +135,45 @@ export class GameState {
   }
 
   public stateChangeHandler(data: any, eventType: string) {
-    if (eventType === LEVEL_OVER) {
-      console.log("Received state change assertion: ", eventType);
-      MSG_SERVICE.queueMessage("LEVEL OVER");
-
-      // Update level state (move to next level, but set it to false untila after load)
-      this.levelNumber = this.levelNumber + 1;
-      this.levelActive = false;
-
-      const loadStuff = () => {
-        this.cleanState();
-        this.loadState();
-
-        // Load the function reference from the list of levels, then call it to load the level
-        if (!this.levelActive) {
-          if (this.levelNumber < levelLoaders.length) {
-            const levelLoadProcedure = levelLoaders[this.levelNumber];
-            if (levelLoadProcedure) {
-              levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop);
-              this.levelActive = true;
-            }
-          } else {
-            MSG_SERVICE.queueMessage("The game is over.");
-            setTimeout(() => {
-              this.cleanState();
-            }, 3000);
-          }
-        }
+    console.log("Received state change assertion: ", eventType);
+    if (LEVEL_OVER === eventType) {
+      // Evaluate win/lose state
+      const levelState = data as LevelResult;
+      if (levelState.success) {
+        MSG_SERVICE.queueMessage("YOUR SHIFT IS OVER");
+        setTimeout(() => {
+          this.cleanState();
+          // go to next level state
+          this.levelNumber = this.levelNumber + 1;
+          this.levelActive = false;
+          // Load stat screen
+          this.sceneManager.loadScene("statScreen", new StatScreenScene(this.gsEventTrigger));
+        }, 2000);
+      } else {
+        MSG_SERVICE.queueMessage(levelState.reason ?? "YOU FAILED");
+        setTimeout(() => {
+          this.cleanState();
+        }, 2000);
       }
+    }
 
-      setTimeout(() => {
-        loadStuff();
-      }, 3000);
+    if (NEXT_SCENE === eventType) {
+      this.cleanState();
+      this.loadState();
+
+      // Load next scene, set to level field to active
+      if (this.levelNumber < levelLoaders.length) {
+        const levelLoadProcedure = levelLoaders[this.levelNumber];
+        if (levelLoadProcedure) {
+          levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop);
+          this.levelActive = true;
+        }
+      } else {
+        MSG_SERVICE.queueMessage("The game is over.");
+        setTimeout(() => {
+          this.cleanState();
+        }, 3000);
+      }
     }
   }
 
