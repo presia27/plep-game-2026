@@ -24,7 +24,10 @@ const ITEM_HSHELF_POSITION: XY[] = [
   {x: 30, y: 20},
   {x: 8, y: 20},
   {x: 52, y: 20}
-];
+]; 
+// TODO: i'd like to make it so items exist in diff locations depending on the number of 
+// rows the shelf has, since some shelves have only 2 rows and then items spawn looking like 
+// they're floating rather than sitting on the shelf
 
 /**
  * Altered base class for all room scenes.
