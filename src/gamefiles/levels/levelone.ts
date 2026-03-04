@@ -2,7 +2,6 @@ import GameEngine from "../../gameengine.ts";
 import { INVENTORY_MAX_SLOTS } from "../../gameState.ts";
 import SceneManager from "../../sceneManager.ts";
 import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
-import { TemporarySatisfactionDisplayEntity } from "../bosssatisfaction/temporarySatisfactionDisplayEntity.ts";
 import { OrderDisplayEntity } from "../ordermanagement/orderdisplayentity.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
@@ -57,10 +56,10 @@ export function loadLevelOne(gameEngine: GameEngine, sceneManager: SceneManager,
   sceneManager.addUIEntity(orderDisplayEntity);
 
   // Add boss satisfaction manager
-  const bossSatisfaction = new BossSatisfaction(orderLoop);
+  const bossSatisfaction = new BossSatisfaction(orderLoop); // TODO: help idk where to get asset maanager from and if my implementation even makes sense im too tired to deal w this rn
   sceneManager.addLevelEntity(bossSatisfaction);
-  const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(900, 30, bossSatisfaction);
-  sceneManager.addUIEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
+  //const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(1000, 10, bossSatisfaction);
+  //sceneManager.addUIEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
 }
   
 

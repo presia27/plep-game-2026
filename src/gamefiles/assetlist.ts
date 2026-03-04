@@ -17,11 +17,18 @@ export const monsterAssets: IAssetList[] = [
   { id: "monster", type: "img", location: "./assets/MonsterSpriteSheet.png" }
 ];
 
+/** All boss assets */
+export const bossAssets: IAssetList[] = [
+  { id: "satisfactionBar", type: "img", location: "./assets/BossSatisfactionBar.png" },
+  { id: "bossIcons", type: "img", location: "./assets/BossSpriteSheet.png" },
+];
+
 /** All environment assets, such as shelves, desks, obstacles, background music, and more */
 export const environmentAssets: IAssetList[] = [
   { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "AllHShelves", type: "img", location: "./assets/AllHShelves.png" },
+  { id: "arrow", type: "img", location: "./assets/ArrowSpritesheet.png" }
 ];
 
 /** Assets for items */
@@ -29,3 +36,5 @@ export const itemAssets: IAssetList[] = [
   { id: "items", type: "img", location: "./assets/items.png" }, // OLD item image - should not be used unless error with new one
   { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
 ];
+
+
