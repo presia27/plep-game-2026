@@ -21,8 +21,9 @@ import { UpdatePoint } from "../monster/updatePointEntity.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
+  {x: 30, y: 20},
   {x: 8, y: 20},
-  {x: 44, y: 20}
+  {x: 52, y: 20}
 ];
 
 /**
