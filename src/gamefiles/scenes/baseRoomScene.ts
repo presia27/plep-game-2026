@@ -14,6 +14,9 @@ import { DoorData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
+import { monsterAssets } from "../assetlist.ts";
+import { MonsterEntity } from "../monster/monsterEntity.ts";
+import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -37,9 +40,12 @@ export abstract class BaseRoomScene implements IScene {
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
+    
   }
 
   protected abstract getPlayerSpawnPoint(): XY;
+  protected abstract getMonsterSpawnPoints(): XY[];
+  protected abstract getUpdatePoints(): XY[];
   protected abstract getShelfPositions(): ShelfData[];
   protected abstract getDoorTriggers(): DoorData[];
   abstract getAllowedItems(): ItemType[];
@@ -67,6 +73,13 @@ export abstract class BaseRoomScene implements IScene {
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
         movementComponent.setPosition(this.getPlayerSpawnPoint());
+        /* Create and load monsters */
+        for (const monsterSpawn of this.getMonsterSpawnPoints()) {
+          const monster = new MonsterEntity(ASSET_MANAGER, monsterSpawn, 4, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          sceneManager.addEntity(monster);
+          this.localEntities.push(monster);
+          this.collisionSystem.addEntity(monster);
+        }
       }
     } else {
       player = null;
@@ -76,13 +89,12 @@ export abstract class BaseRoomScene implements IScene {
     /* Create and load shelving and add items */
     const allowedItems = this.getAllowedItems().slice(); // using slice to get a shallow copy
     //let itemIndex = 0;
-    
     for (const shelfData of this.getShelfPositions()) {
       const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
       if (shelfSprite === null) {
         throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
       }
-      const shelf = new ShelfController(shelfData.position, shelfSprite);
+      const shelf = new ShelfController(shelfData.position, shelfSprite, shelfData.shelfNum);
 
      
       // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.

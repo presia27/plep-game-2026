@@ -41,7 +41,7 @@ export class OrderDisplayRenderer implements IRenderer {
     const activeOrders = this.orderLoop.getActiveOrders();
 
     // Get item sprites
-    const itemSprite = ASSET_MANAGER.getImageAsset("items");
+    const itemSprite = ASSET_MANAGER.getImageAsset("items2");
     if (itemSprite === null) {
       throw new Error("Order Display Renderer: Failed to load spritesheet for items");
     }
