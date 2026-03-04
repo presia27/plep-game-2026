@@ -3,13 +3,10 @@ import { INVENTORY_MAX_SLOTS } from "../../gameState.ts";
 import SceneManager from "../../sceneManager.ts";
 import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
-import { OrderDisplayEntity } from "../ordermanagement/orderdisplayentity.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
-import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
-import { FoodScene } from "../scenes/rooms/foodScene.ts";
-import { PharmaScene } from "../scenes/rooms/pharmaScene.ts";
-import { DeliveryScene } from "../scenes/rooms/deliveryScene.ts";
-import { ASSET_MANAGER, MSG_SERVICE } from "../main.ts";
+import { MSG_SERVICE } from "../main.ts";
+import { BaseRoomScene } from "../scenes/baseRoomScene.ts";
+import { CleaningRoom, DeliveryRoom, FoodRoom, PharmaRoom  } from "../scenes/roomData.ts"
 
 /**
  * Represents concrete level data/parameters
@@ -17,9 +14,9 @@ import { ASSET_MANAGER, MSG_SERVICE } from "../main.ts";
  */
 
 const levelParams = {
-  duration: 120,
+  duration: 60,
   orderPromptVariability: 6,
-  totalOrders: 10
+  totalOrders: 2
 }
 
 export function loadLevelOne(
@@ -30,21 +27,21 @@ export function loadLevelOne(
   orderLoop: OrderDeliveryLoop
 ) {
   // Create rooms
-  const pharmaScene = new PharmaScene(gameEngine);
-  const cleaningScene = new CleaningScene(gameEngine);
-  const foodScene = new FoodScene(gameEngine);
-  const deliveryScene = new DeliveryScene(gameEngine);
+  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom);
+  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom);
+  const foodScene = new BaseRoomScene(gameEngine, FoodRoom);
+  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom);
 
   // Get list of all allowed items for the level
-  const allowedItems = pharmaScene.getAllowedItems()
-    .concat(cleaningScene.getAllowedItems())
-    .concat(foodScene.getAllowedItems());
+  const allowedItems = PharmaRoom.allowedItems
+    .concat(CleaningRoom.allowedItems)
+    .concat(FoodRoom.allowedItems);
 
   // Pre-register all rooms so they're ready when the player walks through doors
-  sceneManager.registerScene(cleaningScene.getRoomId(), cleaningScene);
-  sceneManager.registerScene(foodScene.getRoomId(), foodScene);
-  sceneManager.registerScene(deliveryScene.getRoomId(), deliveryScene);
-  sceneManager.loadScene(pharmaScene.getRoomId(), pharmaScene);
+  sceneManager.registerScene(CleaningRoom.sceneId, cleaningScene);
+  sceneManager.registerScene(FoodRoom.sceneId, foodScene);
+  sceneManager.registerScene(DeliveryRoom.sceneId, deliveryScene);
+  sceneManager.loadScene(PharmaRoom.sceneId, pharmaScene);
   
   // Add order loop
   orderLoop.init(

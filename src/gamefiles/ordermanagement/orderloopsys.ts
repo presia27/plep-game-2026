@@ -1,9 +1,16 @@
 import { GameContext } from "../../classinterfaces.ts";
-import { GameState } from "../../gameState.ts";
+import { GameStateEventTrigger, LEVEL_OVER } from "../../gameStateEventTrigger.ts";
 import { Entity } from "../../entity.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
-import { OBS_INVENTORY_CHANGE, OBS_ORDER_COMPLETE, OBS_NEW_ACTIVE_ORDER, Observable, Observer } from "../../observerinterfaces.ts";
+import {
+  OBS_INVENTORY_CHANGE,
+  OBS_ORDER_COMPLETE,
+  OBS_NEW_ACTIVE_ORDER,
+  Observable,
+  Observer
+} from "../../observerinterfaces.ts";
+import { LevelResult } from "../levels/levelinterfaces.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -15,6 +22,7 @@ const MAX_ORDERS_PERCENT_OF_TIME = 0.8; // The number of orders must not exceed 
  * @author Preston Sia
  */
 export class OrderDeliveryLoop extends Entity implements Observer, Observable {
+  private isRunning: boolean;
   private startTime: number;
   private duration: number;
   private promptIntervalFactor: number;
@@ -30,17 +38,19 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   private allowedItems: ItemType[];
 
   private observers: Observer[];
+  private sceneTrigger: GameStateEventTrigger;
 
   /**
    * Initialize everything to null or 0.
    * Use init to initialize with proper values.
    */
-  constructor() {
+  constructor(sceneTrigger: GameStateEventTrigger) {
 
     // explicit call to super
     super();
 
     // Set to null or 0; init logic moved to the init method
+    this.isRunning = false;
     this.startTime = 0;
     this.duration = 0;
     this.promptIntervalFactor = 0;
@@ -55,6 +65,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     this.allowedItems = [];
 
     this.observers = [];
+    this.sceneTrigger = sceneTrigger;
   }
 
   /**
@@ -84,6 +95,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       throw new Error("The number of orders must be less than " + (MAX_ORDERS_PERCENT_OF_TIME * 100) + "% of the number of seconds passed in")
     }
 
+    this.isRunning = true;
     this.startTime = startTime;
     this.duration = duration;
     this.promptIntervalFactor = Math.min(promptIntervalFactor, MAX_ORDER_PROMPT_FREQ);
@@ -99,6 +111,24 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     // Generate orders
     this.generateOrders(totalOrders);
     this.promptTimes = this.generateTimes();
+  }
+
+  public reset() {
+    this.isRunning = false;
+    this.startTime = 0;
+    this.duration = 0;
+    this.promptIntervalFactor = 0;
+    this.totalOrders = 0;
+    this.inactiveOrders = [];
+    this.activeOrders = [];
+    this.doneOrders = [];
+    this.orderProgress = new Map();
+    this.lastClockTime = 0;
+    this.promptTimes = [];
+    this.totalItemVariety = 0;
+    this.allowedItems = [];
+
+    this.observers = [];
   }
 
   /** Receive observer updates on inventory changes */
@@ -168,29 +198,35 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   public override update(context: GameContext): void {
     super.update(context);
 
-    const currentTime = context.gameTime;
-    this.lastClockTime = currentTime;   // update field so that time is accessible
+    if (this.isRunning) {
+      const currentTime = context.gameTime;
+      this.lastClockTime = currentTime;   // update field so that time is accessible
 
-    if (currentTime < this.startTime + this.duration) {
+      if (currentTime < this.startTime + this.duration) {
 
-      const nextTime = this.promptTimes[this.promptTimes.length - 1];
-      if (Math.floor(currentTime) === nextTime) {
-        this.promptTimes.pop();
+        const nextTime = this.promptTimes[this.promptTimes.length - 1];
+        if (Math.floor(currentTime) === nextTime) {
+          this.promptTimes.pop();
 
-        // load the next order
-        const nextOrder: Order | undefined = this.inactiveOrders.shift();
-        if (nextOrder !== undefined) {
-          // notify if the pushed order will end up at the front of the queue
-          if (this.activeOrders.length === 0) {
-            this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);
-          }
+          // load the next order
+          const nextOrder: Order | undefined = this.inactiveOrders.shift();
+          if (nextOrder !== undefined) {
+            // notify if the pushed order will end up at the front of the queue
+            if (this.activeOrders.length === 0) {
+              this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);
+            }
 
-          this.activeOrders.push(nextOrder);
-          nextOrder.setArrivalTime(Math.floor(currentTime));
-          if (context.debug) {
-            console.log(nextOrder);
+            this.activeOrders.push(nextOrder);
+            nextOrder.setArrivalTime(Math.floor(currentTime));
+            if (context.debug) {
+              console.log(nextOrder);
+            }
           }
         }
+      } else {
+        // stop the loop system, fire level end event
+        this.isRunning = false;
+        this.sceneTrigger.assertChange(this.evaluateLevelResult(), LEVEL_OVER);
       }
     }
   }
@@ -198,12 +234,27 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   public subscribe(observer: Observer): void {
     this.observers.push(observer);
   }
+
   public unsubscribe(observer: Observer): void {
     this.observers = this.observers.filter(obs => obs !== observer);
   }
+
   public notifyObservers(data: any, notificationType: string): void {
     for (const observer of this.observers) {
       observer.observerUpdate(data, notificationType);
+    }
+  }
+
+  private evaluateLevelResult(): LevelResult {
+    if (this.getNumberOfDoneOrders() < this.totalOrders) {
+      return {
+        success: false,
+        reason: "Failed to meet quota"
+      }
+    } else {
+      return {
+        success: true
+      }
     }
   }
 

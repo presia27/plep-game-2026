@@ -10,7 +10,7 @@ import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shel
 import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
-import { DoorData, ShelfData } from "./roomData.ts";
+import { DoorData, roomData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
@@ -31,26 +31,21 @@ const ITEM_HSHELF_POSITION: XY[] = [
  * 
  * @author Luke Willis, Claude Sonnet 4.5, Preston Sia
  */
-export abstract class BaseRoomScene implements IScene {
+export class BaseRoomScene implements IScene {
+  protected roomData: roomData;
+
   protected inputSystem: InputSystem;
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
 
-  constructor(game: GameEngine) {
+  constructor(game: GameEngine, roomData: roomData) {
+    this.roomData = roomData;
+
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
     
   }
-
-  protected abstract getPlayerSpawnPoint(): XY;
-  protected abstract getMonsterSpawnPoints(): XY[];
-  protected abstract getUpdatePoints(): XY[];
-  protected abstract getShelfPositions(): ShelfData[];
-  protected abstract getDoorTriggers(): DoorData[];
-  abstract getAllowedItems(): ItemType[];
-  abstract getRoomId(): string;
-  abstract getDeliveryEntityPosition(): XY | null;
 
   /**
    * Loads scene data and adds them as actual instances
@@ -58,7 +53,8 @@ export abstract class BaseRoomScene implements IScene {
    * @param sceneManager Scene manager
    */
   onEnter(sceneManager: SceneManager): void {
-    console.log("Loading scene " + this.getRoomId());
+    console.log("Loading scene " + this.roomData.sceneId);
+
     // Attempt to find the current player
     let player: PlayerController | null;
     const existingPlayer = sceneManager.getLevelEntities().find(
@@ -72,9 +68,12 @@ export abstract class BaseRoomScene implements IScene {
       player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition(this.getPlayerSpawnPoint());
+        movementComponent.setPosition({
+          x: this.roomData.defaultSpawn.x,
+          y: this.roomData.defaultSpawn.y
+        });
         /* Create and load monsters */
-        for (const monsterSpawn of this.getMonsterSpawnPoints()) {
+        for (const monsterSpawn of this.roomData.monsterSpawns) {
           const monster = new MonsterEntity(ASSET_MANAGER, monsterSpawn, 4, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
           sceneManager.addEntity(monster);
           this.localEntities.push(monster);
@@ -87,9 +86,9 @@ export abstract class BaseRoomScene implements IScene {
     }
 
     /* Create and load shelving and add items */
-    const allowedItems = this.getAllowedItems().slice(); // using slice to get a shallow copy
-    //let itemIndex = 0;
-    for (const shelfData of this.getShelfPositions()) {
+    const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
+    
+    for (const shelfData of this.roomData.shelves) {
       const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
       if (shelfSprite === null) {
         throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
@@ -130,7 +129,7 @@ export abstract class BaseRoomScene implements IScene {
         throw new Error("Player is missing a BoundingBox component");
       }
 
-      for (const door of this.getDoorTriggers()) {
+      for (const door of this.roomData.doors) {
         const trigger = new DoorTrigger(
           door.position,
           door.size,
@@ -145,7 +144,7 @@ export abstract class BaseRoomScene implements IScene {
     }
 
     /* Delivery Entity */
-    const deliveryPOS = this.getDeliveryEntityPosition();
+    const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
       const deliveryEntity = new DeliveryController(deliveryPOS, 1);
       
@@ -163,7 +162,7 @@ export abstract class BaseRoomScene implements IScene {
    * recreating them from scratch.
    */
   onResume(sceneManager: SceneManager): void {
-    console.log("Resuming " + this.getRoomId());
+    console.log("Resuming " + this.roomData.sceneId);
     // Reposition player
     const existingPlayer = sceneManager.getLevelEntities().find(
       entity => entity instanceof PlayerController
@@ -173,7 +172,10 @@ export abstract class BaseRoomScene implements IScene {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition(this.getPlayerSpawnPoint());
+        movementComponent.setPosition({
+          x: this.roomData.defaultSpawn.x,
+          y: this.roomData.defaultSpawn.y
+        });
       }
     }
 

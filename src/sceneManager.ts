@@ -21,12 +21,11 @@ export default class SceneManager {
   private levelEntities: IEntity[];  // SceneManager owns entities now
   private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
   private uiEntities: IEntity[]; // entities that belong to the UI layer, drawn on top of everything else
-  public gameState: GameState | null; // global state, accessible to all scenes
+//  public gameState: GameState | null; // global state, accessible to all scenes
 
 
   constructor() {
     this.currentScene = null;
-    this.gameState = null;
     this.roomEntities = [];
     this.levelEntities = [];
     this.uiEntities = [];
@@ -79,9 +78,9 @@ export default class SceneManager {
    * (e.g. reset game state)
    * @param gs GameState instance
    */
-  public enrollGameState(gs: GameState) {
-    this.gameState = gs;
-  }
+  // public enrollGameState(gs: GameState) {
+  //   this.gameState = gs;
+  // }
   
   /**
    * Clears the scene cache and resets all global state.
@@ -93,7 +92,6 @@ export default class SceneManager {
     this.levelEntities = [];
     this.uiEntities = [];
     this.currentScene = null;
-    if (this.gameState !== null) this.gameState.reset();
   }
 
   public update(context: GameContext): void {
@@ -168,49 +166,32 @@ export default class SceneManager {
    * registerScene() to pre-register scenes ahead of time.
    */
   public loadScene(sceneId: string, scene?: IScene): void {
-  this.currentScene?.onExit();
-  this.clearEntities();
+    this.currentScene?.onExit();
+    this.clearEntities();
 
-  if (this.sceneCache.has(sceneId)) {
-    const cachedScene = this.sceneCache.get(sceneId)!;
-    
-    // Check if this scene has been entered before by checking if it has entities
-    // If this is a BaseRoomScene, it will have entities array
-    const hasBeenEntered = (cachedScene as any).localEntities?.length > 0;
-    
-    if (hasBeenEntered) {
-      // Scene has been visited before - resume it
-      this.currentScene = cachedScene;
-      cachedScene.onResume(this);
+    if (this.sceneCache.has(sceneId)) {
+      const cachedScene = this.sceneCache.get(sceneId)!;
+      
+      // Check if this scene has been entered before by checking if it has entities
+      // If this is a BaseRoomScene, it will have entities array
+      const hasBeenEntered = (cachedScene as any).localEntities?.length > 0;
+      
+      if (hasBeenEntered) {
+        // Scene has been visited before - resume it
+        this.currentScene = cachedScene;
+        cachedScene.onResume(this);
+      } else {
+        // Scene is registered but never entered - enter it for the first time
+        this.currentScene = cachedScene;
+        cachedScene.onEnter(this);
+      }
+    } else if (scene) {
+      // Not registered at all - register and enter
+      this.sceneCache.set(sceneId, scene);
+      this.currentScene = scene;
+      scene.onEnter(this);
     } else {
-      // Scene is registered but never entered - enter it for the first time
-      this.currentScene = cachedScene;
-      cachedScene.onEnter(this);
+      console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
     }
-  } else if (scene) {
-    // Not registered at all - register and enter
-    this.sceneCache.set(sceneId, scene);
-    this.currentScene = scene;
-    scene.onEnter(this);
-  } else {
-    console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
   }
-}
-  // public loadScene(sceneId: string, scene?: IScene): void {
-  //   this.currentScene?.onExit();
-  //   this.clearEntities();
-
-  //   if (this.sceneCache.has(sceneId)) {
-  //     // restore cached scene — onEnter is NOT called again, state is preserved
-  //     this.currentScene = this.sceneCache.get(sceneId)!;
-  //     this.currentScene.onResume(this); // re-add cached entities to sceneManager
-  //   } else if (scene) {
-  //     // first visit — cache and enter the scene fresh
-  //     this.sceneCache.set(sceneId, scene);
-  //     this.currentScene = scene;
-  //     scene.onEnter(this);
-  //   } else {
-  //     console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
-  //   }
-  // }
 }
