@@ -42,3 +42,10 @@ export const itemAssets: IAssetList[] = [
 export const deliveryAssets: IAssetList [] = [
   { id: "deliveryImage", type: "img", location: "./assets/primoChip.png"}
 ];
+
+/** Sound effects for gameplay events */
+export const soundEffects: IAssetList[] = [
+  { id: "orderAppear", type: "audio", location: "./assets/Order.wav" },
+  { id: "itemPickup", type: "audio", location: "./assets/PickUp.wav" },
+  { id: "orderComplete", type: "audio", location: "./assets/Success.wav" }
+];

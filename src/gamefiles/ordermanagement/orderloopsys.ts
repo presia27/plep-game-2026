@@ -1,6 +1,7 @@
 import { GameContext } from "../../classinterfaces.ts";
 import { GameStateEventTrigger, LEVEL_OVER } from "../../gameStateEventTrigger.ts";
 import { Entity } from "../../entity.ts";
+import { ASSET_MANAGER } from "../main.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
 import {
@@ -179,6 +180,14 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     if (currentlyActive) {
       this.doneOrders.push(currentlyActive);
       currentlyActive.setFulfillTime(this.lastClockTime);
+      
+      // Play success sound
+      const successAudio = ASSET_MANAGER.getAudioAsset("orderComplete");
+      if (successAudio) {
+        successAudio.currentTime = 0;
+        successAudio.play();
+      }
+      
       // send alert
       this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
       if (this.getCurrentActiveOrder() !== null)
@@ -211,6 +220,13 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
           // load the next order
           const nextOrder: Order | undefined = this.inactiveOrders.shift();
           if (nextOrder !== undefined) {
+            // Play order appear sound
+            const orderAudio = ASSET_MANAGER.getAudioAsset("orderAppear");
+            if (orderAudio) {
+              orderAudio.currentTime = 0;
+              orderAudio.play();
+            }
+            
             // notify if the pushed order will end up at the front of the queue
             if (this.activeOrders.length === 0) {
               this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);

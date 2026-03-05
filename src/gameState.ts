@@ -15,7 +15,7 @@ import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.t
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 import { StartScreenScene } from "./gamefiles/scenes/startScreen/startScreenScene.ts";
 
-export const INVENTORY_MAX_SLOTS = 6;
+export const INVENTORY_MAX_SLOTS = 3;
 
 /**
  * Holds all global state that persists across rooms and scenes.

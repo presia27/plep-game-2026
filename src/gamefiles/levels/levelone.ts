@@ -14,7 +14,7 @@ import { CleaningRoom, DeliveryRoom, FoodRoom, PharmaRoom  } from "../scenes/roo
  */
 
 const levelParams = {
-  duration: 60,
+  duration: 120,
   orderPromptVariability: 6,
   totalOrders: 2
 }

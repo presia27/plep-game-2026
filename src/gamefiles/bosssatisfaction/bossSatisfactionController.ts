@@ -9,7 +9,7 @@ import { ASSET_MANAGER } from "../main.ts";
 
 const MAX_SATISFACTION = 100; // If > MIN_SATISFACTION, the player can continue playing
 const MIN_SATISFACTION = 0; // The minimum satisfaction points, if reached, the game is over and the player loses
-const START_SATISFACTION = 50; // Level starts with this many satisfaction points
+const START_SATISFACTION = 120; // Level starts with this many satisfaction points
 const SUCCESSFUL_ORDER_POINTS = 10; // Satisfaction points gained per successful order fulfillment
 
 /**

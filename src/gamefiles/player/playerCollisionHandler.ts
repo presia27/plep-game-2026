@@ -11,6 +11,7 @@ import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
+import { ASSET_MANAGER } from "../main.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -108,6 +109,13 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
         // Pickup component and remove the component from the canvas
         this.inventoryMgr.addItem(itemType).then(
           function() {
+            // Play pickup sound
+            const pickupAudio = ASSET_MANAGER.getAudioAsset("itemPickup");
+            if (pickupAudio) {
+              pickupAudio.currentTime = 0;
+              pickupAudio.play();
+            }
+            
             // promise resolved, remove the item from the shelf
             item.getComponent(BasicLifecycle)?.die();
           },
