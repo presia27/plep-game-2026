@@ -18,6 +18,7 @@ import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 import { UpdatePoint } from "../monster/updatePointEntity.ts";
+import { BottomWallEntity, LeftWallEntity, RightWallEntity, TopWallEntity, WallEntity } from "./wallEntity.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -79,7 +80,7 @@ export class BaseRoomScene implements IScene {
         });
         /* Create and load monsters */
         for (const monsterSpawn of this.roomData.monsterSpawns) {
-          const monster = new MonsterEntity(ASSET_MANAGER, monsterSpawn, 4, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          const monster = new MonsterEntity(monsterSpawn, 5, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
           sceneManager.addEntity(monster);
           this.localEntities.push(monster);
           this.collisionSystem.addEntity(monster);
@@ -92,6 +93,25 @@ export class BaseRoomScene implements IScene {
           sceneManager.addEntity(pointTrigger);
           this.collisionSystem.addEntity(pointTrigger);
         }
+        const topWall = new TopWallEntity();
+        const bottomWall = new BottomWallEntity();
+        const leftWall = new LeftWallEntity();
+        const rightWall = new RightWallEntity();
+        
+        sceneManager.addEntity(topWall);
+        sceneManager.addEntity(bottomWall);
+        sceneManager.addEntity(leftWall);
+        sceneManager.addEntity(rightWall);
+
+        this.localEntities.push(topWall);
+        this.localEntities.push(bottomWall);
+        this.localEntities.push(leftWall);
+        this.localEntities.push(rightWall);
+
+        this.collisionSystem.addEntity(topWall);
+        this.collisionSystem.addEntity(bottomWall);
+        this.collisionSystem.addEntity(rightWall);
+        this.collisionSystem.addEntity(leftWall);
       }
     } else {
       player = null;

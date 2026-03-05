@@ -20,7 +20,7 @@ import { staticPositionComponent } from "../../componentLibrary/staticPositionCo
 export class UpdatePoint extends Entity {
   private updatePoint: XY;
   private updatePointBB: BoundingBox;
-
+  
   /**
    * A point on the canvas where the monster is allowed to change direction
    * 
@@ -36,13 +36,17 @@ export class UpdatePoint extends Entity {
     // create static position component for bounding box + for entity
     const pointPosition = new staticPositionComponent({x: updatePoint.x, y: updatePoint.y});
     // set size + scale of bounding box
-    const updatePointBBSize = new BasicSize (10, 10, 5);
+    const updatePointBBSize = new BasicSize (5, 5, 5);
     // instantiate bounding box
     this.updatePointBB = new BoundingBox(pointPosition, updatePointBBSize);
 
     // NOTE: not sure if i should add this.updatePoint or pointPosition, since they seem to be the same thing to me.. but apparently theyre not
     super.addComponent(pointPosition);
     super.addComponent(this.updatePointBB);
+  }
+
+  public getPosition(): XY {
+    return this.updatePoint; 
   }
 
   override draw(context: GameContext): void {

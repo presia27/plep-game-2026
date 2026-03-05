@@ -5,9 +5,11 @@ import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { Entity } from "../../entity.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { MonsterSpriteRenderer } from "./monsterSpriteRenderer.ts";
-import { MonsterCollisionHandler } from "./monsterCollisionHandler.ts";
+import { MonsterCollisionFrameResetter, MonsterCollisionHandler } from "./monsterCollisionHandler.ts";
 import { MonsterMovementSystem } from "./monsterMovementSystem.ts";
 import { IPosition } from "../../classinterfaces.ts";
+import { ASSET_MANAGER } from "../main.ts";
+import SceneManager from "../../sceneManager.ts";
 
 // CONSTANTS
 const MONSTER_SPEED: number = 200;
@@ -29,7 +31,6 @@ const MONSTER_BOUND_OFFSET_Y: number = 11;
  */
 export class MonsterEntity extends Entity {
   constructor(
-    assetManager: AssetManager,
     defaultXY: XY,
     scale: number,
     playerPos: IPosition
@@ -43,14 +44,18 @@ export class MonsterEntity extends Entity {
     const monsterBoundSize = new BasicSize(MONSTER_BOUND_X, MONSTER_BOUND_Y, scale);
     const monsterBoundingBox = new BoundingBox(monsterMovementAndPosition, monsterBoundSize, MONSTER_BOUND_OFFSET_X, MONSTER_BOUND_OFFSET_Y);
     const monsterCollisionHandler = new MonsterCollisionHandler(monsterBoundingBox, monsterMovementAndPosition, monsterSize, monsterMovementSys);
+    //const updatePointCollisionHandler = new UpdatePointCollisionHandler(monsterMovementSys);
+    const frameResetter = new MonsterCollisionFrameResetter(monsterCollisionHandler);
     super.addComponent(monsterMovementAndPosition)
     // super.addComponent(monsterSize);
     // super.addComponent(monsterBoundSize);
     super.addComponent(monsterBoundingBox);
+    super.addComponent(frameResetter); // must be added first so it updates before collisions
     super.addComponent(monsterCollisionHandler);
     super.addComponent(monsterMovementSys);
+    //super.addComponent(updatePointCollisionHandler);
 
-    const monsterSprite = assetManager.getImageAsset("monster");
+    const monsterSprite = ASSET_MANAGER.getImageAsset("monster");
     if (monsterSprite === null) {
       throw new Error("Failed to load asset for the monster");
     }

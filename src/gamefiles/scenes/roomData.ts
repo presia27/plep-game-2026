@@ -30,12 +30,12 @@ export const PharmaRoom: roomData = {
   sceneId: "pharma",
   defaultSpawn: { x: 50, y: 50 },
   monsterSpawns: [ 
-    {x: 1100, y: 325}, {x: 60, y: 600} 
+    {x: 1100, y: 280}, {x: 60, y: 600} 
   ],
   updatePoints: [ // 6 points for perimeter, 0 for in between shelves
-    {x: 60, y: 50}, {x: 1100, y: 50},  
-    {x: 60, y: 325}, {x: 1100, y: 325},
-    {x: 60, y: 600}, {x: 1100, y: 600}
+    {x: 50, y: 40}, {x: 1200, y: 40},  
+    {x: 50, y: 280}, {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 1200, y: 600}
   ],
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 4 },
@@ -83,18 +83,18 @@ export const CleaningRoom: roomData = {
   sceneId: "cleaning",
   defaultSpawn: { x: 50, y: 300 },
   monsterSpawns: [ 
-    {x: 600, y: 325}, {x: 1100, y: 600} 
+    {x: 600, y: 250}, {x: 1100, y: 600} 
   ],
-  updatePoints: [ // 8 for perimeter, 1 for in between shelves
-    {x: 100, y: 50}, {x: 600, y: 50}, {x: 1100, y: 50},  
-    {x: 100, y: 325}, {x: 600, y: 325}, {x: 1100, y: 325},
-    {x: 100, y: 600}, {x: 600, y: 600}, {x: 1100, y: 600}
+  updatePoints: [ // 8 for perimeter, 0 for in between shelves
+    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
+    {x: 50, y: 280},                  {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
   ],
   shelves: [
-    { position: { x: 250, y: 150 }, spriteId: "AllHShelves", shelfNum: 1 },
-    { position: { x: 700, y: 150 }, spriteId: "AllHShelves", shelfNum: 4 },
-    { position: { x: 250, y: 400 }, spriteId: "AllHShelves", shelfNum: 5 },
-    { position: { x: 700, y: 400 }, spriteId: "AllHShelves", shelfNum: 8 },
+    { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 1 },
+    { position: { x: 750, y: 150 }, spriteId: "AllHShelves", shelfNum: 4 },
+    { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 5 },
+    { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 8 },
   ],
   doors: [
     { 
@@ -128,21 +128,20 @@ export const FoodRoom: roomData = {
   sceneId: "food",
   defaultSpawn: { x: 50, y: 50 },
   monsterSpawns: [ 
-    {x: 550, y: 450} 
+    {x: 1100, y: 280}, {x: 60, y: 600}, {x: 1100, y: 50}
   ],
-  updatePoints: [ // 10 for perimeter, 2 for in between shelves
-    {x: 50, y: 25}, {x: 550, y: 25}, {x: 1100, y: 25},  
-    {x: 50, y: 240}, {x: 550, y: 240}, {x: 1100, y: 240},
-    {x: 50, y: 450}, {x: 550, y: 450}, {x: 1100, y: 450},
-    {x: 50, y: 650}, {x: 550, y: 650}, {x: 1100, y: 650}
+  updatePoints: [ // 6 for perimeter, 0 for in between shelves
+    {x: 50, y: 40},  {x: 1200, y: 40},  
+    {x: 50, y: 280}, {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 1200, y: 600}
   ],
   shelves: [
-    { position: { x: 200, y: 75 }, spriteId: "AllHShelves", shelfNum: 2 },
-    { position: { x: 200, y: 275 }, spriteId: "AllHShelves", shelfNum: 1 },
-    { position: { x: 200, y: 500 }, spriteId: "AllHShelves", shelfNum: 6 },
-    { position: { x: 700, y: 75 }, spriteId: "AllHShelves", shelfNum: 3 },
-    { position: { x: 700, y: 275 }, spriteId: "AllHShelves", shelfNum: 4 },
-    { position: { x: 700, y: 500 }, spriteId: "AllHShelves", shelfNum: 7 },
+    { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 2 },
+    { position: { x: 450, y: 150 }, spriteId: "AllHShelves", shelfNum: 1 },
+    { position: { x: 750, y: 150 }, spriteId: "AllHShelves", shelfNum: 6 },
+    { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 7 },
+    { position: { x: 450, y: 400 }, spriteId: "AllHShelves", shelfNum: 4 },
+    { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 3 }
 
   ],
   doors: [
