@@ -17,6 +17,8 @@ import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
+import { StoreInteriorRenderer } from "./storeInterior/storeInteriorRenderer.ts";
+import { StoreInterior } from "./storeInterior/storeInteriorController.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -54,7 +56,12 @@ export class BaseRoomScene implements IScene {
    */
   onEnter(sceneManager: SceneManager): void {
     console.log("Loading scene " + this.roomData.sceneId);
-
+    for (const bloodPos of this.roomData.bloodLocations) {
+      const blood = new StoreInterior(bloodPos);
+      this.localEntities.push(blood);
+      sceneManager.addEntity(blood);
+      this.collisionSystem.addEntity(blood);
+    }
     // Attempt to find the current player
     let player: PlayerController | null;
     const existingPlayer = sceneManager.getLevelEntities().find(

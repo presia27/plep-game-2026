@@ -17,6 +17,7 @@ export interface DoorData {
 
 export interface roomData {
   sceneId: string;
+  bloodLocations: XY[];
   defaultSpawn: XY;
   monsterSpawns: XY[];
   updatePoints: XY[]; // locations where monster direction can be updated
@@ -28,6 +29,12 @@ export interface roomData {
 
 export const PharmaRoom: roomData = {
   sceneId: "pharma",
+  bloodLocations: [
+    { x: 250, y: 50 },
+    { x: 690, y: 350 },
+    { x: 1000, y: 200 },
+    { x: 450, y: 500 },
+  ],
   defaultSpawn: { x: 50, y: 50 },
   monsterSpawns: [ {x: 900, y: 600}, {x: 575, y: 300} ],
   updatePoints: [ {x: 150, y: 300}, {x: 400, y: 300}, {x: 900, y: 300}, {x: 900, y: 600} ],
@@ -75,6 +82,12 @@ export const PharmaRoom: roomData = {
 
 export const CleaningRoom: roomData = {
   sceneId: "cleaning",
+  bloodLocations: [
+    { x: 250, y: 50 },
+    { x: 690, y: 350 },
+    { x: 1000, y: 200 },
+    { x: 450, y: 500 },
+  ],
   defaultSpawn: { x: 50, y: 300 },
   monsterSpawns: [ {x: 900, y: 600}, {x: 575, y: 300} ],
   updatePoints: [ {x: 150, y: 300}, {x: 400, y: 300}, {x: 900, y: 300}, {x: 900, y: 600} ],
@@ -114,6 +127,12 @@ export const CleaningRoom: roomData = {
 
 export const FoodRoom: roomData = {
   sceneId: "food",
+  bloodLocations: [
+    { x: 250, y: 50 },
+    { x: 690, y: 350 },
+    { x: 1000, y: 200 },
+    { x: 450, y: 500 },
+  ],
   defaultSpawn: { x: 350, y: 50 },
   monsterSpawns: [ {x: 900, y: 600}, {x: 575, y: 300} ],
   updatePoints: [ {x: 150, y: 300}, {x: 400, y: 300}, {x: 900, y: 300}, {x: 900, y: 600} ],
@@ -151,6 +170,7 @@ export const FoodRoom: roomData = {
 }
 export const DeliveryRoom: roomData = {
   sceneId: "delivery",
+  bloodLocations: [],
   defaultSpawn: { x: 350, y: 50 },
   monsterSpawns: [],
   updatePoints: [],
