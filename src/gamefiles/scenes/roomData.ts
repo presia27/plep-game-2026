@@ -30,8 +30,8 @@ export interface roomData {
 export const PharmaRoom: roomData = {
   sceneId: "pharma",
   bloodLocations: [
-    { x: 250, y: 50 },
-    { x: 690, y: 350 },
+    { x: 250, y: 300 },
+    { x: 690, y: 400 },
     { x: 1000, y: 200 },
     { x: 450, y: 500 },
   ],
@@ -128,9 +128,9 @@ export const CleaningRoom: roomData = {
 export const FoodRoom: roomData = {
   sceneId: "food",
   bloodLocations: [
-    { x: 250, y: 50 },
-    { x: 690, y: 350 },
-    { x: 1000, y: 200 },
+    { x: 500, y: 20 },
+    { x: 300, y: 350 },
+    { x: 850, y: 160 },
     { x: 450, y: 500 },
   ],
   defaultSpawn: { x: 350, y: 50 },

@@ -7,6 +7,9 @@ import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { MSG_SERVICE } from "../main.ts";
 import { BaseRoomScene } from "../scenes/baseRoomScene.ts";
 import { CleaningRoom, DeliveryRoom, FoodRoom, PharmaRoom  } from "../scenes/roomData.ts"
+import { StoreFloor } from "../scenes/storeInterior/storeFloorController.ts";
+import { SatisfactionDisplayEntity } from "../bosssatisfaction/satisfactionDisplayEntity.ts";
+import { Vignette } from "../scenes/storeInterior/vignetteController.ts";
 
 /**
  * Represents concrete level data/parameters
@@ -55,12 +58,15 @@ export function loadLevelOne(
   sceneManager.addLevelEntity(orderLoop);
 
   // Add boss satisfaction manager
-  const bossSatisfaction = new BossSatisfaction(orderLoop); // TODO: help idk where to get asset maanager from and if my implementation even makes sense im too tired to deal w this rn
+  const bossSatisfaction = new BossSatisfaction(orderLoop); 
   sceneManager.addLevelEntity(bossSatisfaction);
-
-  //const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(1000, 10, bossSatisfaction);
-  //sceneManager.addUIEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
-
+  const satisfactionDisplay = new SatisfactionDisplayEntity(950, 20, bossSatisfaction);
+  sceneManager.addUIEntity(satisfactionDisplay);
+  
+  /* Create vignette */
+  const vignette = new Vignette();
+  sceneManager.addUIEntity(vignette)
+  
   MSG_SERVICE.queueMessage("SHIFT 1");
   MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }

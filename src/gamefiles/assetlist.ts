@@ -31,7 +31,8 @@ export const environmentAssets: IAssetList[] = [
   { id: "AllHShelves", type: "img", location: "./assets/AllHShelves.png" },
   { id: "arrow", type: "img", location: "./assets/ArrowSpritesheet.png" },
   { id: "floor", type: "img", location: "./assets/StoreFloorTexture.png" },
-  { id: "blood", type: "img", location: "./assets/BloodSplatter.png" }
+  { id: "blood", type: "img", location: "./assets/BloodSplatter.png" },
+  { id: "shelfShadow", type: "img", location: "./assets/ShelfShadow.png" }
 ];
 
 /** Assets for items */

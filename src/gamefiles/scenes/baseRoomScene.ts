@@ -17,8 +17,10 @@ import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
-import { StoreInteriorRenderer } from "./storeInterior/storeInteriorRenderer.ts";
-import { StoreInterior } from "./storeInterior/storeInteriorController.ts";
+import { StoreFloor } from "./storeInterior/storeFloorController.ts";
+import { BloodController } from "./storeInterior/bloodSplatterController.ts";
+import { ShelfShadow } from "./storeInterior/shelfShadowController.ts";
+import { Vignette } from "./storeInterior/vignetteController.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -56,12 +58,7 @@ export class BaseRoomScene implements IScene {
    */
   onEnter(sceneManager: SceneManager): void {
     console.log("Loading scene " + this.roomData.sceneId);
-    for (const bloodPos of this.roomData.bloodLocations) {
-      const blood = new StoreInterior(bloodPos);
-      this.localEntities.push(blood);
-      sceneManager.addEntity(blood);
-      this.collisionSystem.addEntity(blood);
-    }
+    
     // Attempt to find the current player
     let player: PlayerController | null;
     const existingPlayer = sceneManager.getLevelEntities().find(
@@ -101,8 +98,12 @@ export class BaseRoomScene implements IScene {
         throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
       }
       const shelf = new ShelfController(shelfData.position, shelfSprite, shelfData.shelfNum);
-
-     
+      
+      /* Shelf shadow */
+      const shelfShadow = new ShelfShadow(shelfData.position);
+      this.localEntities.push(shelfShadow);
+      sceneManager.addEntity(shelfShadow);
+      
       // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.
       const numItems = allowedItems.length >= ITEM_HSHELF_POSITION.length ? ITEM_HSHELF_POSITION.length : allowedItems.length;
       const shelfItems = allowedItems.splice(0, numItems);
@@ -128,6 +129,11 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(shelf);
       this.collisionSystem.addEntity(shelf);
     }
+
+    /* Create vignette */
+    // const vignette = new Vignette();
+    // this.localEntities.push(vignette);
+    // sceneManager.addEntity(vignette);
 
     /* Create door triggers */
     if (player) {
@@ -160,6 +166,20 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(deliveryEntity);
 
     }
+
+    /* Blood splatters */
+    for (const bloodPos of this.roomData.bloodLocations) {
+      const blood = new BloodController(bloodPos);
+      sceneManager.addEntity(blood);
+      this.collisionSystem.addEntity(blood);
+      this.localEntities.push(blood);
+    }
+
+    /* Floor texture */
+    const floor = new StoreFloor();
+    sceneManager.addEntity(floor);
+    this.collisionSystem.addEntity(floor);
+    this.localEntities.push(floor);
   }
 
   /**

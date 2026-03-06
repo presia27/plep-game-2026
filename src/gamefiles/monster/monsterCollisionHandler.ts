@@ -8,11 +8,6 @@ import { InputSystem } from "../../inputsys.ts";
 import { PlayerController } from "../player/playerController.ts";
 import { MonsterMovementSystem } from "./monsterMovementSystem.ts";
 
-/**
- * Monster collision handler that prevents the monster from moving through solid objects
- * Based on the player collision handler
- * @author Emma Szebenyi
- */
 export class MonsterCollisionHandler extends AbstractCollisionHandler {
   private boundingBox: BoundingBox;
   private movementComponent: MovementComponent;

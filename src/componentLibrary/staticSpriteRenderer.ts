@@ -14,7 +14,8 @@ export class StaticSpriteRenderer implements IRenderer {
   positionComponent: IPosition;
   sizeComponent: ISize;
   private boundingBox: BoundingBox | null;
-
+  private darkenMode: boolean | null;
+  private opacity: number | null;
   /**
    * 
    * @param image HTML Image
@@ -33,7 +34,9 @@ export class StaticSpriteRenderer implements IRenderer {
     spriteHeight: number,
     positionComponent: IPosition,
     sizeComponent: ISize,
-    boundingBox?: BoundingBox | null
+    boundingBox?: BoundingBox | null,
+    darkenMode?: boolean | null,
+    opacity?: number | null
   ) {
     this.image = image;
     this.xStart = spriteXstart;
@@ -43,12 +46,21 @@ export class StaticSpriteRenderer implements IRenderer {
     this.sizeComponent = sizeComponent;
     this.positionComponent = positionComponent;
     this.boundingBox = boundingBox ?? null;
+    this.darkenMode = darkenMode ?? null;
+    this.opacity = opacity ?? null;
   }
   
   public draw(context: GameContext): void {
     const pos = this.positionComponent.getPosition();
     const width = this.sizeComponent.getWidth();
     const height = this.sizeComponent.getHeight();
+
+    if (this.darkenMode !== null && this.darkenMode === true)
+      context.ctx.globalCompositeOperation = "darken";
+
+    if (this.opacity !== null)
+      context.ctx.globalAlpha = this.opacity;
+
     // drawImage takes the following parameters:
     // spritesheet, 
     // spriteX, spriteY, spriteWidth, spriteHeight, 
@@ -64,6 +76,9 @@ export class StaticSpriteRenderer implements IRenderer {
       width,
       height
     );
+
+    context.ctx.globalCompositeOperation = "source-over";
+    context.ctx.globalAlpha = 1;
 
     if (context.debug) {
       context.ctx.save();
@@ -89,6 +104,7 @@ export class StaticSpriteRenderer implements IRenderer {
       }
       context.ctx.restore();
     }
+    context.ctx.restore();
     
   } 
 }
