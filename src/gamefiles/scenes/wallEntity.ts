@@ -30,8 +30,8 @@ export class WallEntity extends Entity {
       context.ctx.save();
       context.ctx.strokeStyle = "#197d61";
       context.ctx.strokeRect(
-        this.wallBoundingBox.getLeft(),
-        this.wallBoundingBox.getTop(),
+        this.wallBoundingBox.getLeft() - context.cameraPosition.x,
+        this.wallBoundingBox.getTop() - context.cameraPosition.y,
         this.wallBoundingBox.getRight() - this.wallBoundingBox.getLeft(),
         this.wallBoundingBox.getBottom() - this.wallBoundingBox.getTop()
       );

@@ -56,8 +56,8 @@ export class UpdatePoint extends Entity {
       // draw the full extent of the entity
       context.ctx.strokeStyle = "#e30282";
       context.ctx.strokeRect(
-        this.updatePoint.x,
-        this.updatePoint.y,
+        this.updatePoint.x - context.cameraPosition.x,
+        this.updatePoint.y - context.cameraPosition.y,
         2,
         2
       );
@@ -66,8 +66,8 @@ export class UpdatePoint extends Entity {
       context.ctx.strokeStyle = "#197d61";
       if (this.updatePointBB) {
         context.ctx.strokeRect(
-          this.updatePointBB.getLeft(),
-          this.updatePointBB.getTop(),
+          this.updatePointBB.getLeft() - context.cameraPosition.x,
+          this.updatePointBB.getTop() - context.cameraPosition.y,
           this.updatePointBB.getRight() - this.updatePointBB.getLeft(),
           this.updatePointBB.getBottom() - this.updatePointBB.getTop()
         )
