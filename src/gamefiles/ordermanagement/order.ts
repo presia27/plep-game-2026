@@ -12,6 +12,8 @@ export class Order {
   private arrivalTime: number | null;
   /** Stores the time the order was fulfilled, or null if the player hasn't picked up all items */
   private fulfillTime: number | null;
+  /** Store the number of mistakes made (anything that doesn't match the order) */
+  private fulfillMistakeCount: number | null;
   /** Percentage representing how accurate an order was fulfilled */
   private fulfillAccuracy: number | null;
 
@@ -19,6 +21,7 @@ export class Order {
     this.items = new Map();
     this.arrivalTime = null;
     this.fulfillTime = null;
+    this.fulfillMistakeCount = null;
     this.fulfillAccuracy = null;
   }
 
@@ -77,6 +80,19 @@ export class Order {
 
   public getFulfillAccuracy(): number | null {
     return this.fulfillAccuracy;
+  }
+
+  /** Set the number of mistakes made in the order */
+  public setFulfillMistakeCount(count: number): void {
+    if (count < 0) {
+      this.fulfillMistakeCount = 0;
+    } else {
+      this.fulfillMistakeCount = count;
+    }
+  }
+
+  public getFulfillMistakeCount(): number | null {
+    return this.fulfillMistakeCount;
   }
 
   public getItems(): Map<ItemType, number> {

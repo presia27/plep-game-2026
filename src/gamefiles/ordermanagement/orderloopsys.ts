@@ -147,20 +147,20 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     }
   }
 
-  private calculateAccuracy(correctOrder: Order, itemsToEvaluate: Map<ItemType, number>): number {
+  private calculateAndSetAccuracy(referenceOrder: Order, itemsToEvaluate: Map<ItemType, number>): void {
     /** Calculate correctness */
       let biggerMap;
       let smallerMap;
-      if (correctOrder.getAllItems().size >= itemsToEvaluate.size) {
-        biggerMap = correctOrder.getAllItems();
+      if (referenceOrder.getAllItems().size >= itemsToEvaluate.size) {
+        biggerMap = referenceOrder.getAllItems();
         smallerMap = itemsToEvaluate;
       } else {
         biggerMap = itemsToEvaluate;
-        smallerMap = correctOrder.getAllItems();
+        smallerMap = referenceOrder.getAllItems();
       }
 
-      let totalCorrectCount = 0;
-      let incorrectCount = 0;
+      let totalCorrectCount = 0;  // total items in the order (sum of all item quantities)
+      let incorrectCount = 0;     // number of incorrect items
 
       for (const [key, value] of biggerMap) {
         totalCorrectCount += value;
@@ -171,7 +171,8 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
         }
       }
 
-      return(Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount;
+      referenceOrder.setFulfillMistakeCount(incorrectCount);
+      referenceOrder.setFulfillAccuracy((Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount);
   }
 
   public deliverOrder(items: Map<ItemType, number>): void {
@@ -179,14 +180,14 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     if (currentlyActive) {
       this.doneOrders.push(currentlyActive);
       currentlyActive.setFulfillTime(this.lastClockTime);
+
+      /* Check accuracy */
+      this.calculateAndSetAccuracy(currentlyActive, items);
+
       // send alert
       this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
       if (this.getCurrentActiveOrder() !== null)
         this.notifyObservers(this.getCurrentActiveOrder(), OBS_NEW_ACTIVE_ORDER);
-    
-      /* Check accuracy */
-      currentlyActive.setFulfillAccuracy(this.calculateAccuracy(currentlyActive, items));
-      console.log(currentlyActive.getFulfillAccuracy());
     }
   }
 

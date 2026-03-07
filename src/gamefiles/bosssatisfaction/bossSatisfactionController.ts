@@ -22,12 +22,10 @@ export class BossSatisfaction extends Entity implements Observer {
     private satisfaction: number; // Satisfaction points, if reaches 0, the game is over and the player loses
     private decreaseRate: number; // Satisfaction points lost per second (correlates to level length)
     private errorWeight: number; // Satisfaction points lost per incorrect item delivered
-    private orderLoop: OrderDeliveryLoop;
     private activeOrder: Order | null;
 
     constructor(orderLoop: OrderDeliveryLoop) {
         super();
-        this.orderLoop = orderLoop;
         this.satisfaction = START_SATISFACTION;
         this.decreaseRate = orderLoop.getLevelDuration() / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
         this.activeOrder = null;
@@ -58,22 +56,27 @@ export class BossSatisfaction extends Entity implements Observer {
      * @param order the current active order
      * @param inventory the player's inventory
      */
-    public updateSatisfaction(order: OrderDeliveryLoop, inventory: InventoryManager): void {
-        const incorrectItems = this.checkOrderFulfillment(order.getCurrentActiveOrder()!.getAllItems(), inventory.getAllItems());
+    public updateSatisfaction(order: Order): void {
+        const incorrectItems = order.getFulfillMistakeCount();
+        let satisfaction = this.satisfaction;
         
         if (incorrectItems == 0) {
-            this.satisfaction += SUCCESSFUL_ORDER_POINTS + 5; // bonus points for a perfect order
-        } else {
-            this.satisfaction += SUCCESSFUL_ORDER_POINTS - (this.errorWeight * incorrectItems); // subtract points based on the number of incorrect items (negative if more incorrect items than correct items)
+            satisfaction += SUCCESSFUL_ORDER_POINTS + 5; // bonus points for a perfect order
+        } else if (incorrectItems !== null) {
+            satisfaction += SUCCESSFUL_ORDER_POINTS - (this.errorWeight * incorrectItems); // subtract points based on the number of incorrect items (negative if more incorrect items than correct items)
         }
 
         // Ensure satisfaction does not exceed the maximum or drop below the minimum
-        if (this.satisfaction > MAX_SATISFACTION) {
-            this.satisfaction = MAX_SATISFACTION;
+        if (satisfaction > MAX_SATISFACTION) {
+            satisfaction = MAX_SATISFACTION;
         } else if (this.satisfaction < MIN_SATISFACTION) {
-            this.satisfaction = MIN_SATISFACTION;
+            satisfaction = MIN_SATISFACTION;
         }
+
+        this.satisfaction = satisfaction;
     }
+
+
 
     /** Receive observer updates from order loop */
     public observerUpdate(data: any, propertyName: string): void {
@@ -83,7 +86,8 @@ export class BossSatisfaction extends Entity implements Observer {
             this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
         }
         if (OBS_ORDER_COMPLETE === propertyName) {
-            
+            const completedOrder = data as Order;
+            this.updateSatisfaction(completedOrder);
         }
     }
 
@@ -94,26 +98,26 @@ export class BossSatisfaction extends Entity implements Observer {
      * @param order a map representing all the items in the current active order
      * @returns the number of incorrect items
      */
-    public checkOrderFulfillment(order: Map<string, number>, inventory: Map<string, number>): number {
-        const allItems = new Set([...order.keys(), ...inventory.keys()]); // a set of all unique item types in both the order and inventory
-        let incorrectItems = 0;
+    // public checkOrderFulfillment(order: Map<string, number>, inventory: Map<string, number>): number {
+    //     const allItems = new Set([...order.keys(), ...inventory.keys()]); // a set of all unique item types in both the order and inventory
+    //     let incorrectItems = 0;
 
-        // For each item type in the combined set, look up its quantity in the order 
-        // (defaulting to 0 if absent) and its quantity in the inventory (defaulting to 0 if absent).
-        allItems.forEach((item) => {
-            const orderQuantity = order.get(item) ?? 0;
-            const inventoryQuantity = inventory.get(item) ?? 0;
+    //     // For each item type in the combined set, look up its quantity in the order 
+    //     // (defaulting to 0 if absent) and its quantity in the inventory (defaulting to 0 if absent).
+    //     allItems.forEach((item) => {
+    //         const orderQuantity = order.get(item) ?? 0;
+    //         const inventoryQuantity = inventory.get(item) ?? 0;
             
-            // Calculate the difference between the inventory quantity and the order quantity for this item type.
-            // If difference = 0 -> correct item
-            // If difference != 0 -> incorrect item (too many or too few of this item type)
-            const difference = inventoryQuantity - orderQuantity;
+    //         // Calculate the difference between the inventory quantity and the order quantity for this item type.
+    //         // If difference = 0 -> correct item
+    //         // If difference != 0 -> incorrect item (too many or too few of this item type)
+    //         const difference = inventoryQuantity - orderQuantity;
             
-            if (difference != 0) // Increment incorrectItems by the absolute value of the difference (how many items of this type are incorrect)
-                incorrectItems += Math.abs(difference);
-        });
-        return incorrectItems;
-    }
+    //         if (difference != 0) // Increment incorrectItems by the absolute value of the difference (how many items of this type are incorrect)
+    //             incorrectItems += Math.abs(difference);
+    //     });
+    //     return incorrectItems;
+    // }
 
     /**
      * Returns true if satisfaction reaches 0, indicating the game is over.
