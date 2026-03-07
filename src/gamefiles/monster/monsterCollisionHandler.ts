@@ -10,11 +10,24 @@ import { MonsterMovementSystem } from "./monsterMovementSystem.ts";
 import { UpdatePoint } from "./updatePointEntity.ts";
 import { WallEntity } from "../scenes/wallEntity.ts";
 import { XY } from "../../typeinterfaces.ts";
-import { roomData } from "../scenes/roomData.ts";
+
+/* dont let the monster update its position on an update point more than once in the span of sthis amount of frames */
+const UPDATE_POINT_COOLDOWN_FRAMES: number = 30;
+/* if the monster doesnt hit an update point within this amt of time, it is stuck */ 
+const STUCK_THRESHOLD_FRAMES: number = 1500; 
+
+const AXIS_ALIGN_THRESHOLD: number = 10;
+
+const RECOVERY_POINTS: XY[] = [
+  {x: 50, y: 40}, {x: 1150, y: 40}, 
+  {x: 50, y: 600}, {x: 1150, y: 600}, 
+  {x: 600, y: 350}
+]; 
+
 /**
  * Monster collision handler that prevents the monster from moving through solid objects
  * Based on the player collision handler
- * @author Emma Szebenyi
+ * @author Emma Szebenyi, Claude Sonnet 4.6
  */
 export class MonsterCollisionHandler extends AbstractCollisionHandler {
   private boundingBox: BoundingBox;
@@ -25,18 +38,14 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
   private hitWallThisFrame: boolean = false; // flag to check if the monster has hit a wall 
 
   private updatePointCooldown: number = 0; 
-  private readonly UPDATE_POINT_COOLDOWN_FRAMES: number = 30; // dont let the monster update its position on an update point more than once in the span of sthis amount of frames
+  //private readonly UPDATE_POINT_COOLDOWN_FRAMES: number = 30; // dont let the monster update its position on an update point more than once in the span of sthis amount of frames
 
   private framesWithoutUpdatePoint: number = 0;
-  private readonly STUCK_THRESHOLD_FRAMES: number = 1500; // if the monster doesnt hit an update point within this amt of time, it is stuck
+  //private readonly STUCK_THRESHOLD_FRAMES: number = 1500; // if the monster doesnt hit an update point within this amt of time, it is stuck
   
-  private RECOVERY_POINTS: XY[] = [
-    {x: 50, y: 40}, {x: 1150, y: 40}, 
-    {x: 50, y: 600}, {x: 1150, y: 600}, 
-    {x: 600, y: 350}
-  ]; // points the monster can walk to if it gets stuck
-  private readonly AXIS_ALIGN_THRESHOLD: number = 10;
-  
+  // points the monster can walk to if it gets stuck
+  private recoveryPoints: XY[];
+
   private isRecovering: boolean = false;
   private recoveryTarget: XY | null = null;
   
@@ -47,13 +56,21 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
    * @param movementComponent movement system
    * @param sizeComponent size of monster
    * @param movementSys movement system
+   * @param recoveryPoints safe harbor coordinates if the monster gets stuck (array of XY points)
    */
-  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, movementSys: MonsterMovementSystem) {
+  constructor(boundingBox: BoundingBox,
+    movementComponent: MovementComponent,
+    sizeComponent: ISize,
+    movementSys: MonsterMovementSystem,
+    recoveryPoints: XY[]
+  ) {
     super();
     this.boundingBox = boundingBox;
     this.movementComponent = movementComponent;
     this.sizeComponent = sizeComponent;
     this.movementSys = movementSys;
+
+    this.recoveryPoints = recoveryPoints;
   }
 
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {
@@ -140,7 +157,7 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
       this.movementComponent.setPosition(pos);
       this.movementSys.reverseDirection();
       this.hitWallThisFrame = true;
-      this.updatePointCooldown = this.UPDATE_POINT_COOLDOWN_FRAMES;
+      this.updatePointCooldown = UPDATE_POINT_COOLDOWN_FRAMES;
       this.incrementStuckTimer();
     }
 
@@ -163,7 +180,7 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
 
       this.movementComponent.setPosition(monsterPos);
       this.movementSys.applyPendingDirection();
-      this.updatePointCooldown = this.UPDATE_POINT_COOLDOWN_FRAMES;
+      this.updatePointCooldown = UPDATE_POINT_COOLDOWN_FRAMES;
       this.resetStuckTimer();
     }
 
@@ -183,7 +200,7 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
   public incrementStuckTimer(): void {
     if (this.isRecovering) return;
     this.framesWithoutUpdatePoint++;
-    if (this.framesWithoutUpdatePoint >= this.STUCK_THRESHOLD_FRAMES) {
+    if (this.framesWithoutUpdatePoint >= STUCK_THRESHOLD_FRAMES) {
       this.isRecovering = true;
       this.walkToNearestCorner();
     }
@@ -200,7 +217,7 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
     let nearestDist = Infinity;
 
     
-    for (const point of this.RECOVERY_POINTS) {
+    for (const point of this.recoveryPoints) {
       const px = point.x;
       const py = point.y;
       const dist = Math.sqrt((px - monsterPos.x) ** 2 + (py - monsterPos.y) ** 2);
@@ -215,16 +232,16 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
       const dy = nearest.y - monsterPos.y;
 
       // Check if we've reached the target
-      if (Math.abs(dx) < this.AXIS_ALIGN_THRESHOLD && Math.abs(dy) < this.AXIS_ALIGN_THRESHOLD) {
+      if (Math.abs(dx) < AXIS_ALIGN_THRESHOLD && Math.abs(dy) < AXIS_ALIGN_THRESHOLD) {
         this.resetStuckTimer(); // exit recovery mode
         return;
       }
       
       // First align on whichever axis is further, then the other
-      if (Math.abs(dx) > this.AXIS_ALIGN_THRESHOLD) {
+      if (Math.abs(dx) > AXIS_ALIGN_THRESHOLD) {
         // Walk horizontally first
         this.movementSys.forceDirection({ x: dx > 0 ? 1 : -1, y: 0 });
-      } else if (Math.abs(dy) > this.AXIS_ALIGN_THRESHOLD) {
+      } else if (Math.abs(dy) > AXIS_ALIGN_THRESHOLD) {
         // Then walk vertically
         this.movementSys.forceDirection({ x: 0, y: dy > 0 ? 1 : -1 });
       }

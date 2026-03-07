@@ -33,7 +33,8 @@ export class MonsterEntity extends Entity {
   constructor(
     defaultXY: XY,
     scale: number,
-    playerPos: IPosition
+    playerPos: IPosition,
+    recoveryPoints: XY[]
   ) {
     super();
 
@@ -43,7 +44,7 @@ export class MonsterEntity extends Entity {
     const monsterSize = new BasicSize(MONSTER_WIDTH, MONSTER_HEIGHT, scale);
     const monsterBoundSize = new BasicSize(MONSTER_BOUND_X, MONSTER_BOUND_Y, scale);
     const monsterBoundingBox = new BoundingBox(monsterMovementAndPosition, monsterBoundSize, MONSTER_BOUND_OFFSET_X, MONSTER_BOUND_OFFSET_Y);
-    const monsterCollisionHandler = new MonsterCollisionHandler(monsterBoundingBox, monsterMovementAndPosition, monsterSize, monsterMovementSys);
+    const monsterCollisionHandler = new MonsterCollisionHandler(monsterBoundingBox, monsterMovementAndPosition, monsterSize, monsterMovementSys, recoveryPoints);
     //const updatePointCollisionHandler = new UpdatePointCollisionHandler(monsterMovementSys);
     const frameResetter = new MonsterCollisionFrameResetter(monsterCollisionHandler);
     super.addComponent(monsterMovementAndPosition)

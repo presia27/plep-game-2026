@@ -18,7 +18,8 @@ import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 import { UpdatePoint } from "../monster/updatePointEntity.ts";
-import { BottomWallEntity, LeftWallEntity, RightWallEntity, TopWallEntity, WallEntity } from "./wallEntity.ts";
+import { WallEntity } from "./wallEntity.ts";
+import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -80,43 +81,64 @@ export class BaseRoomScene implements IScene {
         });
         /* Create and load monsters */
         for (const monsterSpawn of this.roomData.monsterSpawns) {
-          const monster = new MonsterEntity(monsterSpawn, 5, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          const monster = new MonsterEntity(
+            monsterSpawn,
+            5,
+            movementComponent,
+            this.roomData.updatePoints.slice()
+          ); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
           sceneManager.addEntity(monster);
           this.localEntities.push(monster);
           this.collisionSystem.addEntity(monster);
         }
-        for (const updatePoint of this.roomData.updatePoints) {
-          const pointTrigger = new UpdatePoint(
-            updatePoint
-          );
-          this.localEntities.push(pointTrigger);
-          sceneManager.addEntity(pointTrigger);
-          this.collisionSystem.addEntity(pointTrigger);
-        }
-        const topWall = new TopWallEntity();
-        const bottomWall = new BottomWallEntity();
-        const leftWall = new LeftWallEntity();
-        const rightWall = new RightWallEntity();
-        
-        sceneManager.addEntity(topWall);
-        sceneManager.addEntity(bottomWall);
-        sceneManager.addEntity(leftWall);
-        sceneManager.addEntity(rightWall);
-
-        this.localEntities.push(topWall);
-        this.localEntities.push(bottomWall);
-        this.localEntities.push(leftWall);
-        this.localEntities.push(rightWall);
-
-        this.collisionSystem.addEntity(topWall);
-        this.collisionSystem.addEntity(bottomWall);
-        this.collisionSystem.addEntity(rightWall);
-        this.collisionSystem.addEntity(leftWall);
       }
     } else {
       player = null;
       console.error("Player not found during scene load");
     }
+
+    /* Create update points */
+    for (const updatePoint of this.roomData.updatePoints) {
+      const pointTrigger = new UpdatePoint(
+        updatePoint
+      );
+      this.localEntities.push(pointTrigger);
+      sceneManager.addEntity(pointTrigger);
+      this.collisionSystem.addEntity(pointTrigger);
+    }
+    
+    /* Create walls */
+    const topWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      1280, 3, 5
+    );
+    const bottomWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 705 }),
+      1280, 3, 5
+    );
+    const leftWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      3, 720, 5
+    );
+    const rightWall = new WallEntity(
+      new staticPositionComponent({ x: 1265, y: 0 }),
+      3, 720, 5
+    );
+
+    sceneManager.addEntity(topWall);
+    sceneManager.addEntity(bottomWall);
+    sceneManager.addEntity(leftWall);
+    sceneManager.addEntity(rightWall);
+
+    this.localEntities.push(topWall);
+    this.localEntities.push(bottomWall);
+    this.localEntities.push(leftWall);
+    this.localEntities.push(rightWall);
+
+    this.collisionSystem.addEntity(topWall);
+    this.collisionSystem.addEntity(bottomWall);
+    this.collisionSystem.addEntity(rightWall);
+    this.collisionSystem.addEntity(leftWall);
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
