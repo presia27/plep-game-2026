@@ -5,6 +5,7 @@ import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAss
 import SceneManager from "../sceneManager.ts";
 import { GameState } from "../gameState.ts";
 import { MessengerService } from "../messengerService.ts";
+import { Camera } from "../camera.ts";
 
 /**
  * This file bootstraps the game engine and loads
@@ -23,7 +24,8 @@ if (ctx === null || ctx === undefined) {
 }
 
 const sceneManager = new SceneManager();
-const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
+const camera = new Camera(ctx.canvas.width, ctx.canvas.height);
+const gameEngine = new GameEngine(ctx, sceneManager, camera, myInputMap, { debugging: true });
 export const ASSET_MANAGER = new AssetManager();
 export const MSG_SERVICE = new MessengerService();
 
@@ -53,7 +55,7 @@ pixelFont.load().then(
 
 ASSET_MANAGER.downloadAll().then(() => {
   // Initialize the game engine and components, pass control to the manager
-  const gameState = new GameState(gameEngine, sceneManager, ctx);
+  const gameState = new GameState(gameEngine, sceneManager, camera, ctx);
 
   gameEngine.start();
 });

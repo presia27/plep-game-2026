@@ -31,6 +31,7 @@ export interface GameContext {
   clockTick: number;
   gameTime: number;
   ctx: CanvasRenderingContext2D;
+  cameraPosition: XY;
   debug: boolean;
 }
 

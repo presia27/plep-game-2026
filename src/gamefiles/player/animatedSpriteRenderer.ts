@@ -180,14 +180,20 @@ export class AnimatedSpriteRenderer implements IRenderer {
     if (animation) {
       if (isMoving) {
         // Animate when moving
-        animation.drawFrame(context.clockTick, context.ctx, pos.x, pos.y, this.scale);
+        animation.drawFrame(
+          context.clockTick,
+          context.ctx,
+          pos.x - context.cameraPosition.x,
+          pos.y - context.cameraPosition.y,
+          this.scale
+        );
       } else {
         // Draw static idle frame when not moving (first frame of current direction)
         context.ctx.drawImage(
           this.spritesheet,
           0, 181 + (this.currentDirection * 20), // x, y on spritesheet
           20, 19, // source width, height
-          pos.x, pos.y, // destination x, y
+          pos.x - context.cameraPosition.x, pos.y - context.cameraPosition.y, // destination x, y
           20 * this.scale, 19 * this.scale // destination width, height
         );
       }
@@ -199,8 +205,8 @@ export class AnimatedSpriteRenderer implements IRenderer {
       // draw the full extent of the entity
       context.ctx.strokeStyle = "#0000cd";
       context.ctx.strokeRect(
-        this.positionComponent.getPosition().x,
-        this.positionComponent.getPosition().y,
+        this.positionComponent.getPosition().x - context.cameraPosition.x,
+        this.positionComponent.getPosition().y - context.cameraPosition.y,
         this.sizeComponent.getWidth(),
         this.sizeComponent.getHeight(),
       );
@@ -209,8 +215,8 @@ export class AnimatedSpriteRenderer implements IRenderer {
       context.ctx.strokeStyle = "#ff0000";
       if (this.boundingBox) {
         context.ctx.strokeRect(
-          this.boundingBox.getLeft(),
-          this.boundingBox.getTop(),
+          this.boundingBox.getLeft() - context.cameraPosition.x,
+          this.boundingBox.getTop() - context.cameraPosition.y,
           this.boundingBox.getRight() - this.boundingBox.getLeft(),
           this.boundingBox.getBottom() - this.boundingBox.getTop()
         )
