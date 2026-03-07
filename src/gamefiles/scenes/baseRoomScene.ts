@@ -20,12 +20,19 @@ import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 import { StoreFloor } from "./storeInterior/storeFloorController.ts";
 import { BloodController } from "./storeInterior/bloodSplatterController.ts";
 import { ShelfShadow } from "./storeInterior/shelfShadowController.ts";
+import { UpdatePoint } from "../monster/updatePointEntity.ts";
+import { WallEntity } from "./wallEntity.ts";
+import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
+  {x: 30, y: 20},
   {x: 8, y: 20},
-  {x: 44, y: 20}
-];
+  {x: 52, y: 20}
+]; 
+// TODO: i'd like to make it so items exist in diff locations depending on the number of 
+// rows the shelf has, since some shelves have only 2 rows and then items spawn looking like 
+// they're floating rather than sitting on the shelf
 
 /**
  * Altered base class for all room scenes.
@@ -77,7 +84,12 @@ export class BaseRoomScene implements IScene {
         });
         /* Create and load monsters */
         for (const monsterSpawn of this.roomData.monsterSpawns) {
-          const monster = new MonsterEntity(ASSET_MANAGER, monsterSpawn, 4, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          const monster = new MonsterEntity(
+            monsterSpawn,
+            5,
+            movementComponent,
+            this.roomData.updatePoints.slice()
+          ); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
           sceneManager.addEntity(monster);
           this.localEntities.push(monster);
           this.collisionSystem.addEntity(monster);
@@ -87,6 +99,49 @@ export class BaseRoomScene implements IScene {
       player = null;
       console.error("Player not found during scene load");
     }
+
+    /* Create update points */
+    for (const updatePoint of this.roomData.updatePoints) {
+      const pointTrigger = new UpdatePoint(
+        updatePoint
+      );
+      this.localEntities.push(pointTrigger);
+      sceneManager.addEntity(pointTrigger);
+      this.collisionSystem.addEntity(pointTrigger);
+    }
+    
+    /* Create walls */
+    const topWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      1280, 3, 5
+    );
+    const bottomWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 705 }),
+      1280, 3, 5
+    );
+    const leftWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      3, 720, 5
+    );
+    const rightWall = new WallEntity(
+      new staticPositionComponent({ x: 1265, y: 0 }),
+      3, 720, 5
+    );
+
+    sceneManager.addEntity(topWall);
+    sceneManager.addEntity(bottomWall);
+    sceneManager.addEntity(leftWall);
+    sceneManager.addEntity(rightWall);
+
+    this.localEntities.push(topWall);
+    this.localEntities.push(bottomWall);
+    this.localEntities.push(leftWall);
+    this.localEntities.push(rightWall);
+
+    this.collisionSystem.addEntity(topWall);
+    this.collisionSystem.addEntity(bottomWall);
+    this.collisionSystem.addEntity(rightWall);
+    this.collisionSystem.addEntity(leftWall);
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
