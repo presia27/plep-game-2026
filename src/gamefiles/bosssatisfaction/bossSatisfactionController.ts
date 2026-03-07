@@ -39,10 +39,12 @@ export class BossSatisfaction extends Entity implements Observer {
 
     public override update(context: GameContext): void {
         super.update(context);
-        if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
-            this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
-        this.getSatisfaction(); // log the current satisfaction level for testing purposes
-        this.isGameOver(); // check if the game is over after updating the satisfaction level
+            if (this.activeOrder) {
+            if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
+                this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
+            this.getSatisfaction(); // log the current satisfaction level for testing purposes
+            this.isGameOver(); // check if the game is over after updating the satisfaction level
+        }
     }
     
     /**
@@ -87,6 +89,7 @@ export class BossSatisfaction extends Entity implements Observer {
         if (OBS_ORDER_COMPLETE === propertyName) {
             const completedOrder = data as Order;
             this.updateSatisfaction(completedOrder);
+            this.activeOrder = null;
         }
     }
 
