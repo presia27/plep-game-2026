@@ -20,7 +20,6 @@ import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 import { StoreFloor } from "./storeInterior/storeFloorController.ts";
 import { BloodController } from "./storeInterior/bloodSplatterController.ts";
 import { ShelfShadow } from "./storeInterior/shelfShadowController.ts";
-import { Vignette } from "./storeInterior/vignetteController.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -129,11 +128,6 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(shelf);
       this.collisionSystem.addEntity(shelf);
     }
-
-    /* Create vignette */
-    // const vignette = new Vignette();
-    // this.localEntities.push(vignette);
-    // sceneManager.addEntity(vignette);
 
     /* Create door triggers */
     if (player) {

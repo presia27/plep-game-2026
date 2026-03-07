@@ -9,6 +9,7 @@ import { ASSET_MANAGER } from "../../main.ts";
 export const SHELF_SCALE: number = 4;
 export const SHELF_WIDTH: number = 68;
 export const SHELF_HEIGHT: number = 38;
+const SHADOW_X_OFFSET: number = 2;
 
 /**
  * Handles rendering shelf shadows using shelf locations
@@ -30,7 +31,7 @@ export class ShelfShadow extends Entity {
     if (shadow === null) {
       throw new Error("Failed to load asset for shelf shadows");
     }
-    const shadowPos = new staticPositionComponent({x: this.posComp.getPosition().x + 2 * SHELF_SCALE, y: this.posComp.getPosition().y + SHELF_HEIGHT * SHELF_SCALE} )
+    const shadowPos = new staticPositionComponent({x: this.posComp.getPosition().x + SHADOW_X_OFFSET * SHELF_SCALE, y: this.posComp.getPosition().y + SHELF_HEIGHT * SHELF_SCALE} )
     const shadowDestSize = new BasicSize(SHELF_WIDTH, SHELF_HEIGHT / 3, SHELF_SCALE)
     const shadowRenderer = new StaticSpriteRenderer(shadow, 0, 0, 68, 12, shadowPos, shadowDestSize, null, true, .65);
     super.setRenderer(shadowRenderer);

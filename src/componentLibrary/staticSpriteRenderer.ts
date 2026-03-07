@@ -55,6 +55,8 @@ export class StaticSpriteRenderer implements IRenderer {
     const width = this.sizeComponent.getWidth();
     const height = this.sizeComponent.getHeight();
 
+    context.ctx.save();
+
     if (this.darkenMode !== null && this.darkenMode === true)
       context.ctx.globalCompositeOperation = "darken";
 
