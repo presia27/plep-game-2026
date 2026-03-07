@@ -28,7 +28,8 @@ export function loadLevelOne(
   sceneManager: SceneManager,
   ctx: CanvasRenderingContext2D,
   inventoryManager: InventoryManager,
-  orderLoop: OrderDeliveryLoop
+  orderLoop: OrderDeliveryLoop,
+  bossSatisfaction: BossSatisfaction
 ) {
   // Create rooms
   const allowedRoomIds = [
@@ -65,10 +66,8 @@ export function loadLevelOne(
   sceneManager.addLevelEntity(orderLoop);
 
   // Add boss satisfaction manager
-  const bossSatisfaction = new BossSatisfaction(orderLoop); 
+  bossSatisfaction.initialize(levelParams.duration);
   sceneManager.addLevelEntity(bossSatisfaction);
-  const satisfactionDisplay = new SatisfactionDisplayEntity(950, 20, bossSatisfaction);
-  sceneManager.addUIEntity(satisfactionDisplay);
   
   /* Create vignette */
   const vignette = new Vignette();
