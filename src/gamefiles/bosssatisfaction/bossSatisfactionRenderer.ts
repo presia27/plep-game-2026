@@ -64,8 +64,6 @@ export class SatisfactionRenderer implements IRenderer {
     // Get satisfaction state
     const satisfaction = this.bossManager.getSatisfaction();
 
-    
-
     // Draw arrow displaying current satisfaction
     if (satisfaction > 0) {
       ctx.drawImage(
