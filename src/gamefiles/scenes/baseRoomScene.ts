@@ -47,14 +47,15 @@ export class BaseRoomScene implements IScene {
   protected inputSystem: InputSystem;
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
+  protected allowedRoomIds: string[];
 
-  constructor(game: GameEngine, roomData: roomData) {
+  constructor(game: GameEngine, roomData: roomData, allowedRoomIds: string[]) {
     this.roomData = roomData;
 
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
-    
+    this.allowedRoomIds = allowedRoomIds;
   }
 
   /**
@@ -192,16 +193,18 @@ export class BaseRoomScene implements IScene {
       }
 
       for (const door of this.roomData.doors) {
-        const trigger = new DoorTrigger(
-          door.position,
-          door.size,
-          door.targetSceneId,
-          sceneManager,
-          playerBoundingBox
-        );
-        this.localEntities.push(trigger);
-        sceneManager.addEntity(trigger);
-        this.collisionSystem.addEntity(trigger);
+        if (this.allowedRoomIds.includes(door.targetSceneId)) {
+          const trigger = new DoorTrigger(
+            door.position,
+            door.size,
+            door.targetSceneId,
+            sceneManager,
+            playerBoundingBox
+          );
+          this.localEntities.push(trigger);
+          sceneManager.addEntity(trigger);
+          this.collisionSystem.addEntity(trigger);
+        }
       }
     }
 
