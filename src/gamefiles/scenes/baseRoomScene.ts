@@ -18,7 +18,8 @@ import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 import { UpdatePoint } from "../monster/updatePointEntity.ts";
-import { BottomWallEntity, LeftWallEntity, RightWallEntity, TopWallEntity, WallEntity } from "./wallEntity.ts";
+import { WallEntity } from "./wallEntity.ts";
+import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -102,10 +103,22 @@ export class BaseRoomScene implements IScene {
     }
     
     /* Create walls */
-    const topWall = new TopWallEntity();
-    const bottomWall = new BottomWallEntity();
-    const leftWall = new LeftWallEntity();
-    const rightWall = new RightWallEntity();
+    const topWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      1280, 3, 5
+    );
+    const bottomWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 705 }),
+      1280, 3, 5
+    );
+    const leftWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      3, 720, 5
+    );
+    const rightWall = new WallEntity(
+      new staticPositionComponent({ x: 1265, y: 0 }),
+      3, 720, 5
+    );
 
     sceneManager.addEntity(topWall);
     sceneManager.addEntity(bottomWall);
