@@ -5,13 +5,15 @@ import { LoseScreenRender } from "./loseScreenRender.ts";
 
 export class LoseScreenScene implements IScene {
   private sceneTrigger: GameStateEventTrigger;
+  private loseText: string;
   
-  constructor(sceneTrigger: GameStateEventTrigger) {
+  constructor(sceneTrigger: GameStateEventTrigger, loseText: string) {
     this.sceneTrigger = sceneTrigger;
+    this.loseText = loseText;
   }
     
   onEnter(sceneManager: SceneManager): void {
-    const screenRenderer = new LoseScreenRender();
+    const screenRenderer = new LoseScreenRender(this.loseText);
     sceneManager.addEntity(screenRenderer);
 
     setTimeout(() => {
@@ -24,7 +26,7 @@ export class LoseScreenScene implements IScene {
   }
 
   onExit(): void {
-    // Game ends, do nothing for noe
+    // Game ends, do nothing for now
   }
 
   update(context: GameContext): void {}

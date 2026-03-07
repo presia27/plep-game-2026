@@ -1,9 +1,9 @@
 import { GameContext } from "../../classinterfaces";
 import { Entity } from "../../entity.ts";
-import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
-import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { Order } from "../ordermanagement/order.ts";
 import { OBS_NEW_ACTIVE_ORDER, OBS_ORDER_COMPLETE, Observer } from "../../observerinterfaces.ts";
+import { LEVEL_OVER, GameStateEventTrigger } from "../../gameStateEventTrigger.ts";
+import { LevelResult } from "../levels/levelinterfaces.ts";
 
 const MAX_SATISFACTION = 100; // If > MIN_SATISFACTION, the player can continue playing
 const MIN_SATISFACTION = 0; // The minimum satisfaction points, if reached, the game is over and the player loses
@@ -16,40 +16,59 @@ const SUCCESSFUL_ORDER_POINTS = 10; // Satisfaction points gained per successful
  * level timer has not run out). 
  * The satisfaction level decreases over time and with incorrect deliveries, and increases with correct deliveries.
  * 
+ * Remember to subscribe this object to the order system in the calling class.
+ * 
  * @author Emma Szebenyi
  */
 export class BossSatisfaction extends Entity implements Observer {
+    private sceneTrigger: GameStateEventTrigger;
+
     private satisfaction: number; // Satisfaction points, if reaches 0, the game is over and the player loses
     private decreaseRate: number; // Satisfaction points lost per second (correlates to level length)
     private errorWeight: number; // Satisfaction points lost per incorrect item delivered
-    private orderLoop: OrderDeliveryLoop;
     private activeOrder: Order | null;
 
-    constructor(orderLoop: OrderDeliveryLoop) {
+    /**
+     * Initialize the boss satisfaction system to
+     * zero or null values. Use initialize to
+     * populate the needed parameters.
+     */
+    constructor(sceneTrigger: GameStateEventTrigger) {
         super();
-        this.orderLoop = orderLoop;
-        this.satisfaction = START_SATISFACTION;
-        this.decreaseRate = orderLoop.getLevelDuration() / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
+        this.sceneTrigger = sceneTrigger;
+        
+        this.satisfaction = 0;
+        this.decreaseRate = 0;
         this.activeOrder = null;
         this.errorWeight = 0;
-        this.getDecreaseRate(); // log the current decrease rate for testing purposes
+    }
 
-        // Register observer
-        orderLoop.subscribe(this);
-        
+    /**
+     * Initialize the state of the boss satisfaction controller
+     * based on the specified order system.
+     * @param duration The time duration of the level
+     */
+    public initialize(duration: number, satisfaction?: number) {
+        this.satisfaction = satisfaction ?? START_SATISFACTION;
+        this.decreaseRate = duration / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
+        this.activeOrder = null;
+        this.errorWeight = 0;
+    }
+
+    public reset(): void {
+        this.satisfaction = 0;
+        this.decreaseRate = 0;
+        this.activeOrder = null;
+        this.errorWeight = 0;
     }
 
     public override update(context: GameContext): void {
         super.update(context);
-        // const newActiveOrder = this.orderLoop.getCurrentActiveOrder();
-        // if (newActiveOrder !== null && this.activeOrder !== newActiveOrder) { // if there is a new active order, update the active order and error weight
-        //     this.activeOrder = newActiveOrder;
-        //     this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
-        // }
-        if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
-            this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
-        this.getSatisfaction(); // log the current satisfaction level for testing purposes
-        this.isGameOver(); // check if the game is over after updating the satisfaction level
+        if (this.activeOrder) { // satisfaction only affected if an order is active
+            if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
+                this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
+        }
+        this.checkLoseCondition();
     }
     
     /**
@@ -58,32 +77,41 @@ export class BossSatisfaction extends Entity implements Observer {
      * @param order the current active order
      * @param inventory the player's inventory
      */
-    public updateSatisfaction(order: OrderDeliveryLoop, inventory: InventoryManager): void {
-        const incorrectItems = this.checkOrderFulfillment(order.getCurrentActiveOrder()!.getAllItems(), inventory.getAllItems());
+    public updateSatisfaction(order: Order): void {
+        const incorrectItems = order.getFulfillMistakeCount();
+        let satisfaction = this.satisfaction;
         
         if (incorrectItems == 0) {
-            this.satisfaction += SUCCESSFUL_ORDER_POINTS + 5; // bonus points for a perfect order
-        } else {
-            this.satisfaction += SUCCESSFUL_ORDER_POINTS - (this.errorWeight * incorrectItems); // subtract points based on the number of incorrect items (negative if more incorrect items than correct items)
+            satisfaction += SUCCESSFUL_ORDER_POINTS + 5; // bonus points for a perfect order
+        } else if (incorrectItems !== null) {
+            satisfaction += SUCCESSFUL_ORDER_POINTS - (this.errorWeight * incorrectItems); // subtract points based on the number of incorrect items (negative if more incorrect items than correct items)
         }
 
         // Ensure satisfaction does not exceed the maximum or drop below the minimum
-        if (this.satisfaction > MAX_SATISFACTION) {
-            this.satisfaction = MAX_SATISFACTION;
+        if (satisfaction > MAX_SATISFACTION) {
+            satisfaction = MAX_SATISFACTION;
         } else if (this.satisfaction < MIN_SATISFACTION) {
-            this.satisfaction = MIN_SATISFACTION;
+            satisfaction = MIN_SATISFACTION;
         }
+
+        this.satisfaction = satisfaction;
     }
 
     /** Receive observer updates from order loop */
     public observerUpdate(data: any, propertyName: string): void {
         if (OBS_NEW_ACTIVE_ORDER === propertyName) {
             const newOrderDataCast = data as Order;
-            this.activeOrder = newOrderDataCast;
-            this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
+            if (newOrderDataCast) {
+                this.activeOrder = newOrderDataCast;
+                this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
+                console.log("New active order with weight" + this.errorWeight);
+            }
+            
         }
         if (OBS_ORDER_COMPLETE === propertyName) {
-            
+            const completedOrder = data as Order;
+            this.updateSatisfaction(completedOrder);
+            this.activeOrder = null;
         }
     }
 
@@ -94,34 +122,39 @@ export class BossSatisfaction extends Entity implements Observer {
      * @param order a map representing all the items in the current active order
      * @returns the number of incorrect items
      */
-    public checkOrderFulfillment(order: Map<string, number>, inventory: Map<string, number>): number {
-        const allItems = new Set([...order.keys(), ...inventory.keys()]); // a set of all unique item types in both the order and inventory
-        let incorrectItems = 0;
+    // public checkOrderFulfillment(order: Map<string, number>, inventory: Map<string, number>): number {
+    //     const allItems = new Set([...order.keys(), ...inventory.keys()]); // a set of all unique item types in both the order and inventory
+    //     let incorrectItems = 0;
 
-        // For each item type in the combined set, look up its quantity in the order 
-        // (defaulting to 0 if absent) and its quantity in the inventory (defaulting to 0 if absent).
-        allItems.forEach((item) => {
-            const orderQuantity = order.get(item) ?? 0;
-            const inventoryQuantity = inventory.get(item) ?? 0;
+    //     // For each item type in the combined set, look up its quantity in the order 
+    //     // (defaulting to 0 if absent) and its quantity in the inventory (defaulting to 0 if absent).
+    //     allItems.forEach((item) => {
+    //         const orderQuantity = order.get(item) ?? 0;
+    //         const inventoryQuantity = inventory.get(item) ?? 0;
             
-            // Calculate the difference between the inventory quantity and the order quantity for this item type.
-            // If difference = 0 -> correct item
-            // If difference != 0 -> incorrect item (too many or too few of this item type)
-            const difference = inventoryQuantity - orderQuantity;
+    //         // Calculate the difference between the inventory quantity and the order quantity for this item type.
+    //         // If difference = 0 -> correct item
+    //         // If difference != 0 -> incorrect item (too many or too few of this item type)
+    //         const difference = inventoryQuantity - orderQuantity;
             
-            if (difference != 0) // Increment incorrectItems by the absolute value of the difference (how many items of this type are incorrect)
-                incorrectItems += Math.abs(difference);
-        });
-        return incorrectItems;
-    }
+    //         if (difference != 0) // Increment incorrectItems by the absolute value of the difference (how many items of this type are incorrect)
+    //             incorrectItems += Math.abs(difference);
+    //     });
+    //     return incorrectItems;
+    // }
 
     /**
      * Returns true if satisfaction reaches 0, indicating the game is over.
      * 
      * @returns boolean indicating whether the game is over or not
      */
-    public isGameOver(): boolean {
+    public checkLoseCondition(): boolean {
         if (this.satisfaction <= MIN_SATISFACTION) {
+            const result: LevelResult = {
+                success: false,
+                reason: "BOSS SATISFACTION DROPPED TO 0!"
+            }
+            this.sceneTrigger.assertChange(result, LEVEL_OVER);
             return true;
         }
         return false;
