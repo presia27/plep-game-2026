@@ -34,12 +34,14 @@ export class GameState {
 
   private levelNumber: number;
   private levelActive: boolean;
+  private gameStarted: boolean; //track if game has started
 
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
     this.gsEventTrigger = new GameStateEventTrigger(this);
 
     this.levelNumber = 0; // 0 based level number to load
     this.levelActive = false;
+    this.gameStarted = false; //game hasn't started yet
     
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
@@ -59,7 +61,8 @@ export class GameState {
     );
 
     // Load the initialized classes into their respective places
-    this.loadState();
+    //this.loadState(); //now handled by startScreenScene.ts. startScreenScene assertChanges to NEXT_SCENE,
+                        //go to stateChangeHandler and loadState is called when NEXT_SCENE is made.
 
     /* Load level or scene */
     // Load the function reference from the list of levels, then call it to load the level
@@ -170,7 +173,7 @@ export class GameState {
 
     if (NEXT_SCENE === eventType) {
       this.cleanState();
-      this.loadState();
+      this.loadState(); // loaded scene 
 
       // Load next scene, set to level field to active
       if (this.levelNumber < levelLoaders.length) {
