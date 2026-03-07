@@ -174,10 +174,11 @@ export class GameState {
           this.sceneManager.loadScene("statScreen", new StatScreenScene(this.gsEventTrigger));
         }, 3000);
       } else {
-        MSG_SERVICE.queueMessage(levelState.reason ?? "YOU FAILED");
+        const loseReason = levelState.reason ?? "YOU FAILED";
+        MSG_SERVICE.queueMessage(loseReason);
         setTimeout(() => {
           this.cleanState();
-          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger));
+          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason));
         }, 3000);
       }
     }

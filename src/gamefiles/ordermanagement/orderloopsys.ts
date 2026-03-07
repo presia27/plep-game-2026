@@ -250,7 +250,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     if (this.getNumberOfDoneOrders() < this.totalOrders) {
       return {
         success: false,
-        reason: "Failed to meet quota"
+        reason: "FAILED TO MEET QUOTA"
       }
     } else {
       return {
