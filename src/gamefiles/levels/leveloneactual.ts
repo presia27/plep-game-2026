@@ -2,7 +2,6 @@ import GameEngine from "../../gameengine.ts";
 import { INVENTORY_MAX_SLOTS } from "../../gameState.ts";
 import SceneManager from "../../sceneManager.ts";
 import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
-import { SatisfactionDisplayEntity } from "../bosssatisfaction/satisfactionDisplayEntity.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { MSG_SERVICE } from "../main.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
@@ -26,7 +25,8 @@ export function loadLevelOneActual(
   sceneManager: SceneManager,
   ctx: CanvasRenderingContext2D,
   inventoryManager: InventoryManager,
-  orderLoop: OrderDeliveryLoop
+  orderLoop: OrderDeliveryLoop,
+  bossSatisfaction: BossSatisfaction
 ) {
   // Create rooms
   const allowedRoomIds = [
@@ -56,10 +56,8 @@ export function loadLevelOneActual(
   sceneManager.addLevelEntity(orderLoop);
 
   // Initialize boss satisfaction
-  const bossSatisfaction = new BossSatisfaction(orderLoop); 
+  bossSatisfaction.initialize(levelParams.duration);
   sceneManager.addLevelEntity(bossSatisfaction);
-  const satisfactionDisplay = new SatisfactionDisplayEntity(950, 20, bossSatisfaction);
-  sceneManager.addUIEntity(satisfactionDisplay);
 
   /* Create vignette */
   const vignette = new Vignette();
