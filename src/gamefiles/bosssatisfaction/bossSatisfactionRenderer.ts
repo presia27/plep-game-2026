@@ -40,21 +40,6 @@ export class SatisfactionRenderer implements IRenderer {
       this.posX, this.posY + 7,
       PANELWIDTH, PANELHEIGHT
     )
-
-    // use custom font
-    const pixelFont = new FontFace(
-      "Jersey-20",
-      'url("../../../assets/Jersey20-Regular.ttf")'
-    );
-    document.fonts.add(pixelFont);
-    pixelFont.load().then(
-      () => {
-        console.log("Custom font loaded");
-      },
-      (err) => {
-        console.error("Font not loaded properly.", err);
-      }
-    );
     
     // Draw title
     ctx.fillStyle = 'black';
