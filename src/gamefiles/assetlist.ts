@@ -25,7 +25,7 @@ export const bossAssets: IAssetList[] = [
 
 /** All environment assets, such as shelves, desks, obstacles, background music, and more */
 export const environmentAssets: IAssetList[] = [
-  { id: "YMCAMusic", type: "audio", location: "./assets/gameMusic.wav" },
+  { id: "YMCAMusic", type: "audio", location: "./assets/gameMusic.ogg" },
   { id: "tempbg", type: "img", location: "./assets/tempbg.JPG" },
   { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
@@ -46,7 +46,7 @@ export const deliveryAssets: IAssetList [] = [
 
 /** Sound effects for gameplay events */
 export const soundEffects: IAssetList[] = [
-  { id: "orderAppear", type: "audio", location: "./assets/Order.wav" },
-  { id: "itemPickup", type: "audio", location: "./assets/PickUp.wav" },
-  { id: "orderComplete", type: "audio", location: "./assets/Success.wav" }
+  { id: "orderAppear", type: "audio", location: "./assets/Order.ogg" },
+  { id: "itemPickup", type: "audio", location: "./assets/PickUp.ogg" },
+  { id: "orderComplete", type: "audio", location: "./assets/Success.ogg" }
 ];

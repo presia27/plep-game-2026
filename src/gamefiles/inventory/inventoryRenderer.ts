@@ -5,10 +5,10 @@ import { InventoryManager } from "./inventoryManager.ts";
 import { ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { InventorySelectorComponent } from "./inventorySelectorComponent.ts";
 
-const PANELWIDTH = 240;
 const PANELHEIGHT = 80;
 const ITEM_SIDE_WIDTH = 50;
 const BUFFER = 8;
+const OFFSET_X = 4;
 
 export class InventoryRenderer implements IRenderer {
   private posX: number;
@@ -39,13 +39,20 @@ export class InventoryRenderer implements IRenderer {
     const selectedSlotFill = '#4d4d4d';
     const selectedSlotBorder = '#262626';
 
+    // Get inventory state
+    const inventory = this.inventoryMgr.getAllItems();
+    const totalSize = this.inventoryMgr.getMaxItems();
+
+    // Calculate panel width dynamically based on number of slots
+    const panelWidth = (2 * OFFSET_X) + (totalSize * ITEM_SIDE_WIDTH) + ((totalSize - 1) * BUFFER);
+
     // Draw 50% opaque border/background around entire UI
     const padding = 8;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(
       this.posX - padding,
       this.posY - 24 - padding,
-      PANELWIDTH + padding * 2,
+      panelWidth + padding * 2,
       PANELHEIGHT + 24 + padding * 2
     );
 
@@ -56,10 +63,6 @@ export class InventoryRenderer implements IRenderer {
     const title = 'Inventory';
     ctx.fillText(title, this.posX, this.posY - 8);
 
-    // Get inventory state
-    const inventory = this.inventoryMgr.getAllItems();
-    const totalSize = this.inventoryMgr.getMaxItems();
-
     // Get inventory sprites
     const itemSprite = ASSET_MANAGER.getImageAsset("items2");
     if (itemSprite === null) {
@@ -67,7 +70,6 @@ export class InventoryRenderer implements IRenderer {
     }
 
     // Offset for items inside panel
-    const offsetX = 4;
     const offsetY = 4;
 
     // Get selected slot index
@@ -76,7 +78,7 @@ export class InventoryRenderer implements IRenderer {
     // Draw empty slots and contents
     ctx.lineWidth = 3;
     for (let s = 0; s < totalSize; s++) {
-      const slotX = this.posX + offsetX + (s * (ITEM_SIDE_WIDTH + BUFFER));
+      const slotX = this.posX + OFFSET_X + (s * (ITEM_SIDE_WIDTH + BUFFER));
       const slotY = this.posY + offsetY;
 
       const isSelected = (s === selectedSlot);
@@ -94,7 +96,7 @@ export class InventoryRenderer implements IRenderer {
     inventory.forEach((value, key) => {
       const item = key;
       const itemMeta = getItemMetadata(item);
-      const startX = this.posX + offsetX + (i * (ITEM_SIDE_WIDTH + BUFFER));
+      const startX = this.posX + OFFSET_X + (i * (ITEM_SIDE_WIDTH + BUFFER));
       const startY = this.posY + offsetY;
 
       ctx.drawImage(

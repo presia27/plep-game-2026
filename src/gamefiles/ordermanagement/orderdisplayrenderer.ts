@@ -5,22 +5,23 @@ import { getItemMetadata } from "./itemTypes.ts";
 import { Order } from "./order.ts";
 import { OrderDeliveryLoop } from "./orderloopsys.ts";
 
-const PANELWIDTH = 240;
 const PANELHEIGHT = 80;
 const ITEM_SIDE_LENGTH = 50;
 const BUFFER = 8;
+const OFFSET_X = 4;
 
 export class OrderDisplayRenderer implements IRenderer {
-  private posX: number;
   private posY: number;
   private orderLoop: OrderDeliveryLoop;
   private getLevelNumber: () => number;
+  private rightMargin: number; // Distance from right edge of canvas
 
-  constructor(posX: number, posY: number, orderLoop: OrderDeliveryLoop, getLevelNumber: () => number) {
-    this.posX = posX;
-    this.posY = posY;
+  constructor(x: number, y: number, orderLoop: OrderDeliveryLoop, getLevelNumber: () => number) {
+    // x is now treated as distance from right edge (for backward compatibility, we'll calculate it)
+    this.posY = y;
     this.orderLoop = orderLoop;
     this.getLevelNumber = getLevelNumber;
+    this.rightMargin = 30; // Default margin from right edge
   }
 
   draw(context: GameContext): void {
@@ -39,13 +40,21 @@ export class OrderDisplayRenderer implements IRenderer {
     const currentOrderNum = this.orderLoop.getNumberOfDoneOrders() + 1;
     const totalOrders = this.orderLoop.getTotalOrders();
 
+    // Calculate panel width based on number of items in current order
+    const currentOrder = activeOrders[0];
+    const numItems = currentOrder ? currentOrder.getAllItems().size : 3; // default to 3 if no order
+    const panelWidth = (2 * OFFSET_X) + (numItems * ITEM_SIDE_LENGTH) + ((numItems - 1) * BUFFER);
+
+    // Calculate position to right-align the panel
+    const posX = ctx.canvas.width - panelWidth - this.rightMargin;
+
     // Draw 50% opaque border/background around entire UI
     const padding = 8;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(
-      this.posX - padding,
+      posX - padding,
       this.posY - 24 - padding,
-      PANELWIDTH + padding * 2,
+      panelWidth + padding * 2,
       PANELHEIGHT + 24 + padding * 2
     );
 
@@ -54,12 +63,12 @@ export class OrderDisplayRenderer implements IRenderer {
     ctx.textAlign = 'left';
     ctx.fillStyle = 'white';
     const nightTitle = 'Night ' + this.getLevelNumber();
-    ctx.fillText(nightTitle, this.posX, this.posY - 8);
+    ctx.fillText(nightTitle, posX, this.posY - 8);
 
     // Draw "Order X / Y" on the right
     ctx.textAlign = 'right';
     const orderTitle = 'Order ' + currentOrderNum + ' / ' + totalOrders;
-    ctx.fillText(orderTitle, this.posX + PANELWIDTH, this.posY - 8);
+    ctx.fillText(orderTitle, posX + panelWidth, this.posY - 8);
 
     // Get item sprites
     const itemSprite = ASSET_MANAGER.getImageAsset("items2");
@@ -68,26 +77,24 @@ export class OrderDisplayRenderer implements IRenderer {
     }
 
     // Draw active orders
-    const currentOrder = activeOrders[0];
     if (currentOrder !== undefined && currentOrder !== null) {
-      this.drawActiveOrder(ctx, currentOrder, itemSprite, bgFill, borderOuter, slotFill, completedBorder, incompleteBorder);
+      this.drawActiveOrder(ctx, posX, currentOrder, itemSprite, bgFill, borderOuter, slotFill, completedBorder, incompleteBorder);
     }
 
     ctx.restore();
   }
 
-  private drawActiveOrder(ctx: CanvasRenderingContext2D, order: Order, itemSprite: HTMLImageElement, bgFill: string, borderOuter: string, slotFill: string, completedBorder: string, incompleteBorder: string) {
+  private drawActiveOrder(ctx: CanvasRenderingContext2D, posX: number, order: Order, itemSprite: HTMLImageElement, bgFill: string, borderOuter: string, slotFill: string, completedBorder: string, incompleteBorder: string) {
     const items = order.getAllItems();
 
     let i = 0;
-    const offsetX = 4;
     const offsetY = 4;
 
     items.forEach((value, key) => {
       const item = key;
       const itemMeta = getItemMetadata(item);
 
-      const startX = this.posX + offsetX + (i * (ITEM_SIDE_LENGTH + BUFFER));
+      const startX = posX + OFFSET_X + (i * (ITEM_SIDE_LENGTH + BUFFER));
       const startY = this.posY + offsetY;
 
       // Determine if item is completed
