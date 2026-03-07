@@ -39,11 +39,6 @@ export class BossSatisfaction extends Entity implements Observer {
 
     public override update(context: GameContext): void {
         super.update(context);
-        // const newActiveOrder = this.orderLoop.getCurrentActiveOrder();
-        // if (newActiveOrder !== null && this.activeOrder !== newActiveOrder) { // if there is a new active order, update the active order and error weight
-        //     this.activeOrder = newActiveOrder;
-        //     this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
-        // }
         if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
             this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
         this.getSatisfaction(); // log the current satisfaction level for testing purposes
@@ -82,8 +77,12 @@ export class BossSatisfaction extends Entity implements Observer {
     public observerUpdate(data: any, propertyName: string): void {
         if (OBS_NEW_ACTIVE_ORDER === propertyName) {
             const newOrderDataCast = data as Order;
-            this.activeOrder = newOrderDataCast;
-            this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
+            if (newOrderDataCast) {
+                this.activeOrder = newOrderDataCast;
+                this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
+                console.log("New active order with weight" + this.errorWeight);
+            }
+            
         }
         if (OBS_ORDER_COMPLETE === propertyName) {
             const completedOrder = data as Order;
