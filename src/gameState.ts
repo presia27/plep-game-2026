@@ -192,16 +192,14 @@ export class GameState {
     if (TOGGLE_PAUSE === eventType) {
       this.gameEngine.togglePause(this.sceneManager);
 
-      // Let's implement it with a UI entity to avoid having to cache current scene ID for returning
       if (this.gameEngine['isPaused']) {
-        // Paused: overlay settings
+        // Create pause settings overlay using StartScreenScene
         this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
         this.pauseSettingsScene.setInGame(true);
         this.pauseSettingsScene.setMenuState('SETTINGS');
 
-        // Let's add the settings buttons to the UI entities directly!
-        // StartScreenScene calls this.sceneManager.clearEntities(), but we just want it to add to uiEntities.
-        // Easiest hack: temporarily mock sceneManager.
+        // Intercept entity additions to add to UI layer instead of clearing level entities.
+        // StartScreenScene.onEnter() calls addEntity() and clearEntities(); mock to preserve level state.
         const mockSceneManager = {
           addEntity: (entity: any) => {
             this.sceneManager.addUIEntity(entity);
@@ -212,10 +210,8 @@ export class GameState {
         this.pauseSettingsScene.onEnter(mockSceneManager);
 
       } else {
-        // Unpaused: remove the settings entities
+        // Remove pause settings entities from UI layer
         for (const entity of this.pauseEntities) {
-          // We might need a method to remove UI entities or just mark them as dead
-          // Or just filter them
           const uiEntities = (this.sceneManager as any).uiEntities;
           const index = uiEntities.indexOf(entity);
           if (index > -1) {

@@ -17,11 +17,11 @@ export class OrderDisplayRenderer implements IRenderer {
   private rightMargin: number; // Distance from right edge of canvas
 
   constructor(x: number, y: number, orderLoop: OrderDeliveryLoop, getLevelNumber: () => number) {
-    // x is now treated as distance from right edge (for backward compatibility, we'll calculate it)
+    // Note: x parameter is ignored; panel is right-aligned with fixed margin
     this.posY = y;
     this.orderLoop = orderLoop;
     this.getLevelNumber = getLevelNumber;
-    this.rightMargin = 30; // Default margin from right edge
+    this.rightMargin = 30;
   }
 
   draw(context: GameContext): void {

@@ -105,7 +105,7 @@ export default class GameEngine {
 
     // Then, update the collision system
     this.collisionSystem.checkCollisions();
-
+    
     // Clear input flags AFTER all entities have had a chance to read them
     this.inputSystem.onFrameUpdate();
   };
@@ -129,7 +129,6 @@ export default class GameEngine {
 
   public togglePause(sceneMgr: SceneManager) {
     this.isPaused = !this.isPaused;
-    // We shouldn't put scene logic here, we should do it in GameState
   }
 
   toggleDebugging() {
