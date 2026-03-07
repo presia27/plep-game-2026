@@ -10,15 +10,29 @@ import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shel
 import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
-import { DoorData, ShelfData } from "./roomData.ts";
+import { DoorData, roomData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
+import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
+import { monsterAssets } from "../assetlist.ts";
+import { MonsterEntity } from "../monster/monsterEntity.ts";
+import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
+import { StoreFloor } from "./storeInterior/storeFloorController.ts";
+import { BloodController } from "./storeInterior/bloodSplatterController.ts";
+import { ShelfShadow } from "./storeInterior/shelfShadowController.ts";
+import { UpdatePoint } from "../monster/updatePointEntity.ts";
+import { WallEntity } from "./wallEntity.ts";
+import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
+  {x: 30, y: 20},
   {x: 8, y: 20},
-  {x: 44, y: 20}
-];
+  {x: 52, y: 20}
+]; 
+// TODO: i'd like to make it so items exist in diff locations depending on the number of 
+// rows the shelf has, since some shelves have only 2 rows and then items spawn looking like 
+// they're floating rather than sitting on the shelf
 
 /**
  * Altered base class for all room scenes.
@@ -27,22 +41,21 @@ const ITEM_HSHELF_POSITION: XY[] = [
  * 
  * @author Luke Willis, Claude Sonnet 4.5, Preston Sia
  */
-export abstract class BaseRoomScene implements IScene {
+export class BaseRoomScene implements IScene {
+  protected roomData: roomData;
+
   protected inputSystem: InputSystem;
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
 
-  constructor(game: GameEngine) {
+  constructor(game: GameEngine, roomData: roomData) {
+    this.roomData = roomData;
+
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
+    
   }
-
-  protected abstract getPlayerSpawnPoint(): XY;
-  protected abstract getShelfPositions(): ShelfData[];
-  protected abstract getDoorTriggers(): DoorData[];
-  abstract getAllowedItems(): ItemType[];
-  abstract getRoomId(): string;
 
   /**
    * Loads scene data and adds them as actual instances
@@ -50,7 +63,8 @@ export abstract class BaseRoomScene implements IScene {
    * @param sceneManager Scene manager
    */
   onEnter(sceneManager: SceneManager): void {
-    console.log("Loading scene " + this.getRoomId());
+    console.log("Loading scene " + this.roomData.sceneId);
+    
     // Attempt to find the current player
     let player: PlayerController | null;
     const existingPlayer = sceneManager.getLevelEntities().find(
@@ -64,35 +78,86 @@ export abstract class BaseRoomScene implements IScene {
       player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition(this.getPlayerSpawnPoint());
+        movementComponent.setPosition({
+          x: this.roomData.defaultSpawn.x,
+          y: this.roomData.defaultSpawn.y
+        });
+        /* Create and load monsters */
+        for (const monsterSpawn of this.roomData.monsterSpawns) {
+          const monster = new MonsterEntity(
+            monsterSpawn,
+            5,
+            movementComponent,
+            this.roomData.updatePoints.slice()
+          ); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          sceneManager.addEntity(monster);
+          this.localEntities.push(monster);
+          this.collisionSystem.addEntity(monster);
+        }
       }
     } else {
       player = null;
       console.error("Player not found during scene load");
     }
 
-    /* Create and load shelving and add items */
-    const allowedItems = this.getAllowedItems().slice(); // using slice to get a shallow copy
-    //let itemIndex = 0;
+    /* Create update points */
+    for (const updatePoint of this.roomData.updatePoints) {
+      const pointTrigger = new UpdatePoint(
+        updatePoint
+      );
+      this.localEntities.push(pointTrigger);
+      sceneManager.addEntity(pointTrigger);
+      this.collisionSystem.addEntity(pointTrigger);
+    }
     
-    for (const shelfData of this.getShelfPositions()) {
+    /* Create walls */
+    const topWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      1280, 3, 5
+    );
+    const bottomWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 705 }),
+      1280, 3, 5
+    );
+    const leftWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      3, 720, 5
+    );
+    const rightWall = new WallEntity(
+      new staticPositionComponent({ x: 1265, y: 0 }),
+      3, 720, 5
+    );
+
+    sceneManager.addEntity(topWall);
+    sceneManager.addEntity(bottomWall);
+    sceneManager.addEntity(leftWall);
+    sceneManager.addEntity(rightWall);
+
+    this.localEntities.push(topWall);
+    this.localEntities.push(bottomWall);
+    this.localEntities.push(leftWall);
+    this.localEntities.push(rightWall);
+
+    this.collisionSystem.addEntity(topWall);
+    this.collisionSystem.addEntity(bottomWall);
+    this.collisionSystem.addEntity(rightWall);
+    this.collisionSystem.addEntity(leftWall);
+
+    /* Create and load shelving and add items */
+    const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
+    
+    for (const shelfData of this.roomData.shelves) {
       const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
       if (shelfSprite === null) {
         throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
       }
-      const shelf = new ShelfController(shelfData.position, shelfSprite);
-
-      // add items
-      // const item = allowedItems[itemIndex]
-      // if (item) {
-      //   const roomItem = new ItemEntity(item, shelfData.position);
-      //   sceneManager.addEntity(roomItem);
-      //   this.collisionSystem.addEntity(roomItem);
-      //   this.localEntities.push(roomItem);
-      // }
-      // if (itemIndex < allowedItems.length) {
-      //   itemIndex++;
-      // }
+      const shelf = new ShelfController(shelfData.position, shelfSprite, shelfData.shelfNum);
+      
+      /* Shelf shadow */
+      const shelfShadow = new ShelfShadow(shelfData.position);
+      this.localEntities.push(shelfShadow);
+      sceneManager.addEntity(shelfShadow);
+      
       // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.
       const numItems = allowedItems.length >= ITEM_HSHELF_POSITION.length ? ITEM_HSHELF_POSITION.length : allowedItems.length;
       const shelfItems = allowedItems.splice(0, numItems);
@@ -126,7 +191,7 @@ export abstract class BaseRoomScene implements IScene {
         throw new Error("Player is missing a BoundingBox component");
       }
 
-      for (const door of this.getDoorTriggers()) {
+      for (const door of this.roomData.doors) {
         const trigger = new DoorTrigger(
           door.position,
           door.size,
@@ -140,7 +205,30 @@ export abstract class BaseRoomScene implements IScene {
       }
     }
 
-    /* Place items */
+    /* Delivery Entity */
+    const deliveryPOS = this.roomData.deliveryEntityPosition;
+    if (deliveryPOS) {
+      const deliveryEntity = new DeliveryController(deliveryPOS, 1);
+      
+      this.localEntities.push(deliveryEntity);
+      sceneManager.addEntity(deliveryEntity);
+      this.collisionSystem.addEntity(deliveryEntity);
+
+    }
+
+    /* Blood splatters */
+    for (const bloodPos of this.roomData.bloodLocations) {
+      const blood = new BloodController(bloodPos);
+      sceneManager.addEntity(blood);
+      this.collisionSystem.addEntity(blood);
+      this.localEntities.push(blood);
+    }
+
+    /* Floor texture */
+    const floor = new StoreFloor();
+    sceneManager.addEntity(floor);
+    this.collisionSystem.addEntity(floor);
+    this.localEntities.push(floor);
   }
 
   /**
@@ -150,7 +238,7 @@ export abstract class BaseRoomScene implements IScene {
    * recreating them from scratch.
    */
   onResume(sceneManager: SceneManager): void {
-    console.log("Resuming " + this.getRoomId());
+    console.log("Resuming " + this.roomData.sceneId);
     // Reposition player
     const existingPlayer = sceneManager.getLevelEntities().find(
       entity => entity instanceof PlayerController
@@ -160,7 +248,10 @@ export abstract class BaseRoomScene implements IScene {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition(this.getPlayerSpawnPoint());
+        movementComponent.setPosition({
+          x: this.roomData.defaultSpawn.x,
+          y: this.roomData.defaultSpawn.y
+        });
       }
     }
 
@@ -187,5 +278,6 @@ export abstract class BaseRoomScene implements IScene {
 
   update(context: GameContext): void {}
   draw(context: GameContext): void {}
+  
   
 }

@@ -34,6 +34,10 @@ export class CollisionSystem {
     }
   }
 
+  public clearEntities(): void {
+    this.entities = [];
+  }
+
   /**
    * Performs a narrow phase collision check
    * on all entities registered with the system.

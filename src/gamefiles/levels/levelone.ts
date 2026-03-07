@@ -2,14 +2,14 @@ import GameEngine from "../../gameengine.ts";
 import { INVENTORY_MAX_SLOTS } from "../../gameState.ts";
 import SceneManager from "../../sceneManager.ts";
 import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
-import { TemporarySatisfactionDisplayEntity } from "../bosssatisfaction/temporarySatisfactionDisplayEntity.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
-import { OrderDisplayEntity } from "../ordermanagement/orderdisplayentity.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
-import { CleaningScene } from "../scenes/rooms/cleaningScene.ts";
-import { FoodScene } from "../scenes/rooms/foodScene.ts";
-import { PharmaScene } from "../scenes/rooms/pharmaScene.ts";
-
+import { MSG_SERVICE } from "../main.ts";
+import { BaseRoomScene } from "../scenes/baseRoomScene.ts";
+import { CleaningRoom, DeliveryRoom, FoodRoom, PharmaRoom  } from "../scenes/roomData.ts"
+import { StoreFloor } from "../scenes/storeInterior/storeFloorController.ts";
+import { SatisfactionDisplayEntity } from "../bosssatisfaction/satisfactionDisplayEntity.ts";
+import { Vignette } from "../scenes/storeInterior/vignetteController.ts";
 
 /**
  * Represents concrete level data/parameters
@@ -19,33 +19,36 @@ import { PharmaScene } from "../scenes/rooms/pharmaScene.ts";
 const levelParams = {
   duration: 120,
   orderPromptVariability: 6,
-  totalOrders: 10
+  totalOrders: 2
 }
 
 export function loadLevelOne(
   gameEngine: GameEngine,
   sceneManager: SceneManager,
   ctx: CanvasRenderingContext2D,
-  inventoryManager: InventoryManager
+  inventoryManager: InventoryManager,
+  orderLoop: OrderDeliveryLoop,
+  bossSatisfaction: BossSatisfaction
 ) {
   // Create rooms
-  const pharmaScene = new PharmaScene(gameEngine);
-  const cleaningScene = new CleaningScene(gameEngine);
-  const foodScene = new FoodScene(gameEngine);
+  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom);
+  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom);
+  const foodScene = new BaseRoomScene(gameEngine, FoodRoom);
+  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom);
 
   // Get list of all allowed items for the level
-  const allowedItems = pharmaScene.getAllowedItems()
-    .concat(cleaningScene.getAllowedItems())
-    .concat(foodScene.getAllowedItems());
+  const allowedItems = PharmaRoom.allowedItems
+    .concat(CleaningRoom.allowedItems)
+    .concat(FoodRoom.allowedItems);
 
   // Pre-register all rooms so they're ready when the player walks through doors
-  sceneManager.registerScene(cleaningScene.getRoomId(), cleaningScene);
-  sceneManager.registerScene(foodScene.getRoomId(), foodScene);
-
-  sceneManager.loadScene(pharmaScene.getRoomId(), pharmaScene);
+  sceneManager.registerScene(CleaningRoom.sceneId, cleaningScene);
+  sceneManager.registerScene(FoodRoom.sceneId, foodScene);
+  sceneManager.registerScene(DeliveryRoom.sceneId, deliveryScene);
+  sceneManager.loadScene(PharmaRoom.sceneId, pharmaScene);
   
   // Add order loop
-  const orderLoop = new OrderDeliveryLoop(
+  orderLoop.init(
     gameEngine.getGameContext().gameTime,
     levelParams.duration,
     levelParams.orderPromptVariability,
@@ -55,21 +58,16 @@ export function loadLevelOne(
   );
   sceneManager.addLevelEntity(orderLoop);
 
-  const orderDisplayEntity = new OrderDisplayEntity(
-    720,
-    ctx.canvas.height - 96,
-    orderLoop
-  );
-  sceneManager.addUIEntity(orderDisplayEntity);
-
-  // Register the order loop as a listener of the inventory
-  inventoryManager.subscribe(orderLoop);
-
   // Add boss satisfaction manager
-  const bossSatisfaction = new BossSatisfaction(orderLoop);
+  bossSatisfaction.initialize(levelParams.duration);
   sceneManager.addLevelEntity(bossSatisfaction);
-  const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(900, 30, bossSatisfaction);
-  sceneManager.addUIEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
+  
+  /* Create vignette */
+  const vignette = new Vignette();
+  sceneManager.addUIEntity(vignette)
+  
+  MSG_SERVICE.queueMessage("SHIFT 1");
+  MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }
   
 

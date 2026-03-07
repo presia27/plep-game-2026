@@ -5,6 +5,7 @@ import { ItemType } from "../ordermanagement/itemTypes.ts";
 export interface ShelfData {
   position: XY;
   spriteId: string;
+  shelfNum: number;
 }
 
 /** Describes a door trigger's position, size, and which scene it leads to */
@@ -16,45 +17,97 @@ export interface DoorData {
 
 export interface roomData {
   sceneId: string;
+  bloodLocations: XY[];
   defaultSpawn: XY;
+  monsterSpawns: XY[];
+  updatePoints: XY[]; // locations where monster direction can be updated
   shelves: ShelfData[];
   doors: DoorData[];
   allowedItems: ItemType[];
+  deliveryEntityPosition?: XY;
 }
 
 export const PharmaRoom: roomData = {
   sceneId: "pharma",
+  bloodLocations: [
+    { x: 250, y: 300 },
+    { x: 690, y: 400 },
+    { x: 1000, y: 200 },
+    { x: 450, y: 500 },
+  ],
   defaultSpawn: { x: 50, y: 50 },
+  monsterSpawns: [ 
+    {x: 1100, y: 280}, {x: 60, y: 600} 
+  ],
+  updatePoints: [ // 6 points for perimeter, 0 for in between shelves
+    {x: 50, y: 40}, {x: 1200, y: 40},  
+    {x: 50, y: 280}, {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 1200, y: 600}
+  ],
   shelves: [
-    { position: { x: 150, y: 150 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 450, y: 150 }, spriteId: "HShelvesVines" },
-    { position: { x: 750, y: 150 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 150, y: 500 }, spriteId: "HShelvesVines" },
-    { position: { x: 450, y: 500 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 750, y: 500 }, spriteId: "HShelvesNoVines" }
+    { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 4 },
+    { position: { x: 450, y: 150 }, spriteId: "AllHShelves", shelfNum: 2 },
+    { position: { x: 750, y: 150 }, spriteId: "AllHShelves", shelfNum: 8 },
+    { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 6 },
+    { position: { x: 450, y: 400 }, spriteId: "AllHShelves", shelfNum: 3 },
+    { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 1 }
   ],
   doors: [
     {
       position: { x: 1200, y: 300 }, 
       size: { x: 20, y: 200 }, 
       targetSceneId: "cleaning" 
+    },
+    {
+      position: { x: 10 , y: 300 },
+      size: { x: 20 , y: 200},
+      targetSceneId: "delivery"
     }
   ],
   allowedItems: [
-    ItemType.TOILETPAPER,
-    ItemType.TISSUES,
-    ItemType.PAPERTOWEL
+    ItemType.PILL,
+    ItemType.BANDAID,
+    ItemType.MEDICINE,
+    ItemType.BOW,
+    ItemType.HEADBAND,
+    ItemType.FIRSTAID,
+    ItemType.TOOTHBRUSH,
+    ItemType.MIRROR,
+    ItemType.NAILPOLISH,
+    ItemType.NAILCLIPPERS,
+    ItemType.FLOSS,
+    ItemType.TOOTHPASTE,
+    ItemType.RAZOR,
+    ItemType.SOAP,
+    ItemType.QTIP,
+    ItemType.SHAMPOO,
+    ItemType.LOTION,
+    ItemType.MOISTURIZER
   ]
 }
 
 export const CleaningRoom: roomData = {
   sceneId: "cleaning",
+  bloodLocations: [
+    { x: 250, y: 50 },
+    { x: 690, y: 350 },
+    { x: 1000, y: 200 },
+    { x: 450, y: 500 },
+  ],
   defaultSpawn: { x: 50, y: 300 },
+  monsterSpawns: [ 
+    {x: 600, y: 250}, {x: 1100, y: 600} 
+  ],
+  updatePoints: [ // 8 for perimeter, 0 for in between shelves
+    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
+    {x: 50, y: 280},                  {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
+  ],
   shelves: [
-    { position: { x: 200, y: 150 }, spriteId: "HShelvesVines" },
-    { position: { x: 650, y: 150 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 200, y: 400 }, spriteId: "HShelvesNoVines" },
-    { position: { x: 650, y: 400 }, spriteId: "HShelvesVines" },
+    { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 1 },
+    { position: { x: 750, y: 150 }, spriteId: "AllHShelves", shelfNum: 4 },
+    { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 5 },
+    { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 8 },
   ],
   doors: [
     { 
@@ -69,20 +122,46 @@ export const CleaningRoom: roomData = {
     }
   ],
   allowedItems: [
+    ItemType.TOILETPAPER,
+    ItemType.TISSUES,
+    ItemType.PAPERTOWEL,
     ItemType.SPRAY,
     ItemType.SPONGE,
-    ItemType.MOP
+    ItemType.MOP,
+    ItemType.DUSTER,
+    ItemType.VACUUM,
+    ItemType.DUSTPAN,
+    ItemType.CLEANER,
+    ItemType.BUCKET,
+    ItemType.DETERGENT,
   ]
 }
 
 export const FoodRoom: roomData = {
   sceneId: "food",
+  bloodLocations: [
+    { x: 500, y: 20 },
+    { x: 300, y: 350 },
+    { x: 850, y: 160 },
+    { x: 450, y: 500 },
+  ],
   defaultSpawn: { x: 350, y: 50 },
+  monsterSpawns: [ 
+    {x: 1100, y: 280}, {x: 60, y: 600}, {x: 1100, y: 50}
+  ],
+  updatePoints: [ // 6 for perimeter, 0 for in between shelves
+    {x: 50, y: 40},  {x: 1200, y: 40},  
+    {x: 50, y: 280}, {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 1200, y: 600}
+  ],
   shelves: [
-    { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" },
-    { position: { x: 650, y: 200 }, spriteId: "HShelvesVines" },
-    { position: { x: 650, y: 450 }, spriteId: "HShelvesVines" },
-    { position: { x: 100, y: 450 }, spriteId: "HShelvesNoVines" },
+    { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 2 },
+    { position: { x: 450, y: 150 }, spriteId: "AllHShelves", shelfNum: 1 },
+    { position: { x: 750, y: 150 }, spriteId: "AllHShelves", shelfNum: 6 },
+    { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 7 },
+    { position: { x: 450, y: 400 }, spriteId: "AllHShelves", shelfNum: 4 },
+    { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 3 }
+
   ],
   doors: [
     { 
@@ -92,8 +171,72 @@ export const FoodRoom: roomData = {
     }
   ],
   allowedItems: [
-    ItemType.DUSTER,
-    ItemType.VACUUM,
-    ItemType.DUSTPAN
+    ItemType.STRAWBERRY,
+    ItemType.BANANA,
+    ItemType.APPLE,
+    ItemType.BROCCOLI,
+    ItemType.STEAK,
+    ItemType.FISH,
+    ItemType.CHEESE,
+    ItemType.MILK,
+    ItemType.BUTTER,
+    ItemType.CHIPS,
+    ItemType.COOKIES,
+    ItemType.SODA,
+    ItemType.PASTA,
+    ItemType.BREAD,
+    ItemType.PIZZA,
+    ItemType.ICECREAM
   ]
 }
+export const DeliveryRoom: roomData = {
+  sceneId: "delivery",
+  bloodLocations: [],
+  defaultSpawn: { x: 350, y: 50 },
+  monsterSpawns: [],
+  updatePoints: [],
+  shelves: [
+   // { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" }
+  ],
+  doors: [
+    { 
+      position: { x: 350, y: 10 }, 
+      size: { x: 80, y: 20 }, 
+      targetSceneId: "pharma" 
+    }
+  ],
+  allowedItems: [],
+  
+  deliveryEntityPosition: { x: 50, y: 300 }
+}
+
+// housing allowed items
+/*
+allowedItems: [
+    ItemType.LAMP,
+    ItemType.CHAIR,
+    ItemType.PILLOW,
+    ItemType.FLOORMIRROR,
+    ItemType.PLANT,
+    ItemType.PAINTING,
+    ItemType.CANDLE,
+    ItemType.SPOON,
+    ItemType.FORK,
+    ItemType.KNIFE
+  ]
+*/
+
+// electronics allowed items
+/*
+allowedItems: [
+    ItemType.MOUSE,
+    ItemType.LAPTOP,
+    ItemType.MONITOR,
+    ItemType.TV,
+    ItemType.HEADPHONES,
+    ItemType.CONTROLLER,
+    ItemType.SPEAKER,
+    ItemType.MICROPHONE,
+    ItemType.PHONE
+  ]
+*/

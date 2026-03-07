@@ -80,6 +80,11 @@ export class InputSystem {
       state.justPressed = false;
       state.justReleased = false;
     });
+
+    // Clear mouse events
+    this.leftClick = null;
+    this.rightClick = null;
+    this.wheel = null;
   }
 
   /**
@@ -116,6 +121,26 @@ export class InputSystem {
       }
     }
     return false;
+  }
+
+  /** Get left click status */
+  public getLeftClick(): XY | null {
+    return this.leftClick;
+  }
+
+  /** Get right click status */
+  public getRightClick(): XY | null {
+    return this.rightClick;
+  }
+
+  /** Get cursor position */
+  public getCursorPosition(): XY | null {
+    return this.cursor;
+  }
+
+  /** Get wheel state */
+  public getWheelState(): WheelEvent | null {
+    return this.wheel;
   }
 
   public startInput() {

@@ -9,6 +9,9 @@ import { ItemEntity } from "../ordermanagement/itemEntity.ts";
 import { InputAction } from "../../inputactionlist.ts";
 import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
+import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
+import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
+import { WallEntity } from "../scenes/wallEntity.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -21,14 +24,23 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
   private sizeComponent: ISize;
   private inputSys: InputSystem;
   private inventoryMgr: InventoryManager;
+  private orderLoop: OrderDeliveryLoop;
 
-  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, inputSys: InputSystem, inventoryMgr: InventoryManager) {
+  constructor(
+    boundingBox: BoundingBox,
+    movementComponent: MovementComponent,
+    sizeComponent: ISize,
+    inputSys: InputSystem,
+    inventoryMgr: InventoryManager,
+    orderLoop: OrderDeliveryLoop
+  ) {
     super();
     this.boundingBox = boundingBox;
     this.movementComponent = movementComponent;
     this.sizeComponent = sizeComponent;
     this.inputSys = inputSys;
     this.inventoryMgr = inventoryMgr;
+    this.orderLoop = orderLoop;
   }
 
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {
@@ -102,9 +114,48 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
           },
           function(reject) {}
         );
-        
-        
       }
+    }
+
+    // Handle item delivery
+    if (other instanceof DeliveryController) {
+      const customer = other as DeliveryController;
+
+      if (this.inputSys.isActionActiveSingle(InputAction.FULFILL)) {
+        const currentItems = this.inventoryMgr.getAllItems();
+        if (currentItems.size > 0 && this.orderLoop.getCurrentActiveOrder()) {
+          this.orderLoop.deliverOrder(currentItems);
+          this.inventoryMgr.clearItems();
+        }
+      }
+    }
+
+    if (other instanceof WallEntity) {
+      const wallLeft = otherBounds.getLeft();
+      const wallRight = otherBounds.getRight();
+      const wallTop = otherBounds.getTop();
+      const wallBottom = otherBounds.getBottom();
+
+      const overlapLeft = playerRight - wallLeft;
+      const overlapRight = wallRight - playerLeft;
+      const overlapTop = playerBottom - wallTop;
+      const overlapBottom = wallBottom - playerTop;
+
+      const minOverlapX = Math.min(overlapLeft, overlapRight);
+      const minOverlapY = Math.min(overlapTop, overlapBottom);
+
+      if (minOverlapX < minOverlapY) {
+        if (overlapLeft < overlapRight) 
+          pos.x = wallLeft - (xOffset + bbWidth);
+        else 
+          pos.x = wallRight - xOffset;
+      } else {
+        if (overlapTop < overlapBottom) 
+          pos.y = wallTop - (yOffset + bbHeight);
+        else 
+          pos.y = wallBottom - yOffset;
+      }
+
     }
   }
 }
