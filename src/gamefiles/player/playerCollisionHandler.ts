@@ -110,11 +110,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
         this.inventoryMgr.addItem(itemType).then(
           function() {
             // Play pickup sound
-            const pickupAudio = ASSET_MANAGER.getAudioAsset("itemPickup");
-            if (pickupAudio) {
-              pickupAudio.currentTime = 0;
-              pickupAudio.play();
-            }
+            ASSET_MANAGER.playMusic("itemPickup");
             
             // promise resolved, remove the item from the shelf
             item.getComponent(BasicLifecycle)?.die();

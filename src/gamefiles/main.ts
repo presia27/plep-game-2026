@@ -47,13 +47,3 @@ document.getElementById("btnDebug")?.addEventListener("click", () => {
   gameEngine.toggleDebugging();
 });
 
-document.getElementById("btnMusic")?.addEventListener("click", () => {
-  const bgAudio = ASSET_MANAGER.getAudioAsset("YMCAMusic");
-  if (bgAudio) {
-    if (bgAudio.paused) {
-      bgAudio.play();
-    } else {
-      bgAudio.pause();
-    }
-  }
-})

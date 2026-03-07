@@ -22,4 +22,5 @@ export enum InputAction {
   INVENTORY7 = "INVENTORY7",
   INVENTORY8 = "INVENTORY8",
   INVENTORY9 = "INVENTORY9",
+  PAUSE = "PAUSE"
 }

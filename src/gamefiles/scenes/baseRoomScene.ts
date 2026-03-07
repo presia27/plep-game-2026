@@ -4,6 +4,8 @@ import GameEngine from "../../gameengine.ts";
 import { InputSystem } from "../../inputsys.ts";
 import SceneManager from "../../sceneManager.ts";
 import { XY } from "../../typeinterfaces.ts";
+import { GameStateEventTrigger } from "../../gameStateEventTrigger.ts";
+import { InputAction } from "../../inputactionlist.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { PlayerController } from "../player/playerController.ts";
 import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shelves/shelfController.ts";
@@ -14,14 +16,15 @@ import { DoorData, roomData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
+import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
-  {x: 8, y: 20},
-  {x: 44, y: 20}
+  { x: 8, y: 20 },
+  { x: 44, y: 20 }
 ];
 
 /**
@@ -37,6 +40,7 @@ export class BaseRoomScene implements IScene {
   protected inputSystem: InputSystem;
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
+  protected orderLoop: OrderDeliveryLoop | null = null;
 
   constructor(game: GameEngine, roomData: roomData) {
     this.roomData = roomData;
@@ -44,7 +48,7 @@ export class BaseRoomScene implements IScene {
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
-    
+
   }
 
   /**
@@ -87,7 +91,7 @@ export class BaseRoomScene implements IScene {
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
-    
+
     for (const shelfData of this.roomData.shelves) {
       const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
       if (shelfSprite === null) {
@@ -95,7 +99,7 @@ export class BaseRoomScene implements IScene {
       }
       const shelf = new ShelfController(shelfData.position, shelfSprite, shelfData.shelfNum);
 
-     
+
       // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.
       const numItems = allowedItems.length >= ITEM_HSHELF_POSITION.length ? ITEM_HSHELF_POSITION.length : allowedItems.length;
       const shelfItems = allowedItems.splice(0, numItems);
@@ -110,13 +114,13 @@ export class BaseRoomScene implements IScene {
           itemPos.x = (itemPos.x * SHELF_SCALE) + shelfData.position.x;
           itemPos.y = (itemPos.y * SHELF_SCALE) + shelfData.position.y;
 
-          const itemEntity = new ItemEntity(shelfItem, itemPos);
+          const itemEntity = new ItemEntity(shelfItem, itemPos, this.orderLoop);
           sceneManager.addEntity(itemEntity);
           this.collisionSystem.addEntity(itemEntity);
           this.localEntities.push(itemEntity);
         }
       }
-      
+
       this.localEntities.push(shelf);
       sceneManager.addEntity(shelf);
       this.collisionSystem.addEntity(shelf);
@@ -147,7 +151,7 @@ export class BaseRoomScene implements IScene {
     const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
       const deliveryEntity = new DeliveryController(deliveryPOS, 1);
-      
+
       this.localEntities.push(deliveryEntity);
       sceneManager.addEntity(deliveryEntity);
       this.collisionSystem.addEntity(deliveryEntity);
@@ -167,7 +171,7 @@ export class BaseRoomScene implements IScene {
     const existingPlayer = sceneManager.getLevelEntities().find(
       entity => entity instanceof PlayerController
     );
-    
+
     if (existingPlayer) {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
@@ -185,7 +189,7 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(entity);
       this.collisionSystem.addEntity(entity);
     }
-    
+
     console.log("onResume complete");
   }
 
@@ -200,8 +204,20 @@ export class BaseRoomScene implements IScene {
     }
   }
 
-  update(context: GameContext): void {}
-  draw(context: GameContext): void {}
-  
-  
+  private eventTrigger: GameStateEventTrigger | undefined;
+
+  public setEventTrigger(trigger: GameStateEventTrigger) {
+    this.eventTrigger = trigger;
+  }
+
+  public setOrderLoop(orderLoop: OrderDeliveryLoop) {
+    this.orderLoop = orderLoop;
+  }
+
+  update(context: GameContext): void {
+    if (this.inputSystem.isActionActiveSingle(InputAction.PAUSE) && this.eventTrigger) {
+      this.eventTrigger.assertChange(null, "TOGGLE_PAUSE");
+    }
+  }
+  draw(context: GameContext): void { }
 }

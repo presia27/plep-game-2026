@@ -9,6 +9,7 @@ import { ItemCollisionHandler } from "./itemCollisionHandler.ts";
 import { ItemLifecycle } from "./itemLifecycle.ts";
 import { ItemRenderer } from "./itemRenderer.ts";
 import { getItemMetadata, ItemType } from "./itemTypes.ts";
+import { OrderDeliveryLoop } from "./orderloopsys.ts";
 
 export const ITEM_WIDTH = 8; //60;
 export const ITEM_HEIGHT = 8; //58;
@@ -31,7 +32,7 @@ const PICKUP_RADIUS_MULTIPLIER = 2;
 export class ItemEntity extends Entity {
   private itemType: ItemType;
 
-  constructor(itemType: ItemType, positionXY: XY) {
+  constructor(itemType: ItemType, positionXY: XY, orderLoop: OrderDeliveryLoop | null = null) {
     super();
 
     this.itemType = itemType;
@@ -67,6 +68,8 @@ export class ItemEntity extends Entity {
       ITEM_HEIGHT,
       itemPosition,
       itemSize,
+      itemType,
+      orderLoop,
       pickupBounds
     );
 

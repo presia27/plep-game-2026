@@ -6,14 +6,14 @@ import { BoundingBox } from "./boundingBox.ts";
  * @author Preston Sia, Emma Szebenyi
  */
 export class StaticSpriteRenderer implements IRenderer {
-  private image: HTMLImageElement;
-  private xStart: number;
-  private yStart: number;
-  private spriteWidth: number;
-  private spriteHeight: number;
+  protected image: HTMLImageElement;
+  protected xStart: number;
+  protected yStart: number;
+  protected spriteWidth: number;
+  protected spriteHeight: number;
   positionComponent: IPosition;
   sizeComponent: ISize;
-  private boundingBox: BoundingBox | null;
+  protected boundingBox: BoundingBox | null;
 
   /**
    * 

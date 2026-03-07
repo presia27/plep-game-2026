@@ -8,7 +8,7 @@ import { levelLoaders } from "./gamefiles/levels/levelLoaders.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
-import { GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE } from "./gameStateEventTrigger.ts";
+import { GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE, TOGGLE_PAUSE } from "./gameStateEventTrigger.ts";
 import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.ts";
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
@@ -40,7 +40,7 @@ export class GameState {
 
     this.levelNumber = 0; // 0 based level number to load
     this.levelActive = false;
-    
+
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
     this.ctx = ctx;
@@ -53,7 +53,7 @@ export class GameState {
     this.player = new PlayerController(
       ASSET_MANAGER,
       gameEngine.getInputSystem(),
-      {x: 0, y: 0}, 5,
+      { x: 0, y: 0 }, 5,
       this.inventoryManager,
       this.orderLoop
     );
@@ -87,17 +87,18 @@ export class GameState {
 
     // add inventory renderer
     const inventoryDisplayEntity = new InventoryDisplayEntity(
-      256,
-      this.ctx.canvas.height - 96,
+      30,
+      this.ctx.canvas.height - 70,
       this.inventoryManager,
       this.gameEngine.getInputSystem()
     );
     this.sceneManager.addUIEntity(inventoryDisplayEntity);
 
     const orderDisplayEntity = new OrderDisplayEntity(
-      720,
-      this.ctx.canvas.height - 96,
-      this.orderLoop
+      this.ctx.canvas.width - 270,
+      this.ctx.canvas.height - 70,
+      this.orderLoop,
+      () => this.levelNumber + 1
     );
     this.sceneManager.addUIEntity(orderDisplayEntity);
   }
@@ -187,7 +188,47 @@ export class GameState {
         }, 3000);
       }
     }
+
+    if (TOGGLE_PAUSE === eventType) {
+      this.gameEngine.togglePause(this.sceneManager);
+
+      // Let's implement it with a UI entity to avoid having to cache current scene ID for returning
+      if (this.gameEngine['isPaused']) {
+        // Paused: overlay settings
+        this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
+        this.pauseSettingsScene.setInGame(true);
+        this.pauseSettingsScene.setMenuState('SETTINGS');
+
+        // Let's add the settings buttons to the UI entities directly!
+        // StartScreenScene calls this.sceneManager.clearEntities(), but we just want it to add to uiEntities.
+        // Easiest hack: temporarily mock sceneManager.
+        const mockSceneManager = {
+          addEntity: (entity: any) => {
+            this.sceneManager.addUIEntity(entity);
+            this.pauseEntities.push(entity);
+          },
+          clearEntities: () => { }
+        } as any;
+        this.pauseSettingsScene.onEnter(mockSceneManager);
+
+      } else {
+        // Unpaused: remove the settings entities
+        for (const entity of this.pauseEntities) {
+          // We might need a method to remove UI entities or just mark them as dead
+          // Or just filter them
+          const uiEntities = (this.sceneManager as any).uiEntities;
+          const index = uiEntities.indexOf(entity);
+          if (index > -1) {
+            uiEntities.splice(index, 1);
+          }
+        }
+        this.pauseEntities = [];
+      }
+    }
   }
+
+  private pauseSettingsScene: StartScreenScene | null = null;
+  private pauseEntities: any[] = [];
 
   public getInventoryManager(): InventoryManager {
     return this.inventoryManager;

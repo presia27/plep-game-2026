@@ -6,7 +6,7 @@ import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { MSG_SERVICE } from "../main.ts";
 import { BaseRoomScene } from "../scenes/baseRoomScene.ts";
-import { CleaningRoom, DeliveryRoom, FoodRoom, PharmaRoom  } from "../scenes/roomData.ts"
+import { CleaningRoom, DeliveryRoom, FoodRoom, PharmaRoom } from "../scenes/roomData.ts"
 
 /**
  * Represents concrete level data/parameters
@@ -32,6 +32,19 @@ export function loadLevelOne(
   const foodScene = new BaseRoomScene(gameEngine, FoodRoom);
   const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom);
 
+  // In order to allow pause menu to be launched, we need to pass a context trigger (which orderLoop inherently possesses at this scope)
+  // down to the rooms.
+  pharmaScene.setEventTrigger(orderLoop.getGsEventTrigger());
+  cleaningScene.setEventTrigger(orderLoop.getGsEventTrigger());
+  foodScene.setEventTrigger(orderLoop.getGsEventTrigger());
+  deliveryScene.setEventTrigger(orderLoop.getGsEventTrigger());
+
+  // Pass orderLoop to scenes for item pulsing animation
+  pharmaScene.setOrderLoop(orderLoop);
+  cleaningScene.setOrderLoop(orderLoop);
+  foodScene.setOrderLoop(orderLoop);
+  deliveryScene.setOrderLoop(orderLoop);
+
   // Get list of all allowed items for the level
   const allowedItems = PharmaRoom.allowedItems
     .concat(CleaningRoom.allowedItems)
@@ -42,7 +55,7 @@ export function loadLevelOne(
   sceneManager.registerScene(FoodRoom.sceneId, foodScene);
   sceneManager.registerScene(DeliveryRoom.sceneId, deliveryScene);
   sceneManager.loadScene(PharmaRoom.sceneId, pharmaScene);
-  
+
   // Add order loop
   orderLoop.init(
     gameEngine.getGameContext().gameTime,
@@ -64,5 +77,5 @@ export function loadLevelOne(
   MSG_SERVICE.queueMessage("SHIFT 1");
   MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }
-  
+
 

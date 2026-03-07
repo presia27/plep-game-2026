@@ -36,7 +36,7 @@ export default class GameEngine {
     // What you will use to draw
     // Documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
     this.ctx = ctx;
-    
+
     // Disable image smoothing for crisp pixel art
     this.ctx.imageSmoothingEnabled = false;
 
@@ -105,16 +105,32 @@ export default class GameEngine {
 
     // Then, update the collision system
     this.collisionSystem.checkCollisions();
-    
+
     // Clear input flags AFTER all entities have had a chance to read them
     this.inputSystem.onFrameUpdate();
   };
 
+  private isPaused: boolean = false;
+
   private loop() {
+    // Only update loop time to avoid jump when unpaused
     this.clockTick = this.timer.tick();
-    this.update();
-    this.draw();
+
+    if (!this.isPaused) {
+      this.update();
+      this.draw();
+    } else {
+      // Consume the input frame updates, update UI entities, and draw last frame
+      this.sceneMgr.updateUI(this.getGameContext());
+      this.inputSystem.onFrameUpdate();
+      this.draw();
+    }
   };
+
+  public togglePause(sceneMgr: SceneManager) {
+    this.isPaused = !this.isPaused;
+    // We shouldn't put scene logic here, we should do it in GameState
+  }
 
   toggleDebugging() {
     this.options.debugging = !this.options.debugging;

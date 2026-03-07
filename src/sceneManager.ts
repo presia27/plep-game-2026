@@ -1,4 +1,4 @@
-import {GameContext, IEntity, IScene} from "./classinterfaces.ts";
+import { GameContext, IEntity, IScene } from "./classinterfaces.ts";
 import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
 import { GameState } from "./gameState.ts";
 
@@ -21,7 +21,7 @@ export default class SceneManager {
   private levelEntities: IEntity[];  // SceneManager owns entities now
   private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
   private uiEntities: IEntity[]; // entities that belong to the UI layer, drawn on top of everything else
-//  public gameState: GameState | null; // global state, accessible to all scenes
+  //  public gameState: GameState | null; // global state, accessible to all scenes
 
 
   constructor() {
@@ -41,10 +41,10 @@ export default class SceneManager {
     this.roomEntities.push(entity);
   }
 
-   /**
-   * Adds a level-scoped entity that persists across all room transitions.
-   * Use this for: OrderDeliveryLoop, UI elements, persistent effects, etc.
-   */
+  /**
+  * Adds a level-scoped entity that persists across all room transitions.
+  * Use this for: OrderDeliveryLoop, UI elements, persistent effects, etc.
+  */
   public addLevelEntity(entity: IEntity): void {
     this.levelEntities.push(entity);
   }
@@ -60,7 +60,7 @@ export default class SceneManager {
   public getLevelEntities(): IEntity[] {
     return this.levelEntities;
   }
-  
+
   /**
    * Pre-registers a scene in the cache without loading it.
    * Useful for registering all rooms at startup so they're
@@ -81,7 +81,7 @@ export default class SceneManager {
   // public enrollGameState(gs: GameState) {
   //   this.gameState = gs;
   // }
-  
+
   /**
    * Clears the scene cache and resets all global state.
    * Use this when starting a new level or resetting the game.
@@ -94,11 +94,7 @@ export default class SceneManager {
     this.currentScene = null;
   }
 
-  public update(context: GameContext): void {
-    // Update scene logic
-    this.currentScene?.update(context);
-
-    //update UI entities
+  public updateUI(context: GameContext): void {
     this.uiEntities = this.uiEntities.filter((entity) => {
       const lifecycle = entity.getComponent(BasicLifecycle);
       return !lifecycle || lifecycle.isAlive();
@@ -107,6 +103,14 @@ export default class SceneManager {
     this.uiEntities.forEach((entity) => {
       entity.update(context);
     });
+  }
+
+  public update(context: GameContext): void {
+    // Update scene logic
+    this.currentScene?.update(context);
+
+    //update UI entities
+    this.updateUI(context);
 
     // Update level entities (these persist across rooms)
     this.levelEntities = this.levelEntities.filter((entity) => {
@@ -130,7 +134,6 @@ export default class SceneManager {
     });
   }
 
-
   public draw(context: GameContext): void {
     this.currentScene?.draw(context);
 
@@ -145,7 +148,7 @@ export default class SceneManager {
         this.roomEntities[i]?.draw(context);
       }
     }
-  
+
     // 2. Level entities (player, items)
     for (let i = this.levelEntities.length - 1; i >= 0; i--) {
       this.levelEntities[i]?.draw(context);
@@ -171,11 +174,11 @@ export default class SceneManager {
 
     if (this.sceneCache.has(sceneId)) {
       const cachedScene = this.sceneCache.get(sceneId)!;
-      
+
       // Check if this scene has been entered before by checking if it has entities
       // If this is a BaseRoomScene, it will have entities array
       const hasBeenEntered = (cachedScene as any).localEntities?.length > 0;
-      
+
       if (hasBeenEntered) {
         // Scene has been visited before - resume it
         this.currentScene = cachedScene;
