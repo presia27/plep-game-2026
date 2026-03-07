@@ -54,7 +54,6 @@ export class GameState {
 
     /* Initialize boss satisfaction */
     this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger); 
-    // sceneManager.addLevelEntity(bossSatisfaction);
 
     /* Initialize the player */
     this.player = new PlayerController(
