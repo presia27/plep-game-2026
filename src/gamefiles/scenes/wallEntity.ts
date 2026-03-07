@@ -9,9 +9,6 @@ import { AbstractCollisionHandler } from "../../componentLibrary/AbstractCollisi
 import { DoorTriggerCollisionHandler } from "./doorTriggerCollisionHandler.ts";
 import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 
-// const NS_WALL_SIZE = new BasicSize(1280, 3, 5);
-// const EW_WALL_SIZE = new BasicSize(3, 720, 5);
-
 /**
  * Abstract base class for wall entities.
  * Extend this for each individual wall side.
@@ -42,27 +39,3 @@ export class WallEntity extends Entity {
     }
   }
 }
-
-// export class TopWallEntity extends WallEntity {
-//   constructor() {
-//     super(new staticPositionComponent({ x: 0, y: 0 }), NS_WALL_SIZE);
-//   }
-// }
-
-// export class BottomWallEntity extends WallEntity {
-//   constructor() {
-//     super(new staticPositionComponent({ x: 0, y: 705 }), NS_WALL_SIZE);
-//   }
-// }
-
-// export class LeftWallEntity extends WallEntity {
-//   constructor() {
-//     super(new staticPositionComponent({ x: 0, y: 0 }), EW_WALL_SIZE);
-//   }
-// }
-
-// export class RightWallEntity extends WallEntity {
-//   constructor() {
-//     super(new staticPositionComponent({ x: 1265, y: 0 }), EW_WALL_SIZE);
-//   }
-// }
