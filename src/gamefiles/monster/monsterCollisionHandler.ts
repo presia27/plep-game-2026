@@ -18,6 +18,12 @@ const STUCK_THRESHOLD_FRAMES: number = 1500;
 
 const AXIS_ALIGN_THRESHOLD: number = 10;
 
+const RECOVERY_POINTS: XY[] = [
+  {x: 50, y: 40}, {x: 1150, y: 40}, 
+  {x: 50, y: 600}, {x: 1150, y: 600}, 
+  {x: 600, y: 350}
+]; 
+
 /**
  * Monster collision handler that prevents the monster from moving through solid objects
  * Based on the player collision handler
@@ -38,12 +44,8 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
   //private readonly STUCK_THRESHOLD_FRAMES: number = 1500; // if the monster doesnt hit an update point within this amt of time, it is stuck
   
   // points the monster can walk to if it gets stuck
-  private RECOVERY_POINTS: XY[] = [
-    {x: 50, y: 40}, {x: 1150, y: 40}, 
-    {x: 50, y: 600}, {x: 1150, y: 600}, 
-    {x: 600, y: 350}
-  ]; 
-  
+  private recoveryPoints: XY[];
+
   private isRecovering: boolean = false;
   private recoveryTarget: XY | null = null;
   
@@ -54,13 +56,21 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
    * @param movementComponent movement system
    * @param sizeComponent size of monster
    * @param movementSys movement system
+   * @param recoveryPoints safe harbor coordinates if the monster gets stuck (array of XY points)
    */
-  constructor(boundingBox: BoundingBox, movementComponent: MovementComponent, sizeComponent: ISize, movementSys: MonsterMovementSystem) {
+  constructor(boundingBox: BoundingBox,
+    movementComponent: MovementComponent,
+    sizeComponent: ISize,
+    movementSys: MonsterMovementSystem,
+    recoveryPoints: XY[]
+  ) {
     super();
     this.boundingBox = boundingBox;
     this.movementComponent = movementComponent;
     this.sizeComponent = sizeComponent;
     this.movementSys = movementSys;
+
+    this.recoveryPoints = recoveryPoints;
   }
 
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {
@@ -207,7 +217,7 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
     let nearestDist = Infinity;
 
     
-    for (const point of this.RECOVERY_POINTS) {
+    for (const point of this.recoveryPoints) {
       const px = point.x;
       const py = point.y;
       const dist = Math.sqrt((px - monsterPos.x) ** 2 + (py - monsterPos.y) ** 2);

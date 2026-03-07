@@ -81,7 +81,12 @@ export class BaseRoomScene implements IScene {
         });
         /* Create and load monsters */
         for (const monsterSpawn of this.roomData.monsterSpawns) {
-          const monster = new MonsterEntity(monsterSpawn, 5, movementComponent); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          const monster = new MonsterEntity(
+            monsterSpawn,
+            5,
+            movementComponent,
+            this.roomData.updatePoints.slice()
+          ); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
           sceneManager.addEntity(monster);
           this.localEntities.push(monster);
           this.collisionSystem.addEntity(monster);
