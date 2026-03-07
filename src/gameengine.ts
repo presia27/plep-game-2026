@@ -11,6 +11,7 @@ import { InputSystem } from "./inputsys.ts";
 import { InputMapValue } from "./typeinterfaces.ts";
 import { CollisionSystem } from "./collisionsys.ts";
 import SceneManager from "./sceneManager.ts";
+import { Camera } from "./camera.ts";
 
 export default class GameEngine {
   private running: boolean;
@@ -21,6 +22,7 @@ export default class GameEngine {
   private timer: Timer;
   private clockTick: number; // elapsed time in seconds since the last clock tick
   private sceneMgr: SceneManager;  // Game scene manager - added after the game engine is created
+  private camera: Camera; // Canvas camera for aiding the rendering of objects relative to a tracked object
 
   private options: any;
 
@@ -30,7 +32,7 @@ export default class GameEngine {
    * @param inputMap A user-defined map of peripheral inputs and intended action when actuated
    * @param options Option parameters to pass to the game
    */
-  constructor(ctx: CanvasRenderingContext2D, sceneMgr: SceneManager, inputMap: InputMapValue[], options?: Object) {
+  constructor(ctx: CanvasRenderingContext2D, sceneMgr: SceneManager, camera: Camera, inputMap: InputMapValue[], options?: Object) {
     this.running = false;
 
     // What you will use to draw
@@ -56,6 +58,7 @@ export default class GameEngine {
     this.inputSystem = new InputSystem(ctx, inputMap, this.options.debugging);
     this.collisionSystem = new CollisionSystem();
     this.sceneMgr = sceneMgr;
+    this.camera = camera;
   };
 
   /**
@@ -105,6 +108,9 @@ export default class GameEngine {
 
     // Then, update the collision system
     this.collisionSystem.checkCollisions();
+
+    // Then, update the camera position after all other events have been handled
+    this.camera.update();
     
     // Clear input flags AFTER all entities have had a chance to read them
     this.inputSystem.onFrameUpdate();
@@ -130,6 +136,7 @@ export default class GameEngine {
       clockTick: this.clockTick,
       gameTime: this.timer.getGameTime(),
       ctx: this.ctx,
+      cameraPosition: this.camera.getCameraPosition(),
       debug: this.options.debugging
     }
   }

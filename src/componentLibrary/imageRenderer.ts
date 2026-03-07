@@ -21,10 +21,19 @@ export class ImageRenderer implements IRenderer {
     if (this.sizeComponent) {
       const width = this.sizeComponent.getWidth();
       const height = this.sizeComponent.getHeight();
-      context.ctx.drawImage(this.image, pos.x, pos.y, width, height);
+      context.ctx.drawImage(
+        this.image,
+        pos.x - context.cameraPosition.x,
+        pos.y - context.cameraPosition.y,
+        width,
+        height);
     } else {
       // Draw with natural image size
-      context.ctx.drawImage(this.image, pos.x, pos.y);
+      context.ctx.drawImage(
+        this.image,
+        pos.x - context.cameraPosition.x,
+        pos.y - context.cameraPosition.y
+      );
     }
   }
 }
