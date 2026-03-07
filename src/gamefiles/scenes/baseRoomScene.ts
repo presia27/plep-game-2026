@@ -85,38 +85,42 @@ export class BaseRoomScene implements IScene {
           this.localEntities.push(monster);
           this.collisionSystem.addEntity(monster);
         }
-        for (const updatePoint of this.roomData.updatePoints) {
-          const pointTrigger = new UpdatePoint(
-            updatePoint
-          );
-          this.localEntities.push(pointTrigger);
-          sceneManager.addEntity(pointTrigger);
-          this.collisionSystem.addEntity(pointTrigger);
-        }
-        const topWall = new TopWallEntity();
-        const bottomWall = new BottomWallEntity();
-        const leftWall = new LeftWallEntity();
-        const rightWall = new RightWallEntity();
-        
-        sceneManager.addEntity(topWall);
-        sceneManager.addEntity(bottomWall);
-        sceneManager.addEntity(leftWall);
-        sceneManager.addEntity(rightWall);
-
-        this.localEntities.push(topWall);
-        this.localEntities.push(bottomWall);
-        this.localEntities.push(leftWall);
-        this.localEntities.push(rightWall);
-
-        this.collisionSystem.addEntity(topWall);
-        this.collisionSystem.addEntity(bottomWall);
-        this.collisionSystem.addEntity(rightWall);
-        this.collisionSystem.addEntity(leftWall);
       }
     } else {
       player = null;
       console.error("Player not found during scene load");
     }
+
+    /* Create update points */
+    for (const updatePoint of this.roomData.updatePoints) {
+      const pointTrigger = new UpdatePoint(
+        updatePoint
+      );
+      this.localEntities.push(pointTrigger);
+      sceneManager.addEntity(pointTrigger);
+      this.collisionSystem.addEntity(pointTrigger);
+    }
+    
+    /* Create walls */
+    const topWall = new TopWallEntity();
+    const bottomWall = new BottomWallEntity();
+    const leftWall = new LeftWallEntity();
+    const rightWall = new RightWallEntity();
+
+    sceneManager.addEntity(topWall);
+    sceneManager.addEntity(bottomWall);
+    sceneManager.addEntity(leftWall);
+    sceneManager.addEntity(rightWall);
+
+    this.localEntities.push(topWall);
+    this.localEntities.push(bottomWall);
+    this.localEntities.push(leftWall);
+    this.localEntities.push(rightWall);
+
+    this.collisionSystem.addEntity(topWall);
+    this.collisionSystem.addEntity(bottomWall);
+    this.collisionSystem.addEntity(rightWall);
+    this.collisionSystem.addEntity(leftWall);
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy

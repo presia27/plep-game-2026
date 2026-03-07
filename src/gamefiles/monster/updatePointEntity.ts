@@ -20,13 +20,13 @@ import { staticPositionComponent } from "../../componentLibrary/staticPositionCo
 export class UpdatePoint extends Entity {
   private updatePoint: XY;
   private updatePointBB: BoundingBox;
-  
+
   /**
    * A point on the canvas where the monster is allowed to change direction
    * 
    * @param updatePoint A point on the canvas where the monster is allowed to change direction
    */
-  constructor (
+  constructor(
     updatePoint: XY
   ) {
     super();
@@ -34,9 +34,9 @@ export class UpdatePoint extends Entity {
     this.updatePoint = updatePoint;
 
     // create static position component for bounding box + for entity
-    const pointPosition = new staticPositionComponent({x: updatePoint.x, y: updatePoint.y});
+    const pointPosition = new staticPositionComponent({ x: updatePoint.x, y: updatePoint.y });
     // set size + scale of bounding box
-    const updatePointBBSize = new BasicSize (5, 5, 5);
+    const updatePointBBSize = new BasicSize(5, 5, 5);
     // instantiate bounding box
     this.updatePointBB = new BoundingBox(pointPosition, updatePointBBSize);
 
@@ -46,34 +46,33 @@ export class UpdatePoint extends Entity {
   }
 
   public getPosition(): XY {
-    return this.updatePoint; 
+    return this.updatePoint;
   }
 
   override draw(context: GameContext): void {
-      if (context.debug) {
-        context.ctx.save();
-  
-        // draw the full extent of the entity
-        context.ctx.strokeStyle = "#e30282";
+    if (context.debug) {
+      context.ctx.save();
+
+      // draw the full extent of the entity
+      context.ctx.strokeStyle = "#e30282";
+      context.ctx.strokeRect(
+        this.updatePoint.x,
+        this.updatePoint.y,
+        2,
+        2
+      );
+
+      // draw bounding box
+      context.ctx.strokeStyle = "#197d61";
+      if (this.updatePointBB) {
         context.ctx.strokeRect(
-          this.updatePoint.x,
-          this.updatePoint.y,
-          2,
-          2
-        );
-  
-        // draw bounding box
-        context.ctx.strokeStyle = "#197d61";
-        if (this.updatePointBB) {
-          context.ctx.strokeRect(
-            this.updatePointBB.getLeft(),
-            this.updatePointBB.getTop(),
-            this.updatePointBB.getRight() - this.updatePointBB.getLeft(),
-            this.updatePointBB.getBottom() - this.updatePointBB.getTop()
-          )
-        }
-        context.ctx.restore();
+          this.updatePointBB.getLeft(),
+          this.updatePointBB.getTop(),
+          this.updatePointBB.getRight() - this.updatePointBB.getLeft(),
+          this.updatePointBB.getBottom() - this.updatePointBB.getTop()
+        )
       }
-      
-    } 
+      context.ctx.restore();
+    }
+  }
 }
