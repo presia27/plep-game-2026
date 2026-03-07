@@ -17,7 +17,7 @@ import { Vignette } from "../scenes/storeInterior/vignetteController.ts";
  */
 
 const levelParams = {
-  duration: 60,
+  duration: 120,
   orderPromptVariability: 6,
   totalOrders: 2
 }
@@ -27,7 +27,8 @@ export function loadLevelOne(
   sceneManager: SceneManager,
   ctx: CanvasRenderingContext2D,
   inventoryManager: InventoryManager,
-  orderLoop: OrderDeliveryLoop
+  orderLoop: OrderDeliveryLoop,
+  bossSatisfaction: BossSatisfaction
 ) {
   // Create rooms
   const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom);
@@ -58,10 +59,8 @@ export function loadLevelOne(
   sceneManager.addLevelEntity(orderLoop);
 
   // Add boss satisfaction manager
-  const bossSatisfaction = new BossSatisfaction(orderLoop); 
+  bossSatisfaction.initialize(levelParams.duration);
   sceneManager.addLevelEntity(bossSatisfaction);
-  const satisfactionDisplay = new SatisfactionDisplayEntity(950, 20, bossSatisfaction);
-  sceneManager.addUIEntity(satisfactionDisplay);
   
   /* Create vignette */
   const vignette = new Vignette();

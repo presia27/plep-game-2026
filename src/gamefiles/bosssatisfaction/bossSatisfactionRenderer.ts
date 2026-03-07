@@ -135,27 +135,27 @@ export class SatisfactionRenderer implements IRenderer {
     }
 
     // Draw background panel
-    if (satisfaction <= 0) {
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, 1280, 720);
+    // if (satisfaction <= 0) {
+    //   ctx.fillStyle = 'black';
+    //   ctx.fillRect(0, 0, 1280, 720);
 
-      ctx.globalAlpha = 0.5; // lower opacity for image
-      ctx.drawImage(
-      this.bossIcons,
-      111, 1,
-      BOSS_ICON_WIDTH,
-      BOSS_ICON_HEIGHT,
-      510,
-      125,
-      BOSS_ICON_WIDTH * 17,
-      BOSS_ICON_HEIGHT * 17,
-      );
-      ctx.globalAlpha = 1; // restore global opacity
+    //   ctx.globalAlpha = 0.5; // lower opacity for image
+    //   ctx.drawImage(
+    //   this.bossIcons,
+    //   111, 1,
+    //   BOSS_ICON_WIDTH,
+    //   BOSS_ICON_HEIGHT,
+    //   510,
+    //   125,
+    //   BOSS_ICON_WIDTH * 17,
+    //   BOSS_ICON_HEIGHT * 17,
+    //   );
+    //   ctx.globalAlpha = 1; // restore global opacity
 
-      ctx.fillStyle = 'white';
-        ctx.font = '40px "Jersey-20", Arial';
-        ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 250, ctx.canvas.height / 2 + 10);
-    }
+    //   ctx.fillStyle = 'white';
+    //     ctx.font = '40px "Jersey-20", Arial';
+    //     ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 250, ctx.canvas.height / 2 + 10);
+    // }
 
     ctx.restore();
   }

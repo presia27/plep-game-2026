@@ -1,9 +1,9 @@
 import { GameContext } from "../../classinterfaces";
 import { Entity } from "../../entity.ts";
-import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
-import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { Order } from "../ordermanagement/order.ts";
 import { OBS_NEW_ACTIVE_ORDER, OBS_ORDER_COMPLETE, Observer } from "../../observerinterfaces.ts";
+import { LEVEL_OVER, GameStateEventTrigger } from "../../gameStateEventTrigger.ts";
+import { LevelResult } from "../levels/levelinterfaces.ts";
 
 const MAX_SATISFACTION = 100; // If > MIN_SATISFACTION, the player can continue playing
 const MIN_SATISFACTION = 0; // The minimum satisfaction points, if reached, the game is over and the player loses
@@ -16,35 +16,59 @@ const SUCCESSFUL_ORDER_POINTS = 10; // Satisfaction points gained per successful
  * level timer has not run out). 
  * The satisfaction level decreases over time and with incorrect deliveries, and increases with correct deliveries.
  * 
+ * Remember to subscribe this object to the order system in the calling class.
+ * 
  * @author Emma Szebenyi
  */
 export class BossSatisfaction extends Entity implements Observer {
+    private sceneTrigger: GameStateEventTrigger;
+
     private satisfaction: number; // Satisfaction points, if reaches 0, the game is over and the player loses
     private decreaseRate: number; // Satisfaction points lost per second (correlates to level length)
     private errorWeight: number; // Satisfaction points lost per incorrect item delivered
     private activeOrder: Order | null;
 
-    constructor(orderLoop: OrderDeliveryLoop) {
+    /**
+     * Initialize the boss satisfaction system to
+     * zero or null values. Use initialize to
+     * populate the needed parameters.
+     */
+    constructor(sceneTrigger: GameStateEventTrigger) {
         super();
-        this.satisfaction = START_SATISFACTION;
-        this.decreaseRate = orderLoop.getLevelDuration() / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
+        this.sceneTrigger = sceneTrigger;
+        
+        this.satisfaction = 0;
+        this.decreaseRate = 0;
         this.activeOrder = null;
         this.errorWeight = 0;
-        this.getDecreaseRate(); // log the current decrease rate for testing purposes
+    }
 
-        // Register observer
-        orderLoop.subscribe(this);
-        
+    /**
+     * Initialize the state of the boss satisfaction controller
+     * based on the specified order system.
+     * @param duration The time duration of the level
+     */
+    public initialize(duration: number, satisfaction?: number) {
+        this.satisfaction = satisfaction ?? START_SATISFACTION;
+        this.decreaseRate = duration / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
+        this.activeOrder = null;
+        this.errorWeight = 0;
+    }
+
+    public reset(): void {
+        this.satisfaction = 0;
+        this.decreaseRate = 0;
+        this.activeOrder = null;
+        this.errorWeight = 0;
     }
 
     public override update(context: GameContext): void {
         super.update(context);
-            if (this.activeOrder) {
+        if (this.activeOrder) { // satisfaction only affected if an order is active
             if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
                 this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
-            this.getSatisfaction(); // log the current satisfaction level for testing purposes
-            this.isGameOver(); // check if the game is over after updating the satisfaction level
         }
+        this.checkLoseCondition();
     }
     
     /**
@@ -72,8 +96,6 @@ export class BossSatisfaction extends Entity implements Observer {
 
         this.satisfaction = satisfaction;
     }
-
-
 
     /** Receive observer updates from order loop */
     public observerUpdate(data: any, propertyName: string): void {
@@ -126,8 +148,13 @@ export class BossSatisfaction extends Entity implements Observer {
      * 
      * @returns boolean indicating whether the game is over or not
      */
-    public isGameOver(): boolean {
+    public checkLoseCondition(): boolean {
         if (this.satisfaction <= MIN_SATISFACTION) {
+            const result: LevelResult = {
+                success: false,
+                reason: "BOSS SATISFACTION DROPPED TO 0!"
+            }
+            this.sceneTrigger.assertChange(result, LEVEL_OVER);
             return true;
         }
         return false;
