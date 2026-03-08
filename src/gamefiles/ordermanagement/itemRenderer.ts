@@ -1,10 +1,19 @@
-import { GameContext, IPosition, ISize } from "../../classinterfaces.ts";
+import { GameContext, IPosition, IRenderer, ISize } from "../../classinterfaces.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
 import { ItemType } from "./itemTypes.ts";
 import { OrderDeliveryLoop } from "./orderloopsys.ts";
 
-export class ItemRenderer extends StaticSpriteRenderer {
+export class ItemRenderer implements IRenderer{
+  private image: HTMLImageElement;
+  private xStart: number;
+  private yStart: number;
+  private spriteWidth: number;
+  private spriteHeight: number;
+  positionComponent: IPosition;
+  sizeComponent: ISize;
+  private boundingBox: BoundingBox | null;
+
   private showHintText = false;
   private itemType: ItemType;
   private orderLoop: OrderDeliveryLoop | null;
@@ -22,16 +31,14 @@ export class ItemRenderer extends StaticSpriteRenderer {
     orderLoop: OrderDeliveryLoop | null,
     boundingBox?: BoundingBox | null
   ) {
-    super(
-      image,
-      spriteXstart,
-      spriteYstart,
-      spriteWidth,
-      spriteHeight,
-      positionComponent,
-      sizeComponent,
-      boundingBox
-    );
+    this.image = image;
+    this.xStart = spriteXstart;
+    this.yStart = spriteYstart;
+    this.spriteWidth = spriteWidth;
+    this.spriteHeight = spriteHeight;
+    this.sizeComponent = sizeComponent;
+    this.positionComponent = positionComponent;
+    this.boundingBox = boundingBox ?? null;
     this.itemType = itemType;
     this.orderLoop = orderLoop;
   }
@@ -50,7 +57,7 @@ export class ItemRenderer extends StaticSpriteRenderer {
   }
 
   // extend the functionality of draw to be able to draw hint text
-  public override draw(context: GameContext): void {
+  public draw(context: GameContext): void {
     const ctx = context.ctx;
     const pos = this.positionComponent.getPosition();
     const width = this.sizeComponent.getWidth();
@@ -113,6 +120,7 @@ export class ItemRenderer extends StaticSpriteRenderer {
       ctx.restore();
     }
 
+    // Show hint text
     if (this.showHintText) {
       const positionX = this.positionComponent.getPosition().x + (this.sizeComponent.getWidth() / 2);
       const positionY = this.positionComponent.getPosition().y - 8;
