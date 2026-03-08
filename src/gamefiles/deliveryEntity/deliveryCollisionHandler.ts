@@ -3,17 +3,12 @@ import { AbstractCollisionHandler } from "../../componentLibrary/AbstractCollisi
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { ItemRenderer } from "../ordermanagement/itemRenderer";
 
-
-
 export class DeliveryCollisionHandler extends AbstractCollisionHandler {
-    
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-    }
+  }
+  override handleCollision(oth: IEntity, boundingBox: BoundingBox): void {
 
-    override handleCollision(oth: IEntity, boundingBox: BoundingBox): void {
-        
-    }
-
+  }
 }

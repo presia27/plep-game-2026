@@ -12,6 +12,8 @@ import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { WallEntity } from "../scenes/wallEntity.ts";
+import { Ball } from "../scenes/storeExterior/ballController.ts";
+import { Bush } from "../scenes/storeExterior/bushController.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -49,7 +51,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
     const bbHeight = this.boundingBox.getBottom() - this.boundingBox.getTop();
     const xOffset = this.boundingBox.getOffsetX();
     const yOffset = this.boundingBox.getOffsetY();
-    
+
     // const playerLeft = pos.x;
     // const playerRight = pos.x + playerWidth;
     // const playerTop = pos.y;
@@ -108,11 +110,11 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
         console.log("Picking up " + itemType);
         // Pickup component and remove the component from the canvas
         this.inventoryMgr.addItem(itemType).then(
-          function() {
+          function () {
             // promise resolved, remove the item from the shelf
             item.getComponent(BasicLifecycle)?.die();
           },
-          function(reject) {}
+          function (reject) { }
         );
       }
     }
@@ -145,17 +147,71 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
       const minOverlapY = Math.min(overlapTop, overlapBottom);
 
       if (minOverlapX < minOverlapY) {
-        if (overlapLeft < overlapRight) 
+        if (overlapLeft < overlapRight)
           pos.x = wallLeft - (xOffset + bbWidth);
-        else 
+        else
           pos.x = wallRight - xOffset;
       } else {
-        if (overlapTop < overlapBottom) 
+        if (overlapTop < overlapBottom)
           pos.y = wallTop - (yOffset + bbHeight);
-        else 
+        else
           pos.y = wallBottom - yOffset;
       }
 
+    }
+
+    if (other instanceof Ball) {
+      const ballLeft = otherBounds.getLeft();
+      const ballRight = otherBounds.getRight();
+      const ballTop = otherBounds.getTop();
+      const ballBottom = otherBounds.getBottom();
+
+      const overlapLeft = playerRight - ballLeft;
+      const overlapRight = ballRight - playerLeft;
+      const overlapTop = playerBottom - ballTop;
+      const overlapBottom = ballBottom - playerTop;
+
+      const minOverlapX = Math.min(overlapLeft, overlapRight);
+      const minOverlapY = Math.min(overlapTop, overlapBottom);
+
+      if (minOverlapX < minOverlapY) {
+        if (overlapLeft < overlapRight)
+          pos.x = ballLeft - (xOffset + bbWidth);
+        else
+          pos.x = ballRight - xOffset;
+      } else {
+        if (overlapTop < overlapBottom)
+          pos.y = ballTop - (yOffset + bbHeight);
+        else
+          pos.y = ballBottom - yOffset;
+      }
+    }
+
+    if (other instanceof Bush) {
+      const bushLeft = otherBounds.getLeft();
+      const bushRight = otherBounds.getRight();
+      const bushTop = otherBounds.getTop();
+      const bushBottom = otherBounds.getBottom();
+
+      const overlapLeft = playerRight - bushLeft;
+      const overlapRight = bushRight - playerLeft;
+      const overlapTop = playerBottom - bushTop;
+      const overlapBottom = bushBottom - playerTop;
+
+      const minOverlapX = Math.min(overlapLeft, overlapRight);
+      const minOverlapY = Math.min(overlapTop, overlapBottom);
+
+      if (minOverlapX < minOverlapY) {
+        if (overlapLeft < overlapRight)
+          pos.x = bushLeft - (xOffset + bbWidth);
+        else
+          pos.x = bushRight - xOffset;
+      } else {
+        if (overlapTop < overlapBottom)
+          pos.y = bushTop - (yOffset + bbHeight);
+        else
+          pos.y = bushBottom - yOffset;
+      }
     }
   }
 }

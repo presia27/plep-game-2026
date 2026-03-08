@@ -32,7 +32,9 @@ export const environmentAssets: IAssetList[] = [
   { id: "arrow", type: "img", location: "./assets/ArrowSpritesheet.png" },
   { id: "floor", type: "img", location: "./assets/StoreFloorTexture.png" },
   { id: "blood", type: "img", location: "./assets/BloodSplatter.png" },
-  { id: "shelfShadow", type: "img", location: "./assets/ShelfShadow.png" }
+  { id: "shelfShadow", type: "img", location: "./assets/ShelfShadow.png" },
+  { id: "parkingLot", type: "img", location: "./assets/ParkingLot.png" },
+  { id: "vehicles", type: "img", location: "./assets/VehicleSpritesheet.png" }
 ];
 
 /** Assets for items */

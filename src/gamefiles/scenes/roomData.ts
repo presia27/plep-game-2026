@@ -25,6 +25,7 @@ export interface roomData {
   doors: DoorData[];
   allowedItems: ItemType[];
   deliveryEntityPosition?: XY;
+  isParkingLot?: boolean;
 }
 
 /** Delivery/Outdoor Area */
@@ -43,7 +44,8 @@ export const DeliveryRoom: roomData = {
     }
   ],
   allowedItems: [],
-  deliveryEntityPosition: { x: 50, y: 300 }
+  deliveryEntityPosition: { x: 250, y: 200 },
+  isParkingLot: true
 }
 
 /** Pharmacy Section */
@@ -103,7 +105,7 @@ export const PharmaRoom: roomData = {
     ItemType.SHAMPOO,
     ItemType.LOTION,
     ItemType.MOISTURIZER
-  ]
+  ],
 }
 
 /** Cleaning Section */
@@ -156,7 +158,7 @@ export const CleaningRoom: roomData = {
     ItemType.CLEANER,
     ItemType.BUCKET,
     ItemType.DETERGENT,
-  ]
+  ],
 }
 
 /** Food Section */
@@ -211,7 +213,7 @@ export const FoodRoom: roomData = {
     ItemType.BREAD,
     ItemType.PIZZA,
     ItemType.ICECREAM
-  ]
+  ],
 }
 
 
