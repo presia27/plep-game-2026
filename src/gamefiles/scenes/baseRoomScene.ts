@@ -79,10 +79,7 @@ export class BaseRoomScene implements IScene {
       player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition({
-          x: this.roomData.defaultSpawn.x,
-          y: this.roomData.defaultSpawn.y
-        });
+        this.movePlayer(movementComponent);
         /* Create and load monsters */
         for (const monsterSpawn of this.roomData.monsterSpawns) {
           const monster = new MonsterEntity(
@@ -251,10 +248,7 @@ export class BaseRoomScene implements IScene {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition({
-          x: this.roomData.defaultSpawn.x,
-          y: this.roomData.defaultSpawn.y
-        });
+        this.movePlayer(movementComponent);
       }
     }
 
@@ -282,5 +276,31 @@ export class BaseRoomScene implements IScene {
   update(context: GameContext): void {}
   draw(context: GameContext): void {}
   
+  private movePlayer(movementComponent: MovementComponent) {
+    // if (this.roomData.defaultSpawn) { // if a default spawn is used, 
+    //   movementComponent.setPosition({
+    //     x: this.roomData.defaultSpawn.x,
+    //     y: this.roomData.defaultSpawn.y
+    //   });
+    // }
+    const currentPosition: XY = {
+      x: movementComponent.getPosition().x,
+      y: movementComponent.getPosition().y
+    };
+    const spawnPts = this.roomData.spawnPoints.slice();
+
+    // invert coordinates to calculate proper destination
+    currentPosition.x = Math.abs(currentPosition.x - this.roomData.roomWidth);
+    currentPosition.y = Math.abs(currentPosition.y - this.roomData.roomHeight);
+
+    const nearestPoint = spawnPts.reduce((nearest: XY, candidate: XY) => {
+      const distanceTo = (point: XY) => Math.hypot(point.x - currentPosition.x, point.y - currentPosition.y);
+      return distanceTo(candidate) < distanceTo(nearest) ? candidate : nearest;
+    });
+    movementComponent.setPosition({
+      x: nearestPoint.x,
+      y: nearestPoint.y
+    });
+  }
   
 }
