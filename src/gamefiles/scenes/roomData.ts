@@ -1,7 +1,7 @@
 import { XY } from "../../typeinterfaces.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 
-const DOOR_VERTICAL_LENGTH: number = 100;
+const DOOR_VERTICAL_LENGTH: number = 200;
 const DOOR_HORIZONTAL_LENGTH: number = 200;
 const DOOR_THICKNESS: number= 20;
 
@@ -66,8 +66,8 @@ export const CheckoutRoom: roomData = {
   bloodLocations: [],
   spawnPoints: [
     { x: 540, y: 30 },   // from electronics
-    { x: 1150, y: 310 }, // from pharmacy
-    { x: 540, y: 590 },  // from delivery
+    { x: 1130, y: 310 }, // from pharmacy
+    { x: 540, y: 570 },  // from delivery
   ],
   monsterSpawns: [],
   updatePoints: [],
@@ -79,12 +79,12 @@ export const CheckoutRoom: roomData = {
       targetSceneId: "electronics"
     },
     {
-      position: { x: 1260, y: 310 },
+      position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "pharmacy"
     },
     {
-      position: { x: 540, y: 700 },
+      position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS }, 
       targetSceneId: "delivery"
     },
@@ -105,7 +105,7 @@ export const PharmaRoom: roomData = {
   spawnPoints: [ // left, right, up
     { x: 540, y: 30 },   // from housing
     { x: 30, y: 310 },   // from checkout
-    { x: 1150, y: 310 }, // from cleaning
+    { x: 1130, y: 310 }, // from cleaning
   ],
   monsterSpawns: [ 
     {x: 1100, y: 280}, {x: 60, y: 600} 
@@ -135,7 +135,7 @@ export const PharmaRoom: roomData = {
       targetSceneId: "checkout"
     },
     {
-      position: { x: 1260, y: 310 },
+      position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "cleaning"
     },
@@ -227,7 +227,7 @@ export const FoodRoom: roomData = {
   ],
   spawnPoints: [ // bottom, left
     { x: 30, y: 310 },   // from housing
-    { x: 540, y: 590 },  // from cleaning
+    { x: 540, y: 570 },  // from cleaning
   ],
   monsterSpawns: [ 
     {x: 1100, y: 280}, {x: 60, y: 600}, {x: 1100, y: 50}
@@ -253,7 +253,7 @@ export const FoodRoom: roomData = {
       targetSceneId: "housing"
     },
     {
-      position: { x: 540, y: 700 },
+      position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
       targetSceneId: "cleaning"
     },
@@ -284,8 +284,8 @@ export const HousingRoom: roomData = {
   roomHeight: 720,
   spawnPoints: [
     { x: 30, y: 310 },   // from electronics
-    { x: 1150, y: 310 }, // from food
-    { x: 540, y: 590 },  // from pharmacy
+    { x: 1130, y: 310 }, // from food
+    { x: 540, y: 570 },  // from pharmacy
   ],
   bloodLocations: [],
   monsterSpawns: [],
@@ -298,12 +298,12 @@ export const HousingRoom: roomData = {
       targetSceneId: "electronics"
     },
     {
-      position: { x: 1260, y: 310 },
+      position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "food"
     },
     {
-      position: { x: 540, y: 700 },
+      position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
       targetSceneId: "pharmacy"
     }
@@ -327,8 +327,8 @@ export const ElectronicsRoom: roomData = {
   roomWidth: 1280,
   roomHeight: 720,
   spawnPoints: [
-    { x: 1150, y: 310 }, // from housing
-    { x: 540, y: 590 },  // from checkout
+    { x: 1130, y: 310 }, // from housing
+    { x: 540, y: 570 },  // from checkout
   ],
   bloodLocations: [],
   monsterSpawns: [],
@@ -336,12 +336,12 @@ export const ElectronicsRoom: roomData = {
   shelves: [],
   doors: [
     {
-      position: { x: 1260, y: 310 },
+      position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "housing"
     },
     {
-      position: { x: 540, y: 700 },
+      position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
       targetSceneId: "checkout"
     }
