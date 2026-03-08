@@ -1,6 +1,10 @@
 import { XY } from "../../typeinterfaces.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 
+const DOOR_VERTICAL_LENGTH: number = 100;
+const DOOR_HORIZONTAL_LENGTH: number = 200;
+const DOOR_THICKNESS: number= 20;
+
 /** Describes a single shelf's position and which sprite to use */
 export interface ShelfData {
   position: XY;
@@ -29,8 +33,67 @@ export interface roomData {
   deliveryEntityPosition?: XY;
 }
 
+
+export const DeliveryRoom: roomData = {
+  sceneId: "delivery",
+  roomWidth: 1280,
+  roomHeight: 720,
+  bloodLocations: [],
+  spawnPoints: [
+    { x: 540, y: 30 },   // from checkout
+  ],
+  monsterSpawns: [],
+  updatePoints: [],
+  shelves: [
+   // { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" }
+  ],
+  doors: [
+    {
+      position: { x: 540, y: 20 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
+      targetSceneId: "checkout"
+    }
+  ],
+  allowedItems: [],
+  
+  deliveryEntityPosition: { x: 50, y: 300 }
+}
+
+export const CheckoutRoom: roomData = {
+  sceneId: "checkout",
+  roomWidth: 1280,
+  roomHeight: 720,
+  bloodLocations: [],
+  spawnPoints: [
+    { x: 540, y: 30 },   // from electronics
+    { x: 1150, y: 310 }, // from pharmacy
+    { x: 540, y: 590 },  // from delivery
+  ],
+  monsterSpawns: [],
+  updatePoints: [],
+  shelves : [],
+  doors: [
+    { 
+      position: { x: 540, y: 20 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
+      targetSceneId: "electronics"
+    },
+    {
+      position: { x: 1260, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "pharmacy"
+    },
+    {
+      position: { x: 540, y: 700 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS }, 
+      targetSceneId: "delivery"
+    },
+  ],
+  allowedItems: [],
+}
+
 export const PharmaRoom: roomData = {
-  sceneId: "pharma",
+  sceneId: "pharmacy",
   roomWidth: 1280,
   roomHeight: 720,
   bloodLocations: [
@@ -40,9 +103,9 @@ export const PharmaRoom: roomData = {
     { x: 450, y: 500 },
   ],
   spawnPoints: [ // left, right, up
-    { x: 60, y: 300 },
-    { x: 1000, y: 300 },
-    { x: 610, y: 64}
+    { x: 540, y: 30 },   // from housing
+    { x: 30, y: 310 },   // from checkout
+    { x: 1150, y: 310 }, // from cleaning
   ],
   monsterSpawns: [ 
     {x: 1100, y: 280}, {x: 60, y: 600} 
@@ -62,15 +125,20 @@ export const PharmaRoom: roomData = {
   ],
   doors: [
     {
-      position: { x: 1200, y: 300 }, 
-      size: { x: 20, y: 200 }, 
-      targetSceneId: "cleaning" 
+      position: { x: 540, y: 20 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
+      targetSceneId: "housing"
     },
     {
-      position: { x: 10 , y: 300 },
-      size: { x: 20 , y: 200},
-      targetSceneId: "delivery"
-    }
+      position: { x: 20, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "checkout"
+    },
+    {
+      position: { x: 1260, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "cleaning"
+    },
   ],
   allowedItems: [
     ItemType.PILL,
@@ -99,10 +167,8 @@ export const CleaningRoom: roomData = {
   roomWidth: 1280,
   roomHeight: 720,
   bloodLocations: [
-    { x: 250, y: 50 },
-    { x: 690, y: 350 },
-    { x: 1000, y: 200 },
-    { x: 450, y: 500 },
+    { x: 540, y: 30 },   // from food
+    { x: 30, y: 310 },   // from pharmacy
   ],
   spawnPoints: [ // left, top
     { x: 60, y: 300 },
@@ -123,16 +189,15 @@ export const CleaningRoom: roomData = {
     { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 8 },
   ],
   doors: [
-    { 
-      position: { x: 10, y: 300 }, 
-      size: { x: 20, y: 200 }, 
-      targetSceneId: "pharma" 
+    {
+      position: { x: 540, y: 20 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
+      targetSceneId: "food" },
+    {
+      position: { x: 20, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "pharmacy"
     },
-    { 
-      position: { x: 1200, y: 300 }, 
-      size: { x: 20, y: 200 }, 
-      targetSceneId: "food" 
-    }
   ],
   allowedItems: [
     ItemType.TOILETPAPER,
@@ -161,8 +226,8 @@ export const FoodRoom: roomData = {
     { x: 450, y: 500 },
   ],
   spawnPoints: [ // bottom, left
-    { x: 60, y: 300 },
-    { x: 610, y: 1200}
+    { x: 30, y: 310 },   // from housing
+    { x: 540, y: 590 },  // from cleaning
   ],
   monsterSpawns: [ 
     {x: 1100, y: 280}, {x: 60, y: 600}, {x: 1100, y: 50}
@@ -183,10 +248,15 @@ export const FoodRoom: roomData = {
   ],
   doors: [
     { 
-      position: { x: 350, y: 10 }, 
-      size: { x: 80, y: 20 }, 
-      targetSceneId: "cleaning" 
-    }
+      position: { x: 20, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "housing"
+    },
+    {
+      position: { x: 540, y: 700 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
+      targetSceneId: "cleaning"
+    },
   ],
   allowedItems: [
     ItemType.STRAWBERRY,
@@ -207,34 +277,38 @@ export const FoodRoom: roomData = {
     ItemType.ICECREAM
   ]
 }
-export const DeliveryRoom: roomData = {
-  sceneId: "delivery",
+
+export const HousingRoom: roomData = {
+  sceneId: "housing",
   roomWidth: 1280,
   roomHeight: 720,
-  bloodLocations: [],
-  spawnPoints: [ // left, right, up
-    { x: 350, y: 50 }
+  spawnPoints: [
+    { x: 30, y: 310 },   // from electronics
+    { x: 1150, y: 310 }, // from food
+    { x: 540, y: 590 },  // from pharmacy
   ],
+  bloodLocations: [],
   monsterSpawns: [],
   updatePoints: [],
-  shelves: [
-   // { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" }
-  ],
+  shelves: [],
   doors: [
     { 
-      position: { x: 350, y: 10 }, 
-      size: { x: 80, y: 20 }, 
-      targetSceneId: "pharma" 
+      position: { x: 20, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "electronics"
+    },
+    {
+      position: { x: 1260, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "food"
+    },
+    {
+      position: { x: 540, y: 700 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
+      targetSceneId: "pharmacy"
     }
   ],
-  allowedItems: [],
-  
-  deliveryEntityPosition: { x: 50, y: 300 }
-}
-
-// housing allowed items
-/*
-allowedItems: [
+  allowedItems: [
     ItemType.LAMP,
     ItemType.CHAIR,
     ItemType.PILLOW,
@@ -246,11 +320,33 @@ allowedItems: [
     ItemType.FORK,
     ItemType.KNIFE
   ]
-*/
+}
 
-// electronics allowed items
-/*
-allowedItems: [
+export const ElectronicsRoom: roomData = {
+  sceneId: "electronics",
+  roomWidth: 1280,
+  roomHeight: 720,
+  spawnPoints: [
+    { x: 1150, y: 310 }, // from housing
+    { x: 540, y: 590 },  // from checkout
+  ],
+  bloodLocations: [],
+  monsterSpawns: [],
+  updatePoints: [],
+  shelves: [],
+  doors: [
+    {
+      position: { x: 1260, y: 310 },
+      size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
+      targetSceneId: "housing"
+    },
+    {
+      position: { x: 540, y: 700 },
+      size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
+      targetSceneId: "checkout"
+    }
+  ],
+  allowedItems: [
     ItemType.MOUSE,
     ItemType.LAPTOP,
     ItemType.MONITOR,
@@ -261,4 +357,5 @@ allowedItems: [
     ItemType.MICROPHONE,
     ItemType.PHONE
   ]
-*/
+}
+
