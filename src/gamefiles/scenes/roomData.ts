@@ -27,6 +27,26 @@ export interface roomData {
   deliveryEntityPosition?: XY;
 }
 
+/** Delivery/Outdoor Area */
+export const DeliveryRoom: roomData = {
+  sceneId: "delivery",
+  bloodLocations: [],
+  defaultSpawn: { x: 350, y: 50 },
+  monsterSpawns: [],
+  updatePoints: [],
+  shelves: [],
+  doors: [
+    { 
+      position: { x: 350, y: 10 }, 
+      size: { x: 80, y: 20 }, 
+      targetSceneId: "pharma" 
+    }
+  ],
+  allowedItems: [],
+  deliveryEntityPosition: { x: 50, y: 300 }
+}
+
+/** Pharmacy Section */
 export const PharmaRoom: roomData = {
   sceneId: "pharma",
   bloodLocations: [
@@ -37,12 +57,12 @@ export const PharmaRoom: roomData = {
   ],
   defaultSpawn: { x: 50, y: 50 },
   monsterSpawns: [ 
-    {x: 1100, y: 280}, {x: 60, y: 600} 
+    {x: 1150, y: 280}
   ],
   updatePoints: [ // 6 points for perimeter, 0 for in between shelves
-    {x: 50, y: 40}, {x: 1200, y: 40},  
-    {x: 50, y: 280}, {x: 1200, y: 280},
-    {x: 50, y: 600}, {x: 1200, y: 600}
+    {x: 50, y: 40}, {x: 1150, y: 40},  
+    {x: 50, y: 280}, {x: 1150, y: 280},
+    {x: 50, y: 600}, {x: 1150, y: 600}
   ],
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 4 },
@@ -86,6 +106,7 @@ export const PharmaRoom: roomData = {
   ]
 }
 
+/** Cleaning Section */
 export const CleaningRoom: roomData = {
   sceneId: "cleaning",
   bloodLocations: [
@@ -96,12 +117,13 @@ export const CleaningRoom: roomData = {
   ],
   defaultSpawn: { x: 50, y: 300 },
   monsterSpawns: [ 
-    {x: 600, y: 250}, {x: 1100, y: 600} 
+    {x: 600, y: 250}, 
+    {x: 1150, y: 600} 
   ],
   updatePoints: [ // 8 for perimeter, 0 for in between shelves
-    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
-    {x: 50, y: 280},                  {x: 1200, y: 280},
-    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
+    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1150, y: 40},  
+    {x: 50, y: 280},                  {x: 1150, y: 280},
+    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1150, y: 600}
   ],
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 1 },
@@ -137,6 +159,7 @@ export const CleaningRoom: roomData = {
   ]
 }
 
+/** Food Section */
 export const FoodRoom: roomData = {
   sceneId: "food",
   bloodLocations: [
@@ -147,12 +170,14 @@ export const FoodRoom: roomData = {
   ],
   defaultSpawn: { x: 350, y: 50 },
   monsterSpawns: [ 
-    {x: 1100, y: 280}, {x: 60, y: 600}, {x: 1100, y: 50}
+    {x: 1150, y: 40}, 
+    {x: 1150, y: 280}, 
+    {x: 600, y: 600}
   ],
   updatePoints: [ // 6 for perimeter, 0 for in between shelves
-    {x: 50, y: 40},  {x: 1200, y: 40},  
-    {x: 50, y: 280}, {x: 1200, y: 280},
-    {x: 50, y: 600}, {x: 1200, y: 600}
+    {x: 50, y: 40}, {x: 1150, y: 40},  
+    {x: 50, y: 280}, {x: 1150, y: 280},
+    {x: 50, y: 600}, {x: 1150, y: 600}
   ],
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 2 },
@@ -161,7 +186,6 @@ export const FoodRoom: roomData = {
     { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 7 },
     { position: { x: 450, y: 400 }, spriteId: "AllHShelves", shelfNum: 4 },
     { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 3 }
-
   ],
   doors: [
     { 
@@ -189,26 +213,7 @@ export const FoodRoom: roomData = {
     ItemType.ICECREAM
   ]
 }
-export const DeliveryRoom: roomData = {
-  sceneId: "delivery",
-  bloodLocations: [],
-  defaultSpawn: { x: 350, y: 50 },
-  monsterSpawns: [],
-  updatePoints: [],
-  shelves: [
-   // { position: { x: 100, y: 200 }, spriteId: "HShelvesVines" }
-  ],
-  doors: [
-    { 
-      position: { x: 350, y: 10 }, 
-      size: { x: 80, y: 20 }, 
-      targetSceneId: "pharma" 
-    }
-  ],
-  allowedItems: [],
-  
-  deliveryEntityPosition: { x: 50, y: 300 }
-}
+
 
 // housing allowed items
 /*

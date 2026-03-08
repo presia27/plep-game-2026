@@ -18,6 +18,7 @@ const STUCK_THRESHOLD_FRAMES: number = 1500;
 
 const AXIS_ALIGN_THRESHOLD: number = 10;
 
+/* backup points in case we need to revert */
 const RECOVERY_POINTS: XY[] = [
   {x: 50, y: 40}, {x: 1150, y: 40}, 
   {x: 50, y: 600}, {x: 1150, y: 600}, 
