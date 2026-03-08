@@ -195,6 +195,7 @@ export class BaseRoomScene implements IScene {
             door.position,
             door.size,
             door.targetSceneId,
+            door.direction,
             sceneManager,
             playerBoundingBox
           );

@@ -7,9 +7,14 @@ import { GameContext } from "../../classinterfaces.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { AbstractCollisionHandler } from "../../componentLibrary/AbstractCollisionHandler.ts";
 import { DoorTriggerCollisionHandler } from "./doorTriggerCollisionHandler.ts";
+import { DoorDirection } from "./roomData.ts";
+import { ASSET_MANAGER } from "../main.ts";
 
 
 ///revise///
+const ARROW_SIDE_LENGTH: number = 9;
+const ARROW_SPRITE_XSTART: number[] = [1, 12, 23, 34];
+const ARROW_SPRITE_YSTART: number = 1;
 
 /**
  * An invisible trigger zone placed at a doorway.
@@ -27,11 +32,14 @@ export class DoorTrigger extends Entity {
   private sceneManager: SceneManager;
   private playerBoundingBox: BoundingBox;
   private collisionHandler: AbstractCollisionHandler;
+  private direction: DoorDirection;
+  private arrowSprite: HTMLImageElement;
 
   constructor(
     position: XY,
     size: XY,
     targetSceneId: string,
+    direction: DoorDirection,
     sceneManager: SceneManager,
     playerBoundingBox: BoundingBox
   ) {
@@ -39,6 +47,7 @@ export class DoorTrigger extends Entity {
     this.targetSceneId = targetSceneId;
     this.sceneManager = sceneManager;
     this.playerBoundingBox = playerBoundingBox;
+    this.direction = direction;
 
     // invisible trigger zone — no renderer needed
     const movement = new MovementComponent(position);
@@ -49,18 +58,128 @@ export class DoorTrigger extends Entity {
     super.addComponent(movement);
     super.addComponent(this.boundingBox);
     super.addComponent(this.collisionHandler);
+
+    const arrowSprite = ASSET_MANAGER.getImageAsset("arrow");
+    if (arrowSprite === null) {
+      throw new Error("Failed to load asset for arrows");
+    }
+    this.arrowSprite = arrowSprite;
   }
 
   override update(context: GameContext): void {
   }
 
-   override draw(context: GameContext): void {
+  override draw(context: GameContext): void {
     super.draw(context);
+
+    const ctx = context.ctx;
+    ctx.save();
+
+    const spriteXStart = ARROW_SPRITE_XSTART[this.direction] ?? 1;
+    const drawSideLength = ARROW_SIDE_LENGTH * 2;
+
+    if (this.direction === DoorDirection.DOWN || this.direction === DoorDirection.UP) {
+      // Draw a series of horizontal arrows
+      const xdraws = [
+        this.boundingBox.getLeft(),
+        (this.boundingBox.getLeft() + this.boundingBox.getRight()) / 2 - (drawSideLength / 2),
+        this.boundingBox.getRight() - drawSideLength
+      ];
+
+      for (let i = 0; i < xdraws.length; i++) {
+        ctx.drawImage(
+          this.arrowSprite,
+          spriteXStart,
+          ARROW_SPRITE_YSTART,
+          ARROW_SIDE_LENGTH,
+          ARROW_SIDE_LENGTH,
+          xdraws[i] ?? this.boundingBox.getLeft(),
+          this.boundingBox.getTop(),
+          drawSideLength,
+          drawSideLength
+        );
+      }
+    } else {
+      // Draw a series of vertical arrows
+      const ydraws = [
+        this.boundingBox.getTop(),
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2 - (drawSideLength / 2),
+        this.boundingBox.getBottom() - drawSideLength
+      ];
+
+      for (let i = 0; i < ydraws.length; i++) {
+        ctx.drawImage(
+          this.arrowSprite,
+          spriteXStart,
+          ARROW_SPRITE_YSTART,
+          ARROW_SIDE_LENGTH,
+          ARROW_SIDE_LENGTH,
+          this.boundingBox.getLeft(),
+          ydraws[i] ?? this.boundingBox.getTop(),
+          drawSideLength,
+          drawSideLength
+        );
+      }
+    }
+
+    ctx.font = "20px Jersey-20";
+    ctx.fillStyle = "#b5b5b5";
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 1;
+
+    // Draw text
+    if (this.direction === DoorDirection.UP) {
+      ctx.textAlign = "center";
+      ctx.fillText(
+        this.targetSceneId,
+        (this.boundingBox.getLeft() + this.boundingBox.getRight()) / 2,
+        this.boundingBox.getBottom() + 16
+      );
+      ctx.strokeText(
+        this.targetSceneId,
+        (this.boundingBox.getLeft() + this.boundingBox.getRight()) / 2,
+        this.boundingBox.getBottom() + 16
+      );
+    } else if (this.direction === DoorDirection.DOWN) {
+      ctx.textAlign = "center";
+      ctx.fillText(
+        this.targetSceneId,
+        (this.boundingBox.getLeft() + this.boundingBox.getRight()) / 2,
+        this.boundingBox.getTop()
+      );
+      ctx.strokeText(
+        this.targetSceneId,
+        (this.boundingBox.getLeft() + this.boundingBox.getRight()) / 2,
+        this.boundingBox.getTop()
+      );
+    } else if (this.direction === DoorDirection.LEFT) {
+      ctx.textAlign = "left";
+      ctx.fillText(
+        this.targetSceneId,
+        this.boundingBox.getRight(),
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+      );
+      ctx.strokeText(
+        this.targetSceneId,
+        this.boundingBox.getRight(),
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+      );
+    } else {
+      ctx.textAlign = "right";
+      ctx.fillText(
+        this.targetSceneId,
+        this.boundingBox.getLeft(),
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+      );
+      ctx.strokeText(
+        this.targetSceneId,
+        this.boundingBox.getLeft(),
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+      );
+    }
     
+
     if (context.debug) {
-      const ctx = context.ctx;
-      ctx.save();
-      
       // Draw door trigger zone in green with transparency
       ctx.strokeStyle = "#00FF00";
       ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
@@ -89,8 +208,8 @@ export class DoorTrigger extends Entity {
         this.boundingBox.getLeft() + (this.boundingBox.getRight() - this.boundingBox.getLeft()) / 2,
         this.boundingBox.getTop() + (this.boundingBox.getBottom() - this.boundingBox.getTop()) / 2
       );
-      
-      ctx.restore();
     }
+
+    ctx.restore();
   }
 }

@@ -12,11 +12,24 @@ export interface ShelfData {
   shelfNum: number;
 }
 
-/** Describes a door trigger's position, size, and which scene it leads to */
+/**
+ * Directions for doors (derived from sprite design: right=0, down=1, left=2, up=3)
+ */
+export enum DoorDirection {
+  RIGHT = 0,
+  DOWN = 1,
+  LEFT = 2,
+  UP = 3
+}
+
+/** 
+ * Describes a door trigger's position, size, and which scene it leads to
+ */
 export interface DoorData {
   position: XY;
   size: XY;
   targetSceneId: string;
+  direction: DoorDirection;
 }
 
 export interface roomData {
@@ -51,7 +64,8 @@ export const DeliveryRoom: roomData = {
     {
       position: { x: 540, y: 20 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
-      targetSceneId: "checkout"
+      targetSceneId: "checkout",
+      direction: DoorDirection.UP
     }
   ],
   allowedItems: [],
@@ -76,17 +90,20 @@ export const CheckoutRoom: roomData = {
     { 
       position: { x: 540, y: 20 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
-      targetSceneId: "electronics"
+      targetSceneId: "electronics",
+      direction: DoorDirection.UP
     },
     {
       position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "pharmacy"
+      targetSceneId: "pharmacy",
+      direction: DoorDirection.RIGHT
     },
     {
       position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS }, 
-      targetSceneId: "delivery"
+      targetSceneId: "delivery",
+      direction: DoorDirection.DOWN
     },
   ],
   allowedItems: [],
@@ -127,17 +144,20 @@ export const PharmaRoom: roomData = {
     {
       position: { x: 540, y: 20 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
-      targetSceneId: "housing"
+      targetSceneId: "housing",
+      direction: DoorDirection.UP
     },
     {
       position: { x: 20, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "checkout"
+      targetSceneId: "checkout",
+      direction: DoorDirection.LEFT
     },
     {
       position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "cleaning"
+      targetSceneId: "cleaning",
+      direction: DoorDirection.RIGHT
     },
   ],
   allowedItems: [
@@ -192,11 +212,14 @@ export const CleaningRoom: roomData = {
     {
       position: { x: 540, y: 20 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
-      targetSceneId: "food" },
+      targetSceneId: "food",
+      direction: DoorDirection.UP
+    },
     {
       position: { x: 20, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "pharmacy"
+      targetSceneId: "pharmacy",
+      direction: DoorDirection.LEFT
     },
   ],
   allowedItems: [
@@ -250,12 +273,14 @@ export const FoodRoom: roomData = {
     { 
       position: { x: 20, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "housing"
+      targetSceneId: "housing",
+      direction: DoorDirection.RIGHT
     },
     {
       position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
-      targetSceneId: "cleaning"
+      targetSceneId: "cleaning",
+      direction: DoorDirection.DOWN
     },
   ],
   allowedItems: [
@@ -295,17 +320,20 @@ export const HousingRoom: roomData = {
     { 
       position: { x: 20, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "electronics"
+      targetSceneId: "electronics",
+      direction: DoorDirection.LEFT
     },
     {
       position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "food"
+      targetSceneId: "food",
+      direction: DoorDirection.RIGHT
     },
     {
       position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
-      targetSceneId: "pharmacy"
+      targetSceneId: "pharmacy",
+      direction: DoorDirection.DOWN
     }
   ],
   allowedItems: [
@@ -338,12 +366,14 @@ export const ElectronicsRoom: roomData = {
     {
       position: { x: 1240, y: 310 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
-      targetSceneId: "housing"
+      targetSceneId: "housing",
+      direction: DoorDirection.RIGHT
     },
     {
       position: { x: 540, y: 680 },
       size: { x: DOOR_HORIZONTAL_LENGTH, y: DOOR_THICKNESS },
-      targetSceneId: "checkout"
+      targetSceneId: "checkout",
+      direction: DoorDirection.DOWN
     }
   ],
   allowedItems: [
