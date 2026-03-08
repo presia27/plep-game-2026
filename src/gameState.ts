@@ -16,6 +16,8 @@ import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 import { StartScreenScene } from "./gamefiles/scenes/startScreen/startScreenScene.ts";
 import { BossSatisfaction } from "./gamefiles/bosssatisfaction/bossSatisfactionController.ts";
 import { SatisfactionDisplayEntity } from "./gamefiles/bosssatisfaction/satisfactionDisplayEntity.ts";
+import { Camera } from "./camera.ts";
+import { MovementComponent } from "./componentLibrary/movementComponent.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -29,6 +31,7 @@ export class GameState {
   private gsEventTrigger: GameStateEventTrigger;
   private gameEngine: GameEngine;
   private sceneManager: SceneManager;
+  private camera: Camera;
   private ctx: CanvasRenderingContext2D;
   private inventoryManager: InventoryManager;
   private orderLoop: OrderDeliveryLoop;
@@ -38,7 +41,8 @@ export class GameState {
   private levelNumber: number;
   private levelActive: boolean;
 
-  constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
+  
+  constructor(gameEngine: GameEngine, sceneManager: SceneManager, camera: Camera, ctx: CanvasRenderingContext2D) {
     this.gsEventTrigger = new GameStateEventTrigger(this);
 
     this.levelNumber = 0; // 0 based level number to load
@@ -46,6 +50,7 @@ export class GameState {
     
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
+    this.camera = camera;
     this.ctx = ctx;
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
 
@@ -80,6 +85,12 @@ export class GameState {
       this.ctx.canvas.width,
       this.ctx.canvas.height
     ));
+
+    // Register player to the camera for tracking
+    const playerPosition = this.player.getComponent(MovementComponent);
+    if (playerPosition) {
+      this.camera.registerPosition(playerPosition);
+    }
   }
 
   /**
