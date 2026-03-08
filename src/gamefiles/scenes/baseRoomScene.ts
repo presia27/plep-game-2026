@@ -114,7 +114,16 @@ export class BaseRoomScene implements IScene {
           itemPos.x = (itemPos.x * SHELF_SCALE) + shelfData.position.x;
           itemPos.y = (itemPos.y * SHELF_SCALE) + shelfData.position.y;
 
-          const itemEntity = new ItemEntity(shelfItem, itemPos, this.orderLoop);
+          const itemEntity = new ItemEntity(shelfItem, itemPos);
+          // Register the item as an observer of the order loop
+          this.orderLoop?.subscribe(itemEntity);
+          // [hack] also determine if the item should be flashing upon instantiation; this method can be loaded after an order is already made active
+          if (this.orderLoop?.getCurrentActiveOrder()) {
+            if (this.orderLoop.getCurrentActiveOrder()?.hasItem(itemEntity.getItemType())) {
+              itemEntity.enablePulsing();
+            }
+          }
+
           sceneManager.addEntity(itemEntity);
           this.collisionSystem.addEntity(itemEntity);
           this.localEntities.push(itemEntity);

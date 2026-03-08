@@ -1,7 +1,6 @@
 import { GameContext, IPosition, IRenderer, ISize } from "../../classinterfaces.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
-import { ItemType } from "./itemTypes.ts";
 import { OrderDeliveryLoop } from "./orderloopsys.ts";
 
 export class ItemRenderer implements IRenderer{
@@ -15,8 +14,7 @@ export class ItemRenderer implements IRenderer{
   private boundingBox: BoundingBox | null;
 
   private showHintText = false;
-  private itemType: ItemType;
-  private orderLoop: OrderDeliveryLoop | null;
+  private pulseEnable = false;
   private pulseTimer: number = 0;
 
   constructor(
@@ -27,8 +25,6 @@ export class ItemRenderer implements IRenderer{
     spriteHeight: number,
     positionComponent: IPosition,
     sizeComponent: ISize,
-    itemType: ItemType,
-    orderLoop: OrderDeliveryLoop | null,
     boundingBox?: BoundingBox | null
   ) {
     this.image = image;
@@ -39,22 +35,24 @@ export class ItemRenderer implements IRenderer{
     this.sizeComponent = sizeComponent;
     this.positionComponent = positionComponent;
     this.boundingBox = boundingBox ?? null;
-    this.itemType = itemType;
-    this.orderLoop = orderLoop;
   }
 
   public enableHintText(): void {
     this.showHintText = true;
   }
 
-  private isItemNeeded(): boolean {
-    if (!this.orderLoop) return false;
-    
-    const currentOrder = this.orderLoop.getCurrentActiveOrder();
-    if (!currentOrder) return false;
-    
-    return currentOrder.hasItem(this.itemType);
+  public setPulsing(state: boolean): void {
+    this.pulseEnable = state;
   }
+
+  // private isItemNeeded(): boolean {
+  //   if (!this.orderLoop) return false;
+    
+  //   const currentOrder = this.orderLoop.getCurrentActiveOrder();
+  //   if (!currentOrder) return false;
+    
+  //   return currentOrder.hasItem(this.itemType);
+  // }
 
   // extend the functionality of draw to be able to draw hint text
   public draw(context: GameContext): void {
@@ -64,13 +62,13 @@ export class ItemRenderer implements IRenderer{
     const height = this.sizeComponent.getHeight();
 
     // Update pulse timer
-    if (this.isItemNeeded()) {
+    if (this.pulseEnable) {
       this.pulseTimer += context.clockTick * 3; // Speed of pulsing
     }
 
     // Calculate scale with pulsing effect
     let scaleMultiplier = 1.0;
-    if (this.isItemNeeded()) {
+    if (this.pulseEnable) {
       // Pulse between 1.0 and 1.15 scale
       scaleMultiplier = 1.0 + Math.sin(this.pulseTimer) * 0.15;
     }
