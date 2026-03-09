@@ -78,14 +78,25 @@ export const CheckoutRoom: roomData = {
   sceneId: "checkout",
   roomWidth: 1280,
   roomHeight: 720,
-  bloodLocations: [],
+  bloodLocations: [
+    { x: 50, y: 100 }, { x: 600, y: 200 }, { x: 1100, y: 50 },
+    { x: 70, y: 330 }, { x: 350, y: 400 }, { x: 120, y: 510 },
+    { x: 200, y: 40 }, { x: 900, y: 600 }, { x: 850, y: 142 },
+    { x: 900, y: 400 },
+  ],
   spawnPoints: [
     { x: 540, y: 30 },   // from electronics
-    { x: 1130, y: 310 }, // from pharmacy
+    { x: 1130, y: 270 }, // from pharmacy
     { x: 540, y: 570 },  // from delivery
   ],
-  monsterSpawns: [],
-  updatePoints: [],
+  monsterSpawns: [
+    { x: 60, y: 600 },
+  ],
+  updatePoints: [
+    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
+    {x: 50, y: 280},                  {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
+  ],
   shelves : [],
   doors: [
     { 
@@ -95,7 +106,7 @@ export const CheckoutRoom: roomData = {
       direction: DoorDirection.UP
     },
     {
-      position: { x: 1240, y: 310 },
+      position: { x: 1240, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "pharmacy",
       direction: DoorDirection.RIGHT
@@ -115,15 +126,14 @@ export const PharmaRoom: roomData = {
   roomWidth: 1280,
   roomHeight: 720,
   bloodLocations: [
-    { x: 250, y: 300 },
-    { x: 690, y: 400 },
-    { x: 1000, y: 200 },
-    { x: 450, y: 500 },
+    { x: 100, y: 50 }, { x: 430, y: 70 }, { x: 830, y: 20 },
+    { x: 250, y: 300 }, { x: 690, y: 350 }, { x: 1000, y: 200 },
+    { x: 450, y: 400 }, { x: 60, y: 500 }, { x: 1100, y: 485 },
   ],
   spawnPoints: [ // left, right, up
     { x: 540, y: 30 },   // from housing
-    { x: 30, y: 310 },   // from checkout
-    { x: 1130, y: 310 }, // from cleaning
+    { x: 30, y: 270 },   // from checkout
+    { x: 1130, y: 270 }, // from cleaning
   ],
   monsterSpawns: [ 
     {x: 1150, y: 280}
@@ -149,13 +159,13 @@ export const PharmaRoom: roomData = {
       direction: DoorDirection.UP
     },
     {
-      position: { x: 20, y: 310 },
+      position: { x: 20, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "checkout",
       direction: DoorDirection.LEFT
     },
     {
-      position: { x: 1240, y: 310 },
+      position: { x: 1240, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "cleaning",
       direction: DoorDirection.RIGHT
@@ -193,6 +203,9 @@ export const CleaningRoom: roomData = {
     { x: 690, y: 350 },
     { x: 1000, y: 200 },
     { x: 450, y: 500 },
+    { x: 60, y: 75 }, { x: 480, y: 220 }, { x: 700, y: 360 },
+    { x: 1000, y: 560 }, { x: 450, y: 480 }, { x: 1000, y: 200 },
+    { x: 1000, y: 100 }, { x: 400, y: 570 }, { x: 720, y: 555 },
   ],
   spawnPoints: [ // left, top
     { x: 540, y: 30 },   // from food
@@ -221,7 +234,7 @@ export const CleaningRoom: roomData = {
       direction: DoorDirection.UP
     },
     {
-      position: { x: 20, y: 310 },
+      position: { x: 20, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "pharmacy",
       direction: DoorDirection.LEFT
@@ -253,9 +266,17 @@ export const FoodRoom: roomData = {
     { x: 300, y: 350 },
     { x: 850, y: 160 },
     { x: 450, y: 500 },
+     { x: 700, y: 50 }, { x: 30, y: 70 }, { x: 830, y: 20 },
+    { x: 300, y: 100 }, { x: 690, y: 350 }, { x: 1000, y: 200 },
+    { x: 1100, y: 200 }, { x: 32, y: 500 }, { x: 1100, y: 485 },
+    { x: 700, y: 300 },
+    { x: 25, y: 400 },
+    { x: 1000, y: 500 },
+    { x: 600, y: 600 }, 
+    { x: 300, y: 650 }
   ],
   spawnPoints: [ // bottom, left
-    { x: 30, y: 310 },   // from housing
+    { x: 30, y: 270 },   // from housing
     { x: 540, y: 570 },  // from cleaning
   ],
   monsterSpawns: [ 
@@ -278,10 +299,10 @@ export const FoodRoom: roomData = {
   ],
   doors: [
     { 
-      position: { x: 20, y: 310 },
+      position: { x: 20, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "housing",
-      direction: DoorDirection.RIGHT
+      direction: DoorDirection.LEFT
     },
     {
       position: { x: 540, y: 680 },
@@ -315,23 +336,47 @@ export const HousingRoom: roomData = {
   roomWidth: 1280,
   roomHeight: 720,
   spawnPoints: [
-    { x: 30, y: 310 },   // from electronics
-    { x: 1130, y: 310 }, // from food
+    { x: 30, y: 270 },   // from electronics
+    { x: 1130, y: 270 }, // from food
     { x: 540, y: 570 },  // from pharmacy
   ],
-  bloodLocations: [],
-  monsterSpawns: [],
-  updatePoints: [],
-  shelves: [],
+  bloodLocations: [
+    { x: 500, y: 20 },
+    { x: 300, y: 350 },
+    { x: 850, y: 160 },
+    { x: 450, y: 500 },
+    { x: 820, y: 50 }, { x: 30, y: 70 }, { x: 830, y: 20 },
+    { x: 320, y: 110 }, { x: 690, y: 210 }, { x: 999, y: 800 },
+    { x: 20, y: 270 }, { x: 312, y: 700 }, { x: 1100, y: 485 },
+    { x: 46, y: 300 },
+    { x: 123, y: 400 },
+    { x: 890, y: 500 },
+    { x: 218, y: 600 }, 
+    { x: 430, y: 650 },
+  ],
+  monsterSpawns: [
+    {x: 1100, y: 280}, {x: 60, y: 600}, {x: 1100, y: 50}
+  ],
+  updatePoints: [
+    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
+    {x: 50, y: 280},                  {x: 1200, y: 280},
+    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
+  ],
+  shelves: [
+    { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 3 },
+    { position: { x: 750, y: 150 }, spriteId: "AllHShelves", shelfNum: 8 },
+    { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 2 },
+    { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 7 },
+  ],
   doors: [
     { 
-      position: { x: 20, y: 310 },
+      position: { x: 20, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "electronics",
       direction: DoorDirection.LEFT
     },
     {
-      position: { x: 1240, y: 310 },
+      position: { x: 1240, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "food",
       direction: DoorDirection.RIGHT
@@ -362,16 +407,33 @@ export const ElectronicsRoom: roomData = {
   roomWidth: 1280,
   roomHeight: 720,
   spawnPoints: [
-    { x: 1130, y: 310 }, // from housing
+    { x: 1130, y: 270 }, // from housing
     { x: 540, y: 570 },  // from checkout
   ],
-  bloodLocations: [],
-  monsterSpawns: [],
-  updatePoints: [],
-  shelves: [],
+  bloodLocations: [
+    { x: 500, y: 20 },
+    { x: 300, y: 350 },
+    { x: 80, y: 160 },
+    { x: 450, y: 500 }, 
+    { x: 1040, y: 102 }, { x: 430, y: 70 }, { x: 830, y: 20 },
+    { x: 729, y: 60 }, { x: 690, y: 654 }, { x: 1000, y: 240 },
+    { x: 490, y: 400 }, { x: 60, y: 500 }, { x: 1100, y: 485 },
+  ],
+  monsterSpawns: [
+    {x: 60, y: 50}, {x: 1100, y: 600}, { x: 60, y: 600}
+  ],
+  updatePoints: [
+    {x: 50, y: 40}, {x: 1200, y: 40},  
+    {x: 50, y: 600}, {x: 1200, y: 600}
+  ],
+  shelves: [
+    { position: { x: 150, y: 250 }, spriteId: "AllHShelves", shelfNum: 8 },
+    { position: { x: 450, y: 250 }, spriteId: "AllHShelves", shelfNum: 7 },
+    { position: { x: 750, y: 250 }, spriteId: "AllHShelves", shelfNum: 6 },
+  ],
   doors: [
     {
-      position: { x: 1240, y: 310 },
+      position: { x: 1240, y: 270 },
       size: { x: DOOR_THICKNESS, y: DOOR_VERTICAL_LENGTH },
       targetSceneId: "housing",
       direction: DoorDirection.RIGHT
