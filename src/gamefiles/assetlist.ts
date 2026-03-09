@@ -51,5 +51,6 @@ export const deliveryAssets: IAssetList [] = [
 export const soundEffects: IAssetList[] = [
   { id: "orderAppear", type: "audio", location: "./assets/Order.ogg" },
   { id: "itemPickup", type: "audio", location: "./assets/PickUp.ogg" },
-  { id: "orderComplete", type: "audio", location: "./assets/Success.ogg" }
+  { id: "orderComplete", type: "audio", location: "./assets/Success.ogg" },
+  { id: "orderWrong", type: "audio", location: "./assets/Wrong.ogg" }
 ];

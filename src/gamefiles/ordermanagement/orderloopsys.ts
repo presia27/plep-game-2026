@@ -174,6 +174,13 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
 
       referenceOrder.setFulfillMistakeCount(incorrectCount);
       referenceOrder.setFulfillAccuracy((Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount);
+
+      // Play success sound
+      if (incorrectCount > 0) {
+        ASSET_MANAGER.playMusic("orderWrong");
+      } else {
+        ASSET_MANAGER.playMusic("orderComplete");
+      }
   }
 
   public deliverOrder(items: Map<ItemType, number>): void {
@@ -189,9 +196,6 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
       if (this.getCurrentActiveOrder() !== null)
         this.notifyObservers(this.getCurrentActiveOrder(), OBS_NEW_ACTIVE_ORDER);
-
-      // Play success sound
-      ASSET_MANAGER.playMusic("orderComplete");
     }
   }
 
