@@ -13,7 +13,7 @@ export class StaticSpriteRenderer {
      * @param sizeComponent Width, height, and scale for drawing the sprite
      * @param positionComponent The position component to place the sprite on the canvas
      */
-    constructor(image, spriteXstart, spriteYstart, spriteWidth, spriteHeight, positionComponent, sizeComponent, boundingBox) {
+    constructor(image, spriteXstart, spriteYstart, spriteWidth, spriteHeight, positionComponent, sizeComponent, boundingBox, darkenMode, opacity) {
         this.image = image;
         this.xStart = spriteXstart;
         this.yStart = spriteYstart;
@@ -22,16 +22,25 @@ export class StaticSpriteRenderer {
         this.sizeComponent = sizeComponent;
         this.positionComponent = positionComponent;
         this.boundingBox = boundingBox !== null && boundingBox !== void 0 ? boundingBox : null;
+        this.darkenMode = darkenMode !== null && darkenMode !== void 0 ? darkenMode : null;
+        this.opacity = opacity !== null && opacity !== void 0 ? opacity : null;
     }
     draw(context) {
         const pos = this.positionComponent.getPosition();
         const width = this.sizeComponent.getWidth();
         const height = this.sizeComponent.getHeight();
+        context.ctx.save();
+        if (this.darkenMode !== null && this.darkenMode === true)
+            context.ctx.globalCompositeOperation = "darken";
+        if (this.opacity !== null)
+            context.ctx.globalAlpha = this.opacity;
         // drawImage takes the following parameters:
         // spritesheet, 
         // spriteX, spriteY, spriteWidth, spriteHeight, 
         // destinationX, destinationY, destinationWidth, destinationHeight
         context.ctx.drawImage(this.image, this.xStart, this.yStart, this.spriteWidth, this.spriteHeight, pos.x, pos.y, width, height);
+        context.ctx.globalCompositeOperation = "source-over";
+        context.ctx.globalAlpha = 1;
         if (context.debug) {
             context.ctx.save();
             // draw the full extent of the entity
@@ -44,5 +53,6 @@ export class StaticSpriteRenderer {
             }
             context.ctx.restore();
         }
+        context.ctx.restore();
     }
 }

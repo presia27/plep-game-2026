@@ -4,9 +4,9 @@ import { OrderDisplayRenderer } from "./orderdisplayrenderer.js";
  * Entity container for rendering on-screen
  */
 export class OrderDisplayEntity extends Entity {
-    constructor(x, y, orderLoop) {
+    constructor(x, y, orderLoop, getLevelNumber) {
         super();
-        const renderer = new OrderDisplayRenderer(x, y, orderLoop);
+        const renderer = new OrderDisplayRenderer(x, y, orderLoop, getLevelNumber);
         this.setRenderer(renderer);
     }
 }

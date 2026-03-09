@@ -15,6 +15,7 @@ export default class GameEngine {
      * @param options Option parameters to pass to the game
      */
     constructor(ctx, sceneMgr, inputMap, options) {
+        this.isPaused = false;
         this.running = false;
         // What you will use to draw
         // Documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
@@ -85,11 +86,31 @@ export default class GameEngine {
     }
     ;
     loop() {
+        // Only update loop time to avoid jump when unpaused
         this.clockTick = this.timer.tick();
-        this.update();
+        if (!this.isPaused) {
+            this.update();
+        }
+        else {
+            // Consume the input frame updates, update UI entities, and draw last frame
+            this.sceneMgr.updateUI(this.getGameContext());
+            this.inputSystem.onFrameUpdate();
+        }
         this.draw();
     }
     ;
+    togglePause() {
+        this.isPaused = !this.isPaused;
+    }
+    /**
+     * Getter method indicating whether the game is soft paused.
+     * The engine still continues, but entities will not receive updates.
+     *
+     * @returns Boolean representing the game's soft pause state
+     */
+    gameIsPaused() {
+        return this.isPaused;
+    }
     toggleDebugging() {
         this.options.debugging = !this.options.debugging;
         this.inputSystem.debugState = this.options.debugging;

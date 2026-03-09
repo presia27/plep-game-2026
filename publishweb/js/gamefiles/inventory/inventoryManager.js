@@ -49,6 +49,13 @@ export class InventoryManager {
             this.dropItem(toDrop);
         }
     }
+    /**
+     * Clear all items
+     */
+    clearItems() {
+        this.items = new Map();
+        this.notifyObservers();
+    }
     getItemAtIndex(index) {
         return [...this.items.keys()][index];
     }

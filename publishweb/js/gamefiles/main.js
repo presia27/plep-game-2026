@@ -2,7 +2,7 @@ var _a;
 import AssetManager from "../assetmanager.js";
 import GameEngine from "../gameengine.js";
 import { myInputMap } from "./inputmap.js";
-import { environmentAssets, itemAssets, playerAssets } from "./assetlist.js";
+import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets, soundEffects } from "./assetlist.js";
 import SceneManager from "../sceneManager.js";
 import { GameState } from "../gameState.js";
 import { MessengerService } from "../messengerService.js";
@@ -25,8 +25,20 @@ export const ASSET_MANAGER = new AssetManager();
 export const MSG_SERVICE = new MessengerService();
 // Download assets and start the game engine and related systems
 playerAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+monsterAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+bossAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+soundEffects.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+// Configure Fonts
+const pixelFont = new FontFace("Jersey-20", 'url("/assets/Jersey20-Regular.ttf")');
+document.fonts.add(pixelFont);
+pixelFont.load().then(() => {
+    console.log("Custom font loaded");
+}, (err) => {
+    console.error("Font not loaded properly.", err);
+});
 ASSET_MANAGER.downloadAll().then(() => {
     // Initialize the game engine and components, pass control to the manager
     const gameState = new GameState(gameEngine, sceneManager, ctx);
