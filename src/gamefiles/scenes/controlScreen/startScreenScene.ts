@@ -53,7 +53,6 @@ export class StartScreenScene implements IScene {
     }
 
     const handleSettingsClick = () => {
-      console.log("received click");
       sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
     }
 

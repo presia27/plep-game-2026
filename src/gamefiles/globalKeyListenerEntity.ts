@@ -23,7 +23,6 @@ export class GlobalKeyListenerEntity extends Entity {
   public override update(context: GameContext): void {
     if (this.inputSystem.isActionActiveSingle(InputAction.PAUSE)) {
       this.eventTrigger.assertChange(null, TOGGLE_PAUSE);
-      console.log("toggling pause");
     }
   }
 }
