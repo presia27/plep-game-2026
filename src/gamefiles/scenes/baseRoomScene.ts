@@ -4,6 +4,8 @@ import GameEngine from "../../gameengine.ts";
 import { InputSystem } from "../../inputsys.ts";
 import SceneManager from "../../sceneManager.ts";
 import { XY } from "../../typeinterfaces.ts";
+import { GameStateEventTrigger } from "../../gameStateEventTrigger.ts";
+import { InputAction } from "../../inputactionlist.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { PlayerController } from "../player/playerController.ts";
 import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shelves/shelfController.ts";
@@ -14,6 +16,7 @@ import { DoorData, roomData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
+import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
@@ -47,14 +50,15 @@ export class BaseRoomScene implements IScene {
   protected inputSystem: InputSystem;
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
+  protected orderLoop: OrderDeliveryLoop;
 
-  constructor(game: GameEngine, roomData: roomData) {
+  constructor(game: GameEngine, roomData: roomData, orderLoop: OrderDeliveryLoop) {
     this.roomData = roomData;
 
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
-    
+    this.orderLoop = orderLoop;
   }
 
   /**
@@ -145,7 +149,7 @@ export class BaseRoomScene implements IScene {
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
-    
+
     for (const shelfData of this.roomData.shelves) {
       const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
       if (shelfSprite === null) {
@@ -173,12 +177,21 @@ export class BaseRoomScene implements IScene {
           itemPos.y = (itemPos.y * SHELF_SCALE) + shelfData.position.y;
 
           const itemEntity = new ItemEntity(shelfItem, itemPos);
+          // Register the item as an observer of the order loop
+          this.orderLoop?.subscribe(itemEntity);
+          // [hack] also determine if the item should be flashing upon instantiation; this method can be loaded after an order is already made active
+          if (this.orderLoop.getCurrentActiveOrder()) {
+            if (this.orderLoop.getCurrentActiveOrder()?.hasItem(itemEntity.getItemType())) {
+              itemEntity.enablePulsing();
+            }
+          }
+
           sceneManager.addEntity(itemEntity);
           this.collisionSystem.addEntity(itemEntity);
           this.localEntities.push(itemEntity);
         }
       }
-      
+
       this.localEntities.push(shelf);
       sceneManager.addEntity(shelf);
       this.collisionSystem.addEntity(shelf);
@@ -209,7 +222,7 @@ export class BaseRoomScene implements IScene {
     const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
       const deliveryEntity = new DeliveryController(deliveryPOS, 1);
-      
+
       this.localEntities.push(deliveryEntity);
       sceneManager.addEntity(deliveryEntity);
       this.collisionSystem.addEntity(deliveryEntity);
@@ -243,7 +256,7 @@ export class BaseRoomScene implements IScene {
     const existingPlayer = sceneManager.getLevelEntities().find(
       entity => entity instanceof PlayerController
     );
-    
+
     if (existingPlayer) {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
@@ -261,7 +274,7 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(entity);
       this.collisionSystem.addEntity(entity);
     }
-    
+
     console.log("onResume complete");
   }
 
@@ -276,8 +289,6 @@ export class BaseRoomScene implements IScene {
     }
   }
 
-  update(context: GameContext): void {}
-  draw(context: GameContext): void {}
-  
-  
+  update(context: GameContext): void { }
+  draw(context: GameContext): void { }
 }

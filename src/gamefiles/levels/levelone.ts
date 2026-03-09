@@ -31,10 +31,10 @@ export function loadLevelOne(
   bossSatisfaction: BossSatisfaction
 ) {
   // Create rooms
-  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom);
-  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom);
-  const foodScene = new BaseRoomScene(gameEngine, FoodRoom);
-  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom);
+  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, orderLoop);
+  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom, orderLoop);
+  const foodScene = new BaseRoomScene(gameEngine, FoodRoom, orderLoop);
+  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, orderLoop);
 
   // Get list of all allowed items for the level
   const allowedItems = PharmaRoom.allowedItems
@@ -46,7 +46,7 @@ export function loadLevelOne(
   sceneManager.registerScene(FoodRoom.sceneId, foodScene);
   sceneManager.registerScene(DeliveryRoom.sceneId, deliveryScene);
   sceneManager.loadScene(PharmaRoom.sceneId, pharmaScene);
-  
+
   // Add order loop
   orderLoop.init(
     gameEngine.getGameContext().gameTime,
@@ -69,5 +69,5 @@ export function loadLevelOne(
   MSG_SERVICE.queueMessage("SHIFT 1");
   MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }
-  
+
 

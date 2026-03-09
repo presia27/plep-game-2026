@@ -34,3 +34,4 @@ export class GameStateEventTrigger {
 /* Event types */
 export const LEVEL_OVER = "LEVEL_OVER";
 export const NEXT_SCENE = "NEXT_SCENE";
+export const TOGGLE_PAUSE = "TOGGLE_PAUSE";
