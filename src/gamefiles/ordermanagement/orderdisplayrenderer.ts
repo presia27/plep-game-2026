@@ -35,6 +35,7 @@ export class OrderDisplayRenderer implements IRenderer {
     const slotFill = '#d9d9d9';
     const completedBorder = '#00ff00'; // green for completed items
     const incompleteBorder = '#808080'; // grey for incomplete items
+    const overcountBorder = '#ff0000'; // Red for items over count
 
     // Get orders
     const activeOrders = this.orderLoop.getActiveOrders();
@@ -80,13 +81,23 @@ export class OrderDisplayRenderer implements IRenderer {
 
     // Draw active orders
     if (currentOrder !== undefined && currentOrder !== null) {
-      this.drawActiveOrder(ctx, posX, currentOrder, itemSprite, bgFill, borderOuter, slotFill, completedBorder, incompleteBorder);
+      this.drawActiveOrder(ctx, posX, currentOrder, itemSprite, bgFill, borderOuter, slotFill, completedBorder, incompleteBorder, overcountBorder);
     }
 
     ctx.restore();
   }
 
-  private drawActiveOrder(ctx: CanvasRenderingContext2D, posX: number, order: Order, itemSprite: HTMLImageElement, bgFill: string, borderOuter: string, slotFill: string, completedBorder: string, incompleteBorder: string) {
+  private drawActiveOrder(
+    ctx: CanvasRenderingContext2D,
+    posX: number, order: Order,
+    itemSprite: HTMLImageElement,
+    bgFill: string,
+    borderOuter: string,
+    slotFill: string,
+    completedBorder: string,
+    incompleteBorder: string,
+    overcountBorder: string
+  ) {
     const items = order.getAllItems();
 
     let i = 0;
@@ -102,7 +113,8 @@ export class OrderDisplayRenderer implements IRenderer {
       // Determine if item is completed
       const orderProgress = this.orderLoop.getOrderStatus();
       const orderItem = orderProgress.get(item);
-      const isCompleted = orderItem && orderItem >= value;
+      const isCompleted = orderItem && orderItem === value;
+      const isOverCount = orderItem && orderItem > value;
 
       // Draw slot background
       ctx.fillStyle = slotFill;
@@ -110,7 +122,14 @@ export class OrderDisplayRenderer implements IRenderer {
       
       // Draw slot border (green if completed, grey if not)
       ctx.lineWidth = 3;
-      ctx.strokeStyle = isCompleted ? completedBorder : incompleteBorder;
+      //ctx.strokeStyle = isCompleted ? completedBorder : incompleteBorder;
+      if (isCompleted) {
+        ctx.strokeStyle = completedBorder;
+      } else if (isOverCount) {
+        ctx.strokeStyle = overcountBorder;
+      } else {
+        ctx.strokeStyle = incompleteBorder;
+      }
       ctx.strokeRect(startX, startY, ITEM_SIDE_LENGTH, ITEM_SIDE_LENGTH);
 
       // Draw item sprite
