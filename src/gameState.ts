@@ -239,6 +239,7 @@ export class GameState {
         // this.pauseSettingsScene.onEnter(mockSceneManager);
 
       } else {
+        this.sceneManager.loadLastScene();
         // // Remove pause settings entities from UI layer
         // for (const entity of this.pauseEntities) {
         //   const uiEntities = (this.sceneManager as any).uiEntities;

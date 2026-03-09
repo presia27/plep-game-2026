@@ -17,6 +17,7 @@ import { GameState } from "./gameState.ts";
  */
 export default class SceneManager {
   private currentScene: IScene | null = null;
+  private lastScene: IScene | null = null;
   private roomEntities: IEntity[];  // SceneManager owns entities now
   private levelEntities: IEntity[];  // SceneManager owns entities now
   private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
@@ -193,6 +194,7 @@ export default class SceneManager {
    */
   public loadScene(sceneId: string, scene?: IScene): void {
     this.currentScene?.onExit();
+    this.lastScene = this.currentScene;
     this.clearEntities();
     this.clearTransientUIEntities();
 
@@ -219,6 +221,29 @@ export default class SceneManager {
       scene.onEnter(this);
     } else {
       console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
+    }
+  }
+
+  /**
+   * If a previous scene is registered as the "last scene" before
+   * the currently loaded scene, reload it. This assumes that
+   * the scene was already loaded before, hence no scene ID
+   * is needed and it is already registered in the scene cache
+   * (I hope).
+   */
+  public loadLastScene(): void {
+    if (this.lastScene) {
+      this.currentScene?.onExit();
+      this.clearEntities();
+      this.clearTransientUIEntities();
+      this.currentScene = this.lastScene;
+      //this.currentScene?.onEnter(this);
+      const hasBeenEntered = (this.lastScene as any).localEntities?.length > 0;
+      if (hasBeenEntered) {
+        this.currentScene.onResume(this);
+      } else {
+        this.currentScene.onEnter(this);
+      }
     }
   }
 }
