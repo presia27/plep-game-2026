@@ -1,4 +1,4 @@
-import {GameContext, IEntity, IScene} from "./classinterfaces.ts";
+import { GameContext, IEntity, IScene } from "./classinterfaces.ts";
 import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
 import { GameState } from "./gameState.ts";
 
@@ -17,11 +17,12 @@ import { GameState } from "./gameState.ts";
  */
 export default class SceneManager {
   private currentScene: IScene | null = null;
+  private lastScene: IScene | null = null;
   private roomEntities: IEntity[];  // SceneManager owns entities now
   private levelEntities: IEntity[];  // SceneManager owns entities now
   private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
   private uiEntities: IEntity[]; // entities that belong to the UI layer, drawn on top of everything else
-//  public gameState: GameState | null; // global state, accessible to all scenes
+  private transientUIEntities: IEntity[];
 
 
   constructor() {
@@ -29,6 +30,7 @@ export default class SceneManager {
     this.roomEntities = [];
     this.levelEntities = [];
     this.uiEntities = [];
+    this.transientUIEntities = [];
     this.sceneCache = new Map();
   }
 
@@ -41,10 +43,10 @@ export default class SceneManager {
     this.roomEntities.push(entity);
   }
 
-   /**
-   * Adds a level-scoped entity that persists across all room transitions.
-   * Use this for: OrderDeliveryLoop, UI elements, persistent effects, etc.
-   */
+  /**
+  * Adds a level-scoped entity that persists across all room transitions.
+  * Use this for: OrderDeliveryLoop, UI elements, persistent effects, etc.
+  */
   public addLevelEntity(entity: IEntity): void {
     this.levelEntities.push(entity);
   }
@@ -53,14 +55,22 @@ export default class SceneManager {
     this.uiEntities.push(entity);
   }
 
+  public addTransientUIEntity(entity: IEntity): void {
+    this.transientUIEntities.push(entity);
+  }
+
   public clearEntities(): void {
     this.roomEntities = [];
+  }
+
+  public clearTransientUIEntities(): void {
+    this.transientUIEntities = [];
   }
 
   public getLevelEntities(): IEntity[] {
     return this.levelEntities;
   }
-  
+
   /**
    * Pre-registers a scene in the cache without loading it.
    * Useful for registering all rooms at startup so they're
@@ -81,7 +91,7 @@ export default class SceneManager {
   // public enrollGameState(gs: GameState) {
   //   this.gameState = gs;
   // }
-  
+
   /**
    * Clears the scene cache and resets all global state.
    * Use this when starting a new level or resetting the game.
@@ -91,14 +101,11 @@ export default class SceneManager {
     this.clearEntities();
     this.levelEntities = [];
     this.uiEntities = [];
+    this.transientUIEntities = [];
     this.currentScene = null;
   }
 
-  public update(context: GameContext): void {
-    // Update scene logic
-    this.currentScene?.update(context);
-
-    //update UI entities
+  public updateUI(context: GameContext): void {
     this.uiEntities = this.uiEntities.filter((entity) => {
       const lifecycle = entity.getComponent(BasicLifecycle);
       return !lifecycle || lifecycle.isAlive();
@@ -107,6 +114,23 @@ export default class SceneManager {
     this.uiEntities.forEach((entity) => {
       entity.update(context);
     });
+
+    this.transientUIEntities = this.transientUIEntities.filter((entity) => {
+      const lifecycle = entity.getComponent(BasicLifecycle);
+      return !lifecycle || lifecycle.isAlive();
+    });
+
+    this.transientUIEntities.forEach((entity) => {
+      entity.update(context);
+    });
+  }
+
+  public update(context: GameContext): void {
+    // Update scene logic
+    this.currentScene?.update(context);
+
+    //update UI entities
+    this.updateUI(context);
 
     // Update level entities (these persist across rooms)
     this.levelEntities = this.levelEntities.filter((entity) => {
@@ -130,7 +154,6 @@ export default class SceneManager {
     });
   }
 
-
   public draw(context: GameContext): void {
     this.currentScene?.draw(context);
 
@@ -145,13 +168,17 @@ export default class SceneManager {
         this.roomEntities[i]?.draw(context);
       }
     }
-  
+
     // 2. Level entities (player, items)
     for (let i = this.levelEntities.length - 1; i >= 0; i--) {
       this.levelEntities[i]?.draw(context);
     }
 
-    // 3. UI entities (drawn on top of everything)
+    for (let i = this.transientUIEntities.length - 1; i >= 0; i--) {
+      this.transientUIEntities[i]?.draw(context);
+    }
+
+    // 4. UI entities (drawn on top of everything)
     for (let i = this.uiEntities.length - 1; i >= 0; i--) {
       this.uiEntities[i]?.draw(context);
     }
@@ -167,15 +194,17 @@ export default class SceneManager {
    */
   public loadScene(sceneId: string, scene?: IScene): void {
     this.currentScene?.onExit();
+    this.lastScene = this.currentScene;
     this.clearEntities();
+    this.clearTransientUIEntities();
 
     if (this.sceneCache.has(sceneId)) {
       const cachedScene = this.sceneCache.get(sceneId)!;
-      
+
       // Check if this scene has been entered before by checking if it has entities
       // If this is a BaseRoomScene, it will have entities array
       const hasBeenEntered = (cachedScene as any).localEntities?.length > 0;
-      
+
       if (hasBeenEntered) {
         // Scene has been visited before - resume it
         this.currentScene = cachedScene;
@@ -192,6 +221,29 @@ export default class SceneManager {
       scene.onEnter(this);
     } else {
       console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
+    }
+  }
+
+  /**
+   * If a previous scene is registered as the "last scene" before
+   * the currently loaded scene, reload it. This assumes that
+   * the scene was already loaded before, hence no scene ID
+   * is needed and it is already registered in the scene cache
+   * (I hope).
+   */
+  public loadLastScene(): void {
+    if (this.lastScene) {
+      this.currentScene?.onExit();
+      this.clearEntities();
+      this.clearTransientUIEntities();
+      this.currentScene = this.lastScene;
+      //this.currentScene?.onEnter(this);
+      const hasBeenEntered = (this.lastScene as any).localEntities?.length > 0;
+      if (hasBeenEntered) {
+        this.currentScene.onResume(this);
+      } else {
+        this.currentScene.onEnter(this);
+      }
     }
   }
 }

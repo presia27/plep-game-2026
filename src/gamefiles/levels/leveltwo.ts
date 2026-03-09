@@ -40,10 +40,10 @@ export function loadLevelTwo(
   const allowedItems = PharmaRoom.allowedItems
     .concat(CleaningRoom.allowedItems);
 
-  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom, allowedRoomIds);
-  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, allowedRoomIds);
-  const checkoutScene = new BaseRoomScene(gameEngine, CheckoutRoom, allowedRoomIds);
-  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, allowedRoomIds);
+  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom, allowedRoomIds, orderLoop);
+  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, allowedRoomIds, orderLoop);
+  const checkoutScene = new BaseRoomScene(gameEngine, CheckoutRoom, allowedRoomIds, orderLoop);
+  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, allowedRoomIds, orderLoop);
 
   // Pre-register all rooms so they're ready when the player walks through doors
   sceneManager.registerScene(CleaningRoom.sceneId, cleaningScene);

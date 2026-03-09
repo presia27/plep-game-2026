@@ -1,6 +1,7 @@
 import { GameContext } from "../../classinterfaces.ts";
 import { GameStateEventTrigger, LEVEL_OVER } from "../../gameStateEventTrigger.ts";
 import { Entity } from "../../entity.ts";
+import { ASSET_MANAGER } from "../main.ts";
 import { ItemType } from "./itemTypes.ts";
 import { Order } from "./order.ts";
 import {
@@ -173,6 +174,13 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
 
       referenceOrder.setFulfillMistakeCount(incorrectCount);
       referenceOrder.setFulfillAccuracy((Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount);
+
+      // Play success sound
+      if (incorrectCount > 0) {
+        ASSET_MANAGER.playMusic("orderWrong");
+      } else {
+        ASSET_MANAGER.playMusic("orderComplete");
+      }
   }
 
   public deliverOrder(items: Map<ItemType, number>): void {
@@ -212,6 +220,9 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
           // load the next order
           const nextOrder: Order | undefined = this.inactiveOrders.shift();
           if (nextOrder !== undefined) {
+            // Play order appear sound
+            ASSET_MANAGER.playMusic("orderAppear");
+            
             // notify if the pushed order will end up at the front of the queue
             if (this.activeOrders.length === 0) {
               this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);

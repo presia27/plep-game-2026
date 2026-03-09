@@ -15,5 +15,6 @@ export const myInputMap: InputMapValue[] = [
   { type: "key", value: "3", action: InputAction.INVENTORY3 },
   { type: "key", value: "4", action: InputAction.INVENTORY4 },
   { type: "key", value: "5", action: InputAction.INVENTORY5 },
-  { type: "key", value: "6", action: InputAction.INVENTORY6 }
+  { type: "key", value: "6", action: InputAction.INVENTORY6 },
+  { type: "key", value: "escape", action: InputAction.PAUSE }
 ]

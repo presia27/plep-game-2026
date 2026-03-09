@@ -12,6 +12,7 @@ import { ILevelParams } from "./levelinterfaces.ts";
 
 /**
  * Represents concrete level data/parameters
+ * @author Preston Sia
  */
 
 const levelParams: ILevelParams = {
@@ -38,9 +39,9 @@ export function loadLevelOne(
   // Get list of all allowed items for the level
   const allowedItems = PharmaRoom.allowedItems;
 
-  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, allowedRoomIds);
-  const checkoutScene = new BaseRoomScene(gameEngine, CheckoutRoom, allowedRoomIds);
-  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, allowedRoomIds);
+  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, allowedRoomIds, orderLoop);
+  const checkoutScene = new BaseRoomScene(gameEngine, CheckoutRoom, allowedRoomIds, orderLoop);
+  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, allowedRoomIds, orderLoop);
 
   // Pre-register all rooms so they're ready when the player walks through doors
   sceneManager.registerScene(DeliveryRoom.sceneId, deliveryScene);
