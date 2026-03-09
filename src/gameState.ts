@@ -201,9 +201,9 @@ export class GameState {
     }
 
     if (TOGGLE_PAUSE === eventType) {
-      this.gameEngine.togglePause(this.sceneManager);
+      this.gameEngine.togglePause();
 
-      if (this.gameEngine['isPaused']) {
+      if (this.gameEngine.gameIsPaused()) {
         // Create pause settings overlay using StartScreenScene
         this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
         this.pauseSettingsScene.setInGame(true);

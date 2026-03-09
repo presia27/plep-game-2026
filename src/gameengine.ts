@@ -21,6 +21,7 @@ export default class GameEngine {
   private timer: Timer;
   private clockTick: number; // elapsed time in seconds since the last clock tick
   private sceneMgr: SceneManager;  // Game scene manager - added after the game engine is created
+  private isPaused: boolean = false;
 
   private options: any;
 
@@ -110,8 +111,6 @@ export default class GameEngine {
     this.inputSystem.onFrameUpdate();
   };
 
-  private isPaused: boolean = false;
-
   private loop() {
     // Only update loop time to avoid jump when unpaused
     this.clockTick = this.timer.tick();
@@ -128,6 +127,16 @@ export default class GameEngine {
 
   public togglePause() {
     this.isPaused = !this.isPaused;
+  }
+
+  /**
+   * Getter method indicating whether the game is soft paused.
+   * The engine still continues, but entities will not receive updates.
+   *
+   * @returns Boolean representing the game's soft pause state
+   */
+  public gameIsPaused(): boolean {
+    return this.isPaused;
   }
 
   toggleDebugging() {
