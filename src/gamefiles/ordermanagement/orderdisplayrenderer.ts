@@ -62,7 +62,7 @@ export class OrderDisplayRenderer implements IRenderer {
     );
 
     // Draw "Night X" on the left
-    ctx.font = 'bold 14px "Courier New", monospace';
+    ctx.font = 'bold 14px "Jersey-20", monospace';
     ctx.textAlign = 'left';
     ctx.fillStyle = 'white';
     const nightTitle = 'Night ' + this.getLevelNumber();
@@ -147,7 +147,7 @@ export class OrderDisplayRenderer implements IRenderer {
 
       // Draw item quantity
       ctx.fillStyle = "black";
-      ctx.font = 'bold 12px "Courier New", monospace';
+      ctx.font = 'bold 12px "Jersey-20", monospace';
       ctx.textAlign = 'right';
       ctx.fillText(
         value.toString(),

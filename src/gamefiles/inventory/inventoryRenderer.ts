@@ -57,7 +57,7 @@ export class InventoryRenderer implements IRenderer {
     );
 
     // Draw Title Label
-    ctx.font = 'bold 14px "Courier New", monospace';
+    ctx.font = 'bold 14px "Jersey-20", monospace';
     ctx.textAlign = 'left';
     ctx.fillStyle = 'white';
     const title = 'Inventory';
@@ -112,7 +112,7 @@ export class InventoryRenderer implements IRenderer {
       );
 
       ctx.fillStyle = 'white';
-      ctx.font = 'bold 12px "Courier New", monospace';
+      ctx.font = 'bold 12px "Jersey-20", monospace';
       ctx.textAlign = 'right';
       ctx.fillText(value.toString(), startX + ITEM_SIDE_WIDTH - 4, startY + ITEM_SIDE_WIDTH - 4);
       ctx.textAlign = 'left';
