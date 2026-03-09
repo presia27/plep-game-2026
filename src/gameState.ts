@@ -13,8 +13,9 @@ import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.t
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
-import { StartScreenScene } from "./gamefiles/scenes/startScreen/startScreenScene.ts";
+import { StartScreenScene } from "./gamefiles/scenes/controlScreen/startScreenScene.ts";
 import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.ts";
+import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScreenLoader.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 
@@ -33,6 +34,9 @@ export class GameState {
   private orderLoop: OrderDeliveryLoop;
   private player: PlayerController;
   private globalKeyEntity: GlobalKeyListenerEntity;
+
+  private pauseSettingsScene: StartScreenScene | null = null;
+  private pauseEntities: any[] = [];
 
   private levelNumber: number;
   private levelActive: boolean;
@@ -76,12 +80,20 @@ export class GameState {
     //   levelLoadProcedure(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
     //   this.levelActive = true;
     // }
-    this.sceneManager.loadScene("start", new StartScreenScene(
-      this.gsEventTrigger,
+
+    // this.sceneManager.loadScene("start", new StartScreenScene(
+    //   this.gsEventTrigger,
+    //   this.gameEngine.getInputSystem(),
+    //   this.ctx.canvas.width,
+    //   this.ctx.canvas.height
+    // ));
+    
+    loadControlScreen(
+      this.sceneManager,
       this.gameEngine.getInputSystem(),
-      this.ctx.canvas.width,
-      this.ctx.canvas.height
-    ));
+      this.ctx,
+      this.gsEventTrigger
+    );
   }
 
   /**
@@ -204,38 +216,35 @@ export class GameState {
       this.gameEngine.togglePause();
 
       if (this.gameEngine.gameIsPaused()) {
-        // Create pause settings overlay using StartScreenScene
-        this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
-        this.pauseSettingsScene.setInGame(true);
-        this.pauseSettingsScene.setMenuState('SETTINGS');
+        // // Create pause settings overlay using StartScreenScene
+        // this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
+        // this.pauseSettingsScene.setInGame(true);
+        // this.pauseSettingsScene.setMenuState('SETTINGS');
 
-        // Intercept entity additions to add to UI layer instead of clearing level entities.
-        // StartScreenScene.onEnter() calls addEntity() and clearEntities(); mock to preserve level state.
-        const mockSceneManager = {
-          addEntity: (entity: any) => {
-            this.sceneManager.addUIEntity(entity);
-            this.pauseEntities.push(entity);
-          },
-          clearEntities: () => { }
-        } as any;
-        this.pauseSettingsScene.onEnter(mockSceneManager);
+        // // Intercept entity additions to add to UI layer instead of clearing level entities.
+        // // StartScreenScene.onEnter() calls addEntity() and clearEntities(); mock to preserve level state.
+        // const mockSceneManager = {
+        //   addEntity: (entity: any) => {
+        //     this.sceneManager.addUIEntity(entity);
+        //     this.pauseEntities.push(entity);
+        //   },
+        //   clearEntities: () => { }
+        // } as any;
+        // this.pauseSettingsScene.onEnter(mockSceneManager);
 
       } else {
-        // Remove pause settings entities from UI layer
-        for (const entity of this.pauseEntities) {
-          const uiEntities = (this.sceneManager as any).uiEntities;
-          const index = uiEntities.indexOf(entity);
-          if (index > -1) {
-            uiEntities.splice(index, 1);
-          }
-        }
-        this.pauseEntities = [];
+        // // Remove pause settings entities from UI layer
+        // for (const entity of this.pauseEntities) {
+        //   const uiEntities = (this.sceneManager as any).uiEntities;
+        //   const index = uiEntities.indexOf(entity);
+        //   if (index > -1) {
+        //     uiEntities.splice(index, 1);
+        //   }
+        // }
+        // this.pauseEntities = [];
       }
     }
   }
-
-  private pauseSettingsScene: StartScreenScene | null = null;
-  private pauseEntities: any[] = [];
 
   public getInventoryManager(): InventoryManager {
     return this.inventoryManager;

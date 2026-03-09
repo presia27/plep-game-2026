@@ -33,7 +33,7 @@ export class StartScreenScene implements IScene {
     if (!this.sceneManager) return;
 
     // Clear existing room entities to refresh the UI
-    this.sceneManager.clearEntities();
+    //this.sceneManager.clearEntities();
 
     // 2. Add buttons based on state
     if (this.menuState === 'MAIN') {
