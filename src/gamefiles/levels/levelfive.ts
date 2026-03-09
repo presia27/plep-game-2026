@@ -46,13 +46,13 @@ export function loadLevelFive(
     .concat(HousingRoom.allowedItems)
     .concat(ElectronicsRoom.allowedItems);
 
-  const ElectronicsScene = new BaseRoomScene(gameEngine, ElectronicsRoom, allowedRoomIds);
-  const HousingScene = new BaseRoomScene(gameEngine, HousingRoom, allowedRoomIds);
-  const FoodScene = new BaseRoomScene(gameEngine, FoodRoom, allowedRoomIds);
-  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom, allowedRoomIds);
-  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, allowedRoomIds);
-  const checkoutScene = new BaseRoomScene(gameEngine, CheckoutRoom, allowedRoomIds);
-  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, allowedRoomIds);
+  const ElectronicsScene = new BaseRoomScene(gameEngine, ElectronicsRoom, allowedRoomIds, orderLoop);
+  const HousingScene = new BaseRoomScene(gameEngine, HousingRoom, allowedRoomIds, orderLoop);
+  const FoodScene = new BaseRoomScene(gameEngine, FoodRoom, allowedRoomIds, orderLoop);
+  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom, allowedRoomIds, orderLoop);
+  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, allowedRoomIds, orderLoop);
+  const checkoutScene = new BaseRoomScene(gameEngine, CheckoutRoom, allowedRoomIds, orderLoop);
+  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, allowedRoomIds, orderLoop);
 
   // Pre-register all rooms so they're ready when the player walks through doors
   sceneManager.registerScene(ElectronicsRoom.sceneId, ElectronicsScene);
