@@ -19,8 +19,8 @@ import { DeliveryRenderer } from "./deliveryRenderer.ts";
 // const PLAYER_BOUND_OFFSET_X: number = 13;
 // const PLAYER_BOUND_OFFSET_Y: number = 11;
 
-const SIZE_WIDTH: number = 300;
-const SIZE_HEIGHT: number = 300;
+const SIZE_WIDTH: number = 340;
+const SIZE_HEIGHT: number = 164;
 
 const RADIUS_MULTIPLIER: number = 2;
 
@@ -31,7 +31,7 @@ const RADIUS_MULTIPLIER: number = 2;
  * sharable logic should be added as a component, while
  * state specific to the player can be added here.
  * 
- * @author Preston Sia, Emma Szebenyi
+ * @author Preston Sia
  */
 export class DeliveryController extends Entity {
 
@@ -62,12 +62,12 @@ export class DeliveryController extends Entity {
     super.addComponent(deliveryBoundingBox);
     super.addComponent(deliveryCollisionHandler);
 
-    const vehicleSpritesheet = ASSET_MANAGER.getImageAsset("vehicles");
-    if (vehicleSpritesheet === null) {
-      throw new Error("Failed to load asset for the vehicles (delivery entity)");
+    const deliveryImage = ASSET_MANAGER.getImageAsset("deliveryImage");
+    if (deliveryImage === null) {
+      throw new Error("Failed to load asset for the deliveryEntity");
     }
-    //const renderer = new DeliveryRenderer(vehicleSpritesheet, 0, 0, vehicleSpritesheet.width, vehicleSpritesheet.height,
-    //  deliveryPosition, deliverySize, deliveryBoundingBox);
-    //super.setRenderer(renderer);
+    const renderer = new DeliveryRenderer(deliveryImage, 0, 0, deliveryImage.width, deliveryImage.height,
+      deliveryPosition, deliverySize, deliveryBoundingBox);
+    super.setRenderer(renderer);
   }
 }

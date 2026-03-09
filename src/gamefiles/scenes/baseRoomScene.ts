@@ -1,4 +1,4 @@
-import { GameContext, IEntity, IScene } from "../../classinterfaces.ts";
+import { GameContext, IEntity, IPosition, IScene } from "../../classinterfaces.ts";
 import { CollisionSystem } from "../../collisionsys.ts";
 import GameEngine from "../../gameengine.ts";
 import { InputSystem } from "../../inputsys.ts";
@@ -26,6 +26,8 @@ import { staticPositionComponent } from "../../componentLibrary/staticPositionCo
 import { ParkingLot } from "./storeExterior/parkingLotController.ts";
 import { Ball } from "./storeExterior/ballController.ts";
 import { Bush } from "./storeExterior/bushController.ts";
+import { VehicleEntity } from "./storeExterior/vehicleEntity.ts";
+import { VehicleState } from "./storeExterior/vehicleMovementSystem.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -217,6 +219,25 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(deliveryEntity);
       this.collisionSystem.addEntity(deliveryEntity);
 
+      if (this.roomData.isParkingLot) {
+        const tempDeliveryPos: XY = { x: -400, y: 200 }
+
+        // const vehicle = new VehicleEntity(
+        //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
+        //   8, 
+        //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
+        // )
+        // sceneManager.addEntity(vehicle);
+        // this.collisionSystem.addEntity(vehicle);
+        // this.localEntities.push(vehicle);
+        // if (vehicle.getMovementSystem().getPosition().x > 1200) {
+        //   const vehicle = new VehicleEntity(
+        //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
+        //   6, 
+        //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
+        //   )
+        // }
+      }
     }
 
     /* Blood splatters */
@@ -229,19 +250,26 @@ export class BaseRoomScene implements IScene {
 
     /* Floor texture */
     if (this.roomData.isParkingLot) {
-      
+      const vehicle = new VehicleEntity(
+        { x: 510, y: 200 },
+        8
+      )
+      sceneManager.addEntity(vehicle);
+      this.collisionSystem.addEntity(vehicle);
+      this.localEntities.push(vehicle);
+
       /** Create bush for collision handling */
       const bush = new Bush();
       sceneManager.addEntity(bush);
       this.localEntities.push(bush);
       this.collisionSystem.addEntity(bush);
-      
+
       /** Create balls for collision handling */
       const ball1Pos = new staticPositionComponent({ x: 32, y: 37 });
       const ball2Pos = new staticPositionComponent({ x: 352, y: 37 });
       const ball3Pos = new staticPositionComponent({ x: 848, y: 37 });
       const ball4Pos = new staticPositionComponent({ x: 1168, y: 37 });
-      
+
       const ball1 = new Ball(ball1Pos);
       const ball2 = new Ball(ball2Pos);
       const ball3 = new Ball(ball3Pos);
@@ -261,7 +289,6 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(ball2);
       this.collisionSystem.addEntity(ball3);
       this.collisionSystem.addEntity(ball4);
-          
       // const ballPositions: XY[] = [
       //   { x: 32, y: 37 }, { x: 352, y: 37 },
       //   { x: 848, y: 37 }, { x: 1168, y: 37 }
@@ -279,6 +306,7 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(lot);
       this.collisionSystem.addEntity(lot);
       this.localEntities.push(lot);
+
     } else {
       const floor = new StoreFloor();
       sceneManager.addEntity(floor);

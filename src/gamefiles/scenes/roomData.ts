@@ -44,7 +44,7 @@ export const DeliveryRoom: roomData = {
     }
   ],
   allowedItems: [],
-  deliveryEntityPosition: { x: 250, y: 200 },
+  deliveryEntityPosition: { x: 500, y: 200 },
   isParkingLot: true
 }
 

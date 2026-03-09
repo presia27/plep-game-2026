@@ -14,6 +14,7 @@ import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { WallEntity } from "../scenes/wallEntity.ts";
 import { Ball } from "../scenes/storeExterior/ballController.ts";
 import { Bush } from "../scenes/storeExterior/bushController.ts";
+import { VehicleEntity } from "../scenes/storeExterior/vehicleEntity.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -211,6 +212,32 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
           pos.y = bushTop - (yOffset + bbHeight);
         else
           pos.y = bushBottom - yOffset;
+      }
+    }
+    if (other instanceof VehicleEntity) {
+      const vehicleLeft = otherBounds.getLeft();
+      const vehicleRight = otherBounds.getRight();
+      const vehicleTop = otherBounds.getTop();
+      const vehicleBottom = otherBounds.getBottom();
+
+      const overlapLeft = playerRight - vehicleLeft;
+      const overlapRight = vehicleRight - playerLeft;
+      const overlapTop = playerBottom - vehicleTop;
+      const overlapBottom = vehicleBottom - playerTop;
+
+      const minOverlapX = Math.min(overlapLeft, overlapRight);
+      const minOverlapY = Math.min(overlapTop, overlapBottom);
+
+      if (minOverlapX < minOverlapY) {
+        if (overlapLeft < overlapRight)
+          pos.x = vehicleLeft - (xOffset + bbWidth);
+        else
+          pos.x = vehicleRight - xOffset;
+      } else {
+        if (overlapTop < overlapBottom)
+          pos.y = vehicleTop - (yOffset + bbHeight);
+        else
+          pos.y = vehicleBottom - yOffset;
       }
     }
   }
