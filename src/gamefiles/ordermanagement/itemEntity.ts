@@ -3,7 +3,7 @@ import { BasicSize } from "../../componentLibrary/BasicSize.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
 import { Entity } from "../../entity.ts";
-import { OBS_NEW_ACTIVE_ORDER, Observer } from "../../observerinterfaces.ts";
+import { OBS_NEW_ACTIVE_ORDER, OBS_ORDER_COMPLETE, Observer } from "../../observerinterfaces.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { ItemCollisionHandler } from "./itemCollisionHandler.ts";
@@ -82,6 +82,12 @@ export class ItemEntity extends Entity implements Observer {
 
   /** Take in observer updates when a new active order is available */
   observerUpdate(data: any, propertyName: string): void {
+    if (OBS_ORDER_COMPLETE) {
+      // disable pulsing when an order is complete in case there are no
+      // active orders. If there are, the code below for OBS_NEW_ACTIVE_ORDER
+      // will handle it
+      this.disablePulsing();
+    }
     if (OBS_NEW_ACTIVE_ORDER === propertyName) {
       const newOrderDataCast = data as Order;
 
