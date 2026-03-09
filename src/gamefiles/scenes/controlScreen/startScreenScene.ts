@@ -61,8 +61,8 @@ export class StartScreenScene implements IScene {
       "PLAY",
       "#4CAF50", // green game-like
       "white",
-      64,
-      (this.canvasHeight) - 264,
+      72,
+      (this.canvasHeight) - 272,
       200,
       50,
       this.inputSystem,
@@ -75,8 +75,8 @@ export class StartScreenScene implements IScene {
       "SETTINGS",
       "#2196F3", // blue
       "white",
-      64,
-      (this.canvasHeight - 192),
+      72,
+      (this.canvasHeight - 200),
       200,
       50,
       this.inputSystem,

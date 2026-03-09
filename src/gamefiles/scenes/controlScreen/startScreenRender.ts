@@ -40,7 +40,7 @@ class Renderer implements IRenderer {
     const title = this.getTitle();
 
     ctx.textAlign = "left"
-    const txtBorderOffset = 64;
+    const txtBorderOffset = 72;
 
     // Title shadow
     ctx.font = "bold 64px 'Jersey-20', monospace"
