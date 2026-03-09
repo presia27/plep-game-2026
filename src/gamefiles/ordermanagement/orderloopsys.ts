@@ -81,9 +81,9 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
    * @param allowedItems A list of all allowed items to pick from
    */
   public init(
-    startTime: number,
-    duration: number,
-    promptIntervalFactor: number,
+    startTime: number, 
+    duration: number, 
+    promptIntervalFactor: number, 
     totalOrders: number,
     totalItemVariety: number,
     allowedItems: ItemType[]
@@ -148,31 +148,32 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     }
   }
 
-  private calculateAccuracy(correctOrder: Order, itemsToEvaluate: Map<ItemType, number>): number {
+  private calculateAndSetAccuracy(referenceOrder: Order, itemsToEvaluate: Map<ItemType, number>): void {
     /** Calculate correctness */
-    let biggerMap;
-    let smallerMap;
-    if (correctOrder.getAllItems().size >= itemsToEvaluate.size) {
-      biggerMap = correctOrder.getAllItems();
-      smallerMap = itemsToEvaluate;
-    } else {
-      biggerMap = itemsToEvaluate;
-      smallerMap = correctOrder.getAllItems();
-    }
-
-    let totalCorrectCount = 0;
-    let incorrectCount = 0;
-
-    for (const [key, value] of biggerMap) {
-      totalCorrectCount += value;
-      if (!smallerMap.has(key)) {
-        incorrectCount += value;
-      } else if (smallerMap.has(key) && smallerMap.get(key) !== value) {
-        incorrectCount = incorrectCount + (Math.abs(value - (smallerMap.get(key) ?? 0)));
+      let biggerMap;
+      let smallerMap;
+      if (referenceOrder.getAllItems().size >= itemsToEvaluate.size) {
+        biggerMap = referenceOrder.getAllItems();
+        smallerMap = itemsToEvaluate;
+      } else {
+        biggerMap = itemsToEvaluate;
+        smallerMap = referenceOrder.getAllItems();
       }
-    }
 
-    return (Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount;
+      let totalCorrectCount = 0;  // total items in the order (sum of all item quantities)
+      let incorrectCount = 0;     // number of incorrect items
+
+      for (const [key, value] of biggerMap) {
+        totalCorrectCount += value;
+        if (!smallerMap.has(key)) {
+          incorrectCount += value;
+        } else if (smallerMap.has(key) && smallerMap.get(key) !== value) {
+          incorrectCount = incorrectCount + (Math.abs(value - (smallerMap.get(key) ?? 0)));
+        }
+      }
+
+      referenceOrder.setFulfillMistakeCount(incorrectCount);
+      referenceOrder.setFulfillAccuracy((Math.max(totalCorrectCount - incorrectCount, 0)) / totalCorrectCount);
   }
 
   public deliverOrder(items: Map<ItemType, number>): void {
@@ -181,17 +182,16 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       this.doneOrders.push(currentlyActive);
       currentlyActive.setFulfillTime(this.lastClockTime);
 
-      // Play success sound
-      ASSET_MANAGER.playMusic("orderComplete");
+      /* Check accuracy */
+      this.calculateAndSetAccuracy(currentlyActive, items);
 
       // send alert
       this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
       if (this.getCurrentActiveOrder() !== null)
         this.notifyObservers(this.getCurrentActiveOrder(), OBS_NEW_ACTIVE_ORDER);
 
-      /* Check accuracy */
-      currentlyActive.setFulfillAccuracy(this.calculateAccuracy(currentlyActive, items));
-      console.log(currentlyActive.getFulfillAccuracy());
+      // Play success sound
+      ASSET_MANAGER.playMusic("orderComplete");
     }
   }
 
@@ -218,7 +218,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
           if (nextOrder !== undefined) {
             // Play order appear sound
             ASSET_MANAGER.playMusic("orderAppear");
-
+            
             // notify if the pushed order will end up at the front of the queue
             if (this.activeOrders.length === 0) {
               this.notifyObservers(nextOrder, OBS_NEW_ACTIVE_ORDER);
@@ -257,7 +257,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     if (this.getNumberOfDoneOrders() < this.totalOrders) {
       return {
         success: false,
-        reason: "Failed to meet quota"
+        reason: "FAILED TO MEET QUOTA"
       }
     } else {
       return {

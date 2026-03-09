@@ -40,21 +40,6 @@ export class SatisfactionRenderer implements IRenderer {
       this.posX, this.posY + 7,
       PANELWIDTH, PANELHEIGHT
     )
-
-    // use custom font
-    const pixelFont = new FontFace(
-      "Jersey-20",
-      'url("../../../assets/Jersey20-Regular.ttf")'
-    );
-    document.fonts.add(pixelFont);
-    pixelFont.load().then(
-      () => {
-        console.log("Custom font loaded");
-      },
-      (err) => {
-        console.error("Font not loaded properly.", err);
-      }
-    );
     
     // Draw title
     ctx.fillStyle = 'black';
@@ -63,8 +48,6 @@ export class SatisfactionRenderer implements IRenderer {
 
     // Get satisfaction state
     const satisfaction = this.bossManager.getSatisfaction();
-
-    
 
     // Draw arrow displaying current satisfaction
     if (satisfaction > 0) {
@@ -149,29 +132,6 @@ export class SatisfactionRenderer implements IRenderer {
       BOSS_ICON_WIDTH * 2,
       BOSS_ICON_HEIGHT * 2,
     );
-    }
-
-    // Draw background panel
-    if (satisfaction <= 0) {
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, 1280, 720);
-
-      ctx.globalAlpha = 0.5; // lower opacity for image
-      ctx.drawImage(
-      this.bossIcons,
-      111, 1,
-      BOSS_ICON_WIDTH,
-      BOSS_ICON_HEIGHT,
-      510,
-      125,
-      BOSS_ICON_WIDTH * 17,
-      BOSS_ICON_HEIGHT * 17,
-      );
-      ctx.globalAlpha = 1; // restore global opacity
-
-      ctx.fillStyle = 'white';
-        ctx.font = '40px "Jersey-20", Arial';
-        ctx.fillText('YOU LOST - BOSS SATISFACTION DROPPED TO 0!', 250, ctx.canvas.height / 2 + 10);
     }
 
     ctx.restore();

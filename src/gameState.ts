@@ -13,6 +13,8 @@ import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.t
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
+import { BossSatisfaction } from "./gamefiles/bosssatisfaction/bossSatisfactionController.ts";
+import { SatisfactionDisplayEntity } from "./gamefiles/bosssatisfaction/satisfactionDisplayEntity.ts";
 import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.ts";
 import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScreenLoader.ts";
 import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.ts";
@@ -34,6 +36,7 @@ export class GameState {
   private ctx: CanvasRenderingContext2D;
   private inventoryManager: InventoryManager;
   private orderLoop: OrderDeliveryLoop;
+  private bossSatisfaction: BossSatisfaction
   private player: PlayerController;
   private globalKeyEntity: GlobalKeyListenerEntity;
 
@@ -57,6 +60,9 @@ export class GameState {
 
     /* Initialize the order loop */
     this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
+
+    /* Initialize boss satisfaction */
+    this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger); 
 
     /* Initialize the player */
     this.player = new PlayerController(
@@ -110,6 +116,7 @@ export class GameState {
     );
     this.sceneManager.addUIEntity(inventoryDisplayEntity);
 
+    // add order display renderer
     const orderDisplayEntity = new OrderDisplayEntity(
       this.ctx.canvas.width - 270,
       this.ctx.canvas.height - 70,
@@ -117,6 +124,10 @@ export class GameState {
       () => this.levelNumber + 1
     );
     this.sceneManager.addUIEntity(orderDisplayEntity);
+
+    // add boss satisfaction renderer
+    const satisfactionDisplay = new SatisfactionDisplayEntity(950, 20, this.bossSatisfaction);
+    this.sceneManager.addUIEntity(satisfactionDisplay);
   }
 
   /**
@@ -132,6 +143,7 @@ export class GameState {
     this.inventoryManager.clearItems();
     this.sceneManager.resetAll();
     this.orderLoop.reset();
+    this.bossSatisfaction.reset();
     this.gameEngine.getCollisionSystem().clearEntities();
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
@@ -148,6 +160,7 @@ export class GameState {
    */
   public loadState() {
     this.inventoryManager.subscribe(this.orderLoop);
+    this.orderLoop.subscribe(this.bossSatisfaction);
     this.initDisplayEntities();   // load display entities
     this.sceneManager.addLevelEntity(this.player);
     this.gameEngine.getCollisionSystem().addEntity(this.player);
@@ -186,10 +199,11 @@ export class GameState {
           this.sceneManager.loadScene("statScreen", new StatScreenScene(this.gsEventTrigger));
         }, 3000);
       } else {
-        MSG_SERVICE.queueMessage(levelState.reason ?? "YOU FAILED");
+        const loseReason = levelState.reason ?? "YOU FAILED";
+        MSG_SERVICE.queueMessage(loseReason);
         setTimeout(() => {
           this.cleanState();
-          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger));
+          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason));
         }, 3000);
       }
     }
@@ -202,7 +216,7 @@ export class GameState {
       if (this.levelNumber < levelLoaders.length) {
         const levelLoadProcedure = levelLoaders[this.levelNumber];
         if (levelLoadProcedure) {
-          levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop);
+          levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop, this.bossSatisfaction);
           this.levelActive = true;
         }
       } else {

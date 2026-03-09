@@ -11,6 +11,7 @@ import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
+import { WallEntity } from "../scenes/wallEntity.ts";
 import { ASSET_MANAGER } from "../main.ts";
 
 /**
@@ -131,6 +132,34 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
           this.inventoryMgr.clearItems();
         }
       }
+    }
+
+    if (other instanceof WallEntity) {
+      const wallLeft = otherBounds.getLeft();
+      const wallRight = otherBounds.getRight();
+      const wallTop = otherBounds.getTop();
+      const wallBottom = otherBounds.getBottom();
+
+      const overlapLeft = playerRight - wallLeft;
+      const overlapRight = wallRight - playerLeft;
+      const overlapTop = playerBottom - wallTop;
+      const overlapBottom = wallBottom - playerTop;
+
+      const minOverlapX = Math.min(overlapLeft, overlapRight);
+      const minOverlapY = Math.min(overlapTop, overlapBottom);
+
+      if (minOverlapX < minOverlapY) {
+        if (overlapLeft < overlapRight) 
+          pos.x = wallLeft - (xOffset + bbWidth);
+        else 
+          pos.x = wallRight - xOffset;
+      } else {
+        if (overlapTop < overlapBottom) 
+          pos.y = wallTop - (yOffset + bbHeight);
+        else 
+          pos.y = wallBottom - yOffset;
+      }
+
     }
   }
 }
