@@ -58,11 +58,11 @@ export class StartScreenScene implements IScene {
 
     /* Add buttons */
     const startBtn = new ButtonEntity(
-      "START GAME",
+      "PLAY",
       "#4CAF50", // green game-like
       "white",
-      (this.canvasWidth / 2) - 100,
-      (this.canvasHeight / 2) + 10,
+      64,
+      (this.canvasHeight) - 264,
       200,
       50,
       this.inputSystem,
@@ -75,8 +75,8 @@ export class StartScreenScene implements IScene {
       "SETTINGS",
       "#2196F3", // blue
       "white",
-      (this.canvasWidth / 2) - 100,
-      (this.canvasHeight / 2) + 80,
+      64,
+      (this.canvasHeight - 192),
       200,
       50,
       this.inputSystem,

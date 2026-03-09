@@ -39,16 +39,19 @@ class Renderer implements IRenderer {
     // Draw Title Text
     const title = this.getTitle();
 
-    ctx.textAlign = "center"
+    ctx.textAlign = "left"
+    const txtBorderOffset = 64;
 
     // Title shadow
-    ctx.font = "bold 64px 'Trebuchet MS', Arial, sans-serif"
+    ctx.font = "bold 64px 'Jersey-20', monospace"
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillText(title, ctx.canvas.width / 2 + 4, ctx.canvas.height / 4 + 4);
+    //ctx.fillText(title, ctx.canvas.width / 2 + 4, ctx.canvas.height / 4 + 4);
+    ctx.fillText(title, txtBorderOffset + 4, ctx.canvas.height - txtBorderOffset + 4);
 
     // Title foreground
-    ctx.fillStyle = "#FFD700"; // gold color
-    ctx.fillText(title, ctx.canvas.width / 2, ctx.canvas.height / 4);
+    ctx.fillStyle = "#9cb3c5"; // gold color
+    //ctx.fillText(title, ctx.canvas.width / 2, ctx.canvas.height / 4);
+    ctx.fillText(title, txtBorderOffset, ctx.canvas.height - (txtBorderOffset));
 
     ctx.restore();
   }
