@@ -12,6 +12,7 @@ import { ILevelParams } from "./levelinterfaces.ts";
 
 /**
  * Represents concrete level data/parameters
+ * @author Preston Sia
  */
 
 const levelParams: ILevelParams = {
