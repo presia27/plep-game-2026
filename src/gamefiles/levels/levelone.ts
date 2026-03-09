@@ -27,23 +27,10 @@ export function loadLevelOne(
   orderLoop: OrderDeliveryLoop
 ) {
   // Create rooms
-  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom);
-  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom);
-  const foodScene = new BaseRoomScene(gameEngine, FoodRoom);
-  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom);
-
-  // In order to allow pause menu to be launched, we need to pass a context trigger (which orderLoop inherently possesses at this scope)
-  // down to the rooms.
-  pharmaScene.setEventTrigger(orderLoop.getGsEventTrigger());
-  cleaningScene.setEventTrigger(orderLoop.getGsEventTrigger());
-  foodScene.setEventTrigger(orderLoop.getGsEventTrigger());
-  deliveryScene.setEventTrigger(orderLoop.getGsEventTrigger());
-
-  // Pass orderLoop to scenes for item pulsing animation
-  pharmaScene.setOrderLoop(orderLoop);
-  cleaningScene.setOrderLoop(orderLoop);
-  foodScene.setOrderLoop(orderLoop);
-  deliveryScene.setOrderLoop(orderLoop);
+  const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, orderLoop);
+  const cleaningScene = new BaseRoomScene(gameEngine, CleaningRoom, orderLoop);
+  const foodScene = new BaseRoomScene(gameEngine, FoodRoom, orderLoop);
+  const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, orderLoop);
 
   // Get list of all allowed items for the level
   const allowedItems = PharmaRoom.allowedItems

@@ -14,6 +14,7 @@ import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 import { StartScreenScene } from "./gamefiles/scenes/startScreen/startScreenScene.ts";
+import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 
@@ -31,6 +32,7 @@ export class GameState {
   private inventoryManager: InventoryManager;
   private orderLoop: OrderDeliveryLoop;
   private player: PlayerController;
+  private globalKeyEntity: GlobalKeyListenerEntity;
 
   private levelNumber: number;
   private levelActive: boolean;
@@ -56,6 +58,12 @@ export class GameState {
       { x: 0, y: 0 }, 5,
       this.inventoryManager,
       this.orderLoop
+    );
+
+    /* Initialize the global key (pause) controller */
+    this.globalKeyEntity = new GlobalKeyListenerEntity(
+      this.gameEngine.getInputSystem(),
+      this.gsEventTrigger
     );
 
     // Load the initialized classes into their respective places
@@ -133,7 +141,10 @@ export class GameState {
     this.initDisplayEntities();   // load display entities
     this.sceneManager.addLevelEntity(this.player);
     this.gameEngine.getCollisionSystem().addEntity(this.player);
-  }
+
+    // Add pause controller
+    this.sceneManager.addLevelEntity(this.globalKeyEntity);
+  }    
 
   /**
    * Perform a hard reset of the game state system.

@@ -383,8 +383,4 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   public getStartTime(): number {
     return this.startTime;
   }
-
-  public getGsEventTrigger(): GameStateEventTrigger {
-    return this.sceneTrigger;
-  }
 }

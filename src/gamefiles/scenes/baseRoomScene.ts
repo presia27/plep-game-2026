@@ -40,15 +40,15 @@ export class BaseRoomScene implements IScene {
   protected inputSystem: InputSystem;
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
-  protected orderLoop: OrderDeliveryLoop | null = null;
+  protected orderLoop: OrderDeliveryLoop;
 
-  constructor(game: GameEngine, roomData: roomData) {
+  constructor(game: GameEngine, roomData: roomData, orderLoop: OrderDeliveryLoop) {
     this.roomData = roomData;
 
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
-
+    this.orderLoop = orderLoop;
   }
 
   /**
@@ -118,7 +118,7 @@ export class BaseRoomScene implements IScene {
           // Register the item as an observer of the order loop
           this.orderLoop?.subscribe(itemEntity);
           // [hack] also determine if the item should be flashing upon instantiation; this method can be loaded after an order is already made active
-          if (this.orderLoop?.getCurrentActiveOrder()) {
+          if (this.orderLoop.getCurrentActiveOrder()) {
             if (this.orderLoop.getCurrentActiveOrder()?.hasItem(itemEntity.getItemType())) {
               itemEntity.enablePulsing();
             }
@@ -213,20 +213,6 @@ export class BaseRoomScene implements IScene {
     }
   }
 
-  private eventTrigger: GameStateEventTrigger | undefined;
-
-  public setEventTrigger(trigger: GameStateEventTrigger) {
-    this.eventTrigger = trigger;
-  }
-
-  public setOrderLoop(orderLoop: OrderDeliveryLoop) {
-    this.orderLoop = orderLoop;
-  }
-
-  update(context: GameContext): void {
-    if (this.inputSystem.isActionActiveSingle(InputAction.PAUSE) && this.eventTrigger) {
-      this.eventTrigger.assertChange(null, "TOGGLE_PAUSE");
-    }
-  }
+  update(context: GameContext): void { }
   draw(context: GameContext): void { }
 }
