@@ -37,7 +37,7 @@ export class StartScreenScene implements IScene {
 
     // Start Intro Music Loop: 0 to 12s
     // We store it so we can modify the loop points later
-    let introMusicNode = ASSET_MANAGER.playMusic("YMCAMusic", 0, 12);
+    let introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 0, 12);
     const handleStartGameClick = () => {
       
       // Transition music to full loop: 12s to end
@@ -46,7 +46,7 @@ export class StartScreenScene implements IScene {
         introMusicNode.source.loopEnd = introMusicNode.source.buffer?.duration || 100;
       } else {
         // Fallback if intro didn't play (e.g. autoplay blocked)
-        introMusicNode = ASSET_MANAGER.playMusic("YMCAMusic", 11.8, ASSET_MANAGER.getAudioAsset("YMCAMusic")?.duration || 100, 11.8);
+        introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, ASSET_MANAGER.getAudioAsset("gameMusic")?.duration || 100, 11.8);
       }
 
       this.sceneTrigger.assertChange(null, NEXT_SCENE);
