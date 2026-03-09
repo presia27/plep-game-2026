@@ -9,6 +9,7 @@ const PANELHEIGHT = 80;
 const ITEM_SIDE_LENGTH = 50;
 const BUFFER = 8;
 const OFFSET_X = 4;
+const MIN_ITEM_DISPLAY_CAPACITY = 5;
 
 export class OrderDisplayRenderer implements IRenderer {
   private posY: number;
@@ -37,12 +38,13 @@ export class OrderDisplayRenderer implements IRenderer {
 
     // Get orders
     const activeOrders = this.orderLoop.getActiveOrders();
-    const currentOrderNum = this.orderLoop.getNumberOfDoneOrders() + 1;
+    const currentOrderNum = this.orderLoop.getNumberOfDoneOrders();
     const totalOrders = this.orderLoop.getTotalOrders();
 
     // Calculate panel width based on number of items in current order
     const currentOrder = activeOrders[0];
-    const numItems = currentOrder ? currentOrder.getAllItems().size : 3; // default to 3 if no order
+    // const numItems = currentOrder ? currentOrder.getAllItems().size : 3; // default to 3 if no order
+    const numItems =  Math.max(currentOrder ? currentOrder.getAllItems().size : 0, MIN_ITEM_DISPLAY_CAPACITY); // calculate size to hold X items
     const panelWidth = (2 * OFFSET_X) + (numItems * ITEM_SIDE_LENGTH) + ((numItems - 1) * BUFFER);
 
     // Calculate position to right-align the panel
@@ -67,7 +69,7 @@ export class OrderDisplayRenderer implements IRenderer {
 
     // Draw "Order X / Y" on the right
     ctx.textAlign = 'right';
-    const orderTitle = 'Order ' + currentOrderNum + ' / ' + totalOrders;
+    const orderTitle = 'Shift Quota ' + currentOrderNum + ' / ' + totalOrders;
     ctx.fillText(orderTitle, posX + panelWidth, this.posY - 8);
 
     // Get item sprites
