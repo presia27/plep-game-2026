@@ -61,7 +61,7 @@ export class SettingsScreenScene implements IScene {
       this.inputSystem,
       handleVolumeChange
     );
-    sceneManager.addEntity(slider);
+    sceneManager.addTransientUIEntity(slider);
     this.localEntities.push(slider)
 
     const button = new ButtonEntity(
@@ -75,12 +75,12 @@ export class SettingsScreenScene implements IScene {
       this.inputSystem,
       handleBackClick
     );
-    sceneManager.addEntity(button);
+    sceneManager.addTransientUIEntity(button);
     this.localEntities.push(button);
 
     /* Add Background */
     const screenRenderer = new StartScreenRender(() => {return "PROJECT RUNNER"});
-    sceneManager.addEntity(screenRenderer);
+    sceneManager.addTransientUIEntity(screenRenderer);
     this.localEntities.push(screenRenderer);
   }
 
@@ -89,7 +89,7 @@ export class SettingsScreenScene implements IScene {
 
     // Re-add room entities
     for (const entity of this.localEntities) {
-      sceneManager.addEntity(entity);
+      sceneManager.addTransientUIEntity(entity);
     }
   }
 

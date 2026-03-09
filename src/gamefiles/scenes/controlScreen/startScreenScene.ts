@@ -15,7 +15,7 @@ export class StartScreenScene implements IScene {
   private canvasWidth: number;
   private canvasHeight: number;
 
-  localEntities: IEntity[]
+  localEntities: IEntity[];
 
   constructor(
     sceneTrigger: GameStateEventTrigger,
@@ -53,6 +53,7 @@ export class StartScreenScene implements IScene {
     }
 
     const handleSettingsClick = () => {
+      console.log("received click");
       sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
     }
 
@@ -68,7 +69,7 @@ export class StartScreenScene implements IScene {
       this.inputSystem,
       handleStartGameClick
     );
-    sceneManager.addEntity(startBtn);
+    sceneManager.addTransientUIEntity(startBtn);
     this.localEntities.push(startBtn);
 
     const settingsBtn = new ButtonEntity(
@@ -82,12 +83,12 @@ export class StartScreenScene implements IScene {
       this.inputSystem,
       handleSettingsClick
     );
-    sceneManager.addEntity(settingsBtn);
+    sceneManager.addTransientUIEntity(settingsBtn);
     this.localEntities.push(settingsBtn);
 
     /* Add Background */
     const screenRenderer = new StartScreenRender(() => {return "PROJECT RUNNER"});
-    sceneManager.addEntity(screenRenderer);
+    sceneManager.addTransientUIEntity(screenRenderer);
     this.localEntities.push(screenRenderer);
   }
 
@@ -96,7 +97,7 @@ export class StartScreenScene implements IScene {
 
     // Re-add room entities
     for (const entity of this.localEntities) {
-      sceneManager.addEntity(entity);
+      sceneManager.addTransientUIEntity(entity);
     }
   }
 

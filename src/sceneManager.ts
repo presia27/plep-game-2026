@@ -21,7 +21,7 @@ export default class SceneManager {
   private levelEntities: IEntity[];  // SceneManager owns entities now
   private sceneCache: Map<string, IScene>; // cache scenes/rooms by id
   private uiEntities: IEntity[]; // entities that belong to the UI layer, drawn on top of everything else
-  //  public gameState: GameState | null; // global state, accessible to all scenes
+  private transientUIEntities: IEntity[];
 
 
   constructor() {
@@ -29,6 +29,7 @@ export default class SceneManager {
     this.roomEntities = [];
     this.levelEntities = [];
     this.uiEntities = [];
+    this.transientUIEntities = [];
     this.sceneCache = new Map();
   }
 
@@ -53,8 +54,16 @@ export default class SceneManager {
     this.uiEntities.push(entity);
   }
 
+  public addTransientUIEntity(entity: IEntity): void {
+    this.transientUIEntities.push(entity);
+  }
+
   public clearEntities(): void {
     this.roomEntities = [];
+  }
+
+  public clearTransientUIEntities(): void {
+    this.transientUIEntities = [];
   }
 
   public getLevelEntities(): IEntity[] {
@@ -91,6 +100,7 @@ export default class SceneManager {
     this.clearEntities();
     this.levelEntities = [];
     this.uiEntities = [];
+    this.transientUIEntities = [];
     this.currentScene = null;
   }
 
@@ -101,6 +111,15 @@ export default class SceneManager {
     });
 
     this.uiEntities.forEach((entity) => {
+      entity.update(context);
+    });
+
+    this.transientUIEntities = this.transientUIEntities.filter((entity) => {
+      const lifecycle = entity.getComponent(BasicLifecycle);
+      return !lifecycle || lifecycle.isAlive();
+    });
+
+    this.transientUIEntities.forEach((entity) => {
       entity.update(context);
     });
   }
@@ -154,7 +173,11 @@ export default class SceneManager {
       this.levelEntities[i]?.draw(context);
     }
 
-    // 3. UI entities (drawn on top of everything)
+    for (let i = this.transientUIEntities.length - 1; i >= 0; i--) {
+      this.transientUIEntities[i]?.draw(context);
+    }
+
+    // 4. UI entities (drawn on top of everything)
     for (let i = this.uiEntities.length - 1; i >= 0; i--) {
       this.uiEntities[i]?.draw(context);
     }
@@ -171,6 +194,7 @@ export default class SceneManager {
   public loadScene(sceneId: string, scene?: IScene): void {
     this.currentScene?.onExit();
     this.clearEntities();
+    this.clearTransientUIEntities();
 
     if (this.sceneCache.has(sceneId)) {
       const cachedScene = this.sceneCache.get(sceneId)!;
