@@ -125,12 +125,12 @@ export const PharmaRoom: roomData = {
     { x: 1130, y: 310 }, // from cleaning
   ],
   monsterSpawns: [ 
-    {x: 1100, y: 280}, {x: 60, y: 600} 
+    {x: 1150, y: 280}
   ],
   updatePoints: [ // 6 points for perimeter, 0 for in between shelves
-    {x: 50, y: 40}, {x: 1200, y: 40},  
-    {x: 50, y: 280}, {x: 1200, y: 280},
-    {x: 50, y: 600}, {x: 1200, y: 600}
+    {x: 50, y: 40}, {x: 1150, y: 40},  
+    {x: 50, y: 280}, {x: 1150, y: 280},
+    {x: 50, y: 600}, {x: 1150, y: 600}
   ],
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 4 },
@@ -182,25 +182,29 @@ export const PharmaRoom: roomData = {
   ]
 }
 
+/** Cleaning Section */
 export const CleaningRoom: roomData = {
   sceneId: "cleaning",
   roomWidth: 1280,
   roomHeight: 720,
   bloodLocations: [
+    { x: 250, y: 50 },
+    { x: 690, y: 350 },
+    { x: 1000, y: 200 },
+    { x: 450, y: 500 },
+  ],
+  spawnPoints: [ // left, top
     { x: 540, y: 30 },   // from food
     { x: 30, y: 310 },   // from pharmacy
   ],
-  spawnPoints: [ // left, top
-    { x: 60, y: 300 },
-    { x: 610, y: 64}
-  ],
   monsterSpawns: [ 
-    {x: 600, y: 250}, {x: 1100, y: 600} 
+    {x: 600, y: 250}, 
+    {x: 1150, y: 600} 
   ],
   updatePoints: [ // 8 for perimeter, 0 for in between shelves
-    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
-    {x: 50, y: 280},                  {x: 1200, y: 280},
-    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
+    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1150, y: 40},  
+    {x: 50, y: 280},                  {x: 1150, y: 280},
+    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1150, y: 600}
   ],
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 1 },
@@ -238,6 +242,7 @@ export const CleaningRoom: roomData = {
   ]
 }
 
+/** Food Section */
 export const FoodRoom: roomData = {
   sceneId: "food",
   roomWidth: 1280,
@@ -253,12 +258,14 @@ export const FoodRoom: roomData = {
     { x: 540, y: 570 },  // from cleaning
   ],
   monsterSpawns: [ 
-    {x: 1100, y: 280}, {x: 60, y: 600}, {x: 1100, y: 50}
+    {x: 1150, y: 40}, 
+    {x: 1150, y: 280}, 
+    {x: 600, y: 600}
   ],
   updatePoints: [ // 6 for perimeter, 0 for in between shelves
-    {x: 50, y: 40},  {x: 1200, y: 40},  
-    {x: 50, y: 280}, {x: 1200, y: 280},
-    {x: 50, y: 600}, {x: 1200, y: 600}
+    {x: 50, y: 40}, {x: 1150, y: 40},  
+    {x: 50, y: 280}, {x: 1150, y: 280},
+    {x: 50, y: 600}, {x: 1150, y: 600}
   ],
   shelves: [
     { position: { x: 150, y: 150 }, spriteId: "AllHShelves", shelfNum: 2 },
@@ -267,7 +274,6 @@ export const FoodRoom: roomData = {
     { position: { x: 150, y: 400 }, spriteId: "AllHShelves", shelfNum: 7 },
     { position: { x: 450, y: 400 }, spriteId: "AllHShelves", shelfNum: 4 },
     { position: { x: 750, y: 400 }, spriteId: "AllHShelves", shelfNum: 3 }
-
   ],
   doors: [
     { 
