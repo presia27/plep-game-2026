@@ -118,16 +118,15 @@ export default class GameEngine {
 
     if (!this.isPaused) {
       this.update();
-      this.draw();
     } else {
       // Consume the input frame updates, update UI entities, and draw last frame
       this.sceneMgr.updateUI(this.getGameContext());
       this.inputSystem.onFrameUpdate();
-      this.draw();
     }
+    this.draw();
   };
 
-  public togglePause(sceneMgr: SceneManager) {
+  public togglePause() {
     this.isPaused = !this.isPaused;
   }
 
