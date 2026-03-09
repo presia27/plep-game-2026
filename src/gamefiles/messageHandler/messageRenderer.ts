@@ -11,7 +11,7 @@ export class MessageRenderer implements IRenderer {
   draw(context: GameContext): void {
     const currentMsg = this.currentMessageComponent.getCurrentMessasge();
     const ctx = context.ctx;
-    const panelWidth = 300;
+    const panelWidth = 640;
     const panelHeight = 50;
     const posX = (ctx.canvas.width / 2) - (panelWidth / 2);
     const posY = ctx.canvas.height - (panelHeight * 2);
