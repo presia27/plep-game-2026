@@ -133,6 +133,8 @@ export class GameState {
     this.sceneManager.resetAll();
     this.orderLoop.reset();
     this.gameEngine.getCollisionSystem().clearEntities();
+    this.pauseSettingsScene = null;
+    this.playerLastPositionBeforePause = null;
   }
 
   /**
@@ -161,6 +163,10 @@ export class GameState {
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
     this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
     this.sceneManager.resetAll();
+    this.levelNumber = 0;
+    this.levelActive = false;
+    this.pauseSettingsScene = null;
+    this.playerLastPositionBeforePause = null;
   }
 
   public stateChangeHandler(data: any, eventType: string) {
