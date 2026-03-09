@@ -32,7 +32,7 @@ itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, 
 deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 soundEffects.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 // Configure Fonts
-const pixelFont = new FontFace("Jersey-20", 'url("/assets/Jersey20-Regular.ttf")');
+const pixelFont = new FontFace("Jersey-20", 'url("./assets/Jersey20-Regular.ttf")');
 document.fonts.add(pixelFont);
 pixelFont.load().then(() => {
     console.log("Custom font loaded");

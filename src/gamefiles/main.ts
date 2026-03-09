@@ -39,7 +39,7 @@ soundEffects.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type
 // Configure Fonts
 const pixelFont = new FontFace(
   "Jersey-20",
-  'url("/assets/Jersey20-Regular.ttf")'
+  'url("./assets/Jersey20-Regular.ttf")'
 );
 
 document.fonts.add(pixelFont);
