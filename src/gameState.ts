@@ -13,9 +13,9 @@ import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.t
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
-import { StartScreenScene } from "./gamefiles/scenes/controlScreen/startScreenScene.ts";
 import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.ts";
 import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScreenLoader.ts";
+import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 
@@ -35,8 +35,9 @@ export class GameState {
   private player: PlayerController;
   private globalKeyEntity: GlobalKeyListenerEntity;
 
-  private pauseSettingsScene: StartScreenScene | null = null;
-  private pauseEntities: any[] = [];
+  // For loading in game
+  private pauseSettingsScene: SettingsScreenScene | null = null;
+  //private pauseEntities: any[] = [];
 
   private levelNumber: number;
   private levelActive: boolean;
@@ -80,13 +81,6 @@ export class GameState {
     //   levelLoadProcedure(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
     //   this.levelActive = true;
     // }
-
-    // this.sceneManager.loadScene("start", new StartScreenScene(
-    //   this.gsEventTrigger,
-    //   this.gameEngine.getInputSystem(),
-    //   this.ctx.canvas.width,
-    //   this.ctx.canvas.height
-    // ));
     
     loadControlScreen(
       this.sceneManager,
@@ -216,6 +210,18 @@ export class GameState {
       this.gameEngine.togglePause();
 
       if (this.gameEngine.gameIsPaused()) {
+        // create and register scene if not done already
+        if (!this.pauseSettingsScene) {
+          this.pauseSettingsScene = new SettingsScreenScene(
+            this.gsEventTrigger,
+            this.gameEngine.getInputSystem(),
+            this.ctx.canvas.width,
+            this.ctx.canvas.height,
+            true
+          );
+          this.sceneManager.registerScene(SETTINGSSCREEN_SCENEID, this.pauseSettingsScene);
+        }
+        this.sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
         // // Create pause settings overlay using StartScreenScene
         // this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
         // this.pauseSettingsScene.setInGame(true);

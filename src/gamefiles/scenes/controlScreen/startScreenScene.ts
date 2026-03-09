@@ -4,7 +4,10 @@ import { InputSystem } from "../../../inputsys.ts";
 import SceneManager from "../../../sceneManager";
 import { ASSET_MANAGER } from "../../main.ts";
 import { ButtonEntity } from "../buttonEntity.ts";
+import { SETTINGSSCREEN_SCENEID } from "./settingsScreen.ts";
 import { StartScreenRender } from "./startScreenRender.ts";
+
+export const STARTSCREEN_SCENEID = "start"
 
 export class StartScreenScene implements IScene {
   private sceneTrigger: GameStateEventTrigger;
@@ -50,7 +53,7 @@ export class StartScreenScene implements IScene {
     }
 
     const handleSettingsClick = () => {
-      sceneManager.loadScene("settings");
+      sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
     }
 
     /* Add buttons */

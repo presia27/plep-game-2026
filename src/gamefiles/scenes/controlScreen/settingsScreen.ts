@@ -6,6 +6,9 @@ import { ASSET_MANAGER } from "../../main.ts";
 import { ButtonEntity } from "../buttonEntity.ts";
 import { SliderEntity } from "../sliderEntity.ts";
 import { StartScreenRender } from "./startScreenRender.ts";
+import { STARTSCREEN_SCENEID } from "./startScreenScene.ts";
+
+export const SETTINGSSCREEN_SCENEID = "settings"
 
 export class SettingsScreenScene implements IScene {
   private sceneTrigger: GameStateEventTrigger;
@@ -42,7 +45,7 @@ export class SettingsScreenScene implements IScene {
         this.sceneTrigger.assertChange(null, TOGGLE_PAUSE);
       }
       else {
-        sceneManager.loadScene("start");
+        sceneManager.loadScene(STARTSCREEN_SCENEID);
       }
     };
 
