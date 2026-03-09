@@ -16,6 +16,8 @@ import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 import { StartScreenScene } from "./gamefiles/scenes/startScreen/startScreenScene.ts";
 import { BossSatisfaction } from "./gamefiles/bosssatisfaction/bossSatisfactionController.ts";
 import { SatisfactionDisplayEntity } from "./gamefiles/bosssatisfaction/satisfactionDisplayEntity.ts";
+import { TextboxManager } from "./gamefiles/textbox/textboxManager.ts";
+import { BossDialogueController } from "./gamefiles/textbox/bossDialogueController.ts";
 
 export const INVENTORY_MAX_SLOTS = 6;
 
@@ -37,6 +39,10 @@ export class GameState {
 
   private levelNumber: number;
   private levelActive: boolean;
+
+  // boss dialogue controls
+  private textboxManager: TextboxManager;
+  private bossDialogue: BossDialogueController;
 
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
     this.gsEventTrigger = new GameStateEventTrigger(this);
@@ -64,8 +70,26 @@ export class GameState {
       this.orderLoop
     );
 
+    // boss dialogue
+    this.textboxManager = new TextboxManager(
+      sceneManager,
+      ASSET_MANAGER,
+      270,
+      40,
+      760,
+      140,
+      "dialogueBox"
+    );
+
+    this.textboxManager.setDefaultDuration(4.0);
+    this.textboxManager.setDefaultRevealSpeed(35);
+
+    this.bossDialogue = new BossDialogueController(this.textboxManager, this.orderLoop);
+
+    this.orderLoop.setBossDialogue(this.bossDialogue);
+
     // Load the initialized classes into their respective places
-    this.loadState();
+    //this.loadState();
 
     /* Load level or scene */
     // Load the function reference from the list of levels, then call it to load the level
@@ -123,11 +147,13 @@ export class GameState {
    * re-instantiated.
    */
   public cleanState() {
+    this.textboxManager.clearAll(); // clear textboxes
     this.inventoryManager.clearItems();
     this.sceneManager.resetAll();
     this.orderLoop.reset();
     this.bossSatisfaction.reset();
     this.gameEngine.getCollisionSystem().clearEntities();
+
   }
 
   /**
@@ -145,6 +171,8 @@ export class GameState {
     this.initDisplayEntities();   // load display entities
     this.sceneManager.addLevelEntity(this.player);
     this.gameEngine.getCollisionSystem().addEntity(this.player);
+
+    this.sceneManager.addLevelEntity(this.bossDialogue);
   }
 
   /**
@@ -192,6 +220,8 @@ export class GameState {
         if (levelLoadProcedure) {
           levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop, this.bossSatisfaction);
           this.levelActive = true;
+
+          this.bossDialogue.onLevelStart();
         }
       } else {
         MSG_SERVICE.queueMessage("The game is over.");
@@ -201,6 +231,14 @@ export class GameState {
         }, 3000);
       }
     }
+  }
+
+  public getTextboxManager(): TextboxManager {
+    return this.textboxManager;
+  }
+
+  public getBossDialogue(): BossDialogueController {
+    return this.bossDialogue;
   }
 
   public getInventoryManager(): InventoryManager {

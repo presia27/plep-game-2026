@@ -11,6 +11,7 @@ import {
   Observer
 } from "../../observerinterfaces.ts";
 import { LevelResult } from "../levels/levelinterfaces.ts";
+import { BossDialogueController } from "../textbox/bossDialogueController.ts";
 
 const MAX_ORDER_PROMPT_FREQ = 8; // maximum range of order frequency variation
 const SCHED_BUFFER = 10; // Time in seconds to use as a buffer between start and end timestamps
@@ -40,6 +41,8 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   private observers: Observer[];
   private sceneTrigger: GameStateEventTrigger;
 
+  private bossDialogue: BossDialogueController | null;
+
   /**
    * Initialize everything to null or 0.
    * Use init to initialize with proper values.
@@ -66,6 +69,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
 
     this.observers = [];
     this.sceneTrigger = sceneTrigger;
+    this.bossDialogue = null;
   }
 
   /**
@@ -184,10 +188,20 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       /* Check accuracy */
       this.calculateAndSetAccuracy(currentlyActive, items);
 
+      //new
+      const accuracy = currentlyActive.getFulfillAccuracy();
+      const isCorrect = accuracy !== null && accuracy >= 1.0;
+      if (this.bossDialogue) {
+        this.bossDialogue.onOrderDelivered(isCorrect);
+      }
+
       // send alert
       this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
       if (this.getCurrentActiveOrder() !== null)
         this.notifyObservers(this.getCurrentActiveOrder(), OBS_NEW_ACTIVE_ORDER);
+        if (this.bossDialogue) {
+          this.bossDialogue.onNewOrder();
+        }
     }
   }
 
@@ -316,6 +330,23 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     return times;
   }
 
+  /** Im not sure how order satisfaction is found at this moment */
+public getSatisfaction(): number {
+  if (this.doneOrders.length === 0) return 50;
+  
+  const totalAccuracy = this.doneOrders.reduce((sum, order) => {
+    const accuracy = order.getFulfillAccuracy();
+    return sum + (accuracy !== null ? accuracy : 0);  // Handle null
+  }, 0);
+  const avgAccuracy = totalAccuracy / this.doneOrders.length;
+  return Math.round(avgAccuracy * 100);
+}
+
+  public getTimeRemaining(): number {
+    const endTime = this.startTime + this.duration;
+    return Math.max(0, endTime - this.lastClockTime);
+  }
+
   /** 
    * From
    * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
@@ -375,5 +406,12 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
    */
   public getStartTime(): number {
     return this.startTime;
+  }
+
+  /**
+   * Set boss dialogue
+   */
+  public setBossDialogue(bossDialogue: BossDialogueController): void {
+    this.bossDialogue = bossDialogue;
   }
 }
