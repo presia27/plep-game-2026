@@ -16,6 +16,8 @@ import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.ts";
 import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScreenLoader.ts";
 import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.ts";
+import { XY } from "./typeinterfaces.ts";
+import { MovementComponent } from "./componentLibrary/movementComponent.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 
@@ -37,7 +39,7 @@ export class GameState {
 
   // For loading in game
   private pauseSettingsScene: SettingsScreenScene | null = null;
-  //private pauseEntities: any[] = [];
+  private playerLastPositionBeforePause: XY | null = null; // reload the player's last position on resume from pause screen
 
   private levelNumber: number;
   private levelActive: boolean;
@@ -222,6 +224,13 @@ export class GameState {
           this.sceneManager.registerScene(SETTINGSSCREEN_SCENEID, this.pauseSettingsScene);
         }
         this.sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
+        const movementComponent = this.player.getComponent(MovementComponent);
+        if (movementComponent) {
+          this.playerLastPositionBeforePause = {
+            x: movementComponent.getPosition().x,
+            y: movementComponent.getPosition().y
+          }
+        }
         // // Create pause settings overlay using StartScreenScene
         // this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
         // this.pauseSettingsScene.setInGame(true);
@@ -240,6 +249,16 @@ export class GameState {
 
       } else {
         this.sceneManager.loadLastScene();
+
+        // Snap the player back to its position before pause
+        // Otherwiser, the last scene will snap it to the nearest spawn point
+        const movementComponent = this.player.getComponent(MovementComponent);
+        if (movementComponent && this.playerLastPositionBeforePause) {
+          movementComponent.setPosition({
+            x: this.playerLastPositionBeforePause.x,
+            y: this.playerLastPositionBeforePause.y
+          });
+        }
         // // Remove pause settings entities from UI layer
         // for (const entity of this.pauseEntities) {
         //   const uiEntities = (this.sceneManager as any).uiEntities;
