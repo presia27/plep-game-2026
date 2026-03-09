@@ -1,4 +1,4 @@
-import { GameContext, IEntity, IScene } from "../../classinterfaces.ts";
+import { GameContext, IEntity, IPosition, IScene } from "../../classinterfaces.ts";
 import { CollisionSystem } from "../../collisionsys.ts";
 import GameEngine from "../../gameengine.ts";
 import { InputSystem } from "../../inputsys.ts";
@@ -23,13 +23,18 @@ import { ShelfShadow } from "./storeInterior/shelfShadowController.ts";
 import { UpdatePoint } from "../monster/updatePointEntity.ts";
 import { WallEntity } from "./wallEntity.ts";
 import { staticPositionComponent } from "../../componentLibrary/staticPositionComponent.ts";
+import { ParkingLot } from "./storeExterior/parkingLotController.ts";
+import { Ball } from "./storeExterior/ballController.ts";
+import { Bush } from "./storeExterior/bushController.ts";
+import { VehicleEntity } from "./storeExterior/vehicleEntity.ts";
+import { VehicleState } from "./storeExterior/vehicleMovementSystem.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
-  {x: 30, y: 20},
-  {x: 8, y: 20},
-  {x: 52, y: 20}
-]; 
+  { x: 30, y: 20 },
+  { x: 8, y: 20 },
+  { x: 52, y: 20 }
+];
 // TODO: i'd like to make it so items exist in diff locations depending on the number of 
 // rows the shelf has, since some shelves have only 2 rows and then items spawn looking like 
 // they're floating rather than sitting on the shelf
@@ -65,7 +70,7 @@ export class BaseRoomScene implements IScene {
    */
   onEnter(sceneManager: SceneManager): void {
     console.log("Loading scene " + this.roomData.sceneId);
-    
+
     // Attempt to find the current player
     let player: PlayerController | null;
     const existingPlayer = sceneManager.getLevelEntities().find(
@@ -107,7 +112,7 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(pointTrigger);
       this.collisionSystem.addEntity(pointTrigger);
     }
-    
+
     /* Create walls */
     const topWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 0 }),
@@ -143,19 +148,19 @@ export class BaseRoomScene implements IScene {
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
-    
+
     for (const shelfData of this.roomData.shelves) {
       const shelfSprite = ASSET_MANAGER.getImageAsset(shelfData.spriteId);
       if (shelfSprite === null) {
         throw new Error(`Failed to load shelf sprite: "${shelfData.spriteId}"`);
       }
       const shelf = new ShelfController(shelfData.position, shelfSprite, shelfData.shelfNum);
-      
+
       /* Shelf shadow */
       const shelfShadow = new ShelfShadow(shelfData.position);
       this.localEntities.push(shelfShadow);
       sceneManager.addEntity(shelfShadow);
-      
+
       // if the array has enough items to fill the shelf, retrive as many as will fit up to the max. Otherwise, retrieve whatever's available.
       const numItems = allowedItems.length >= ITEM_HSHELF_POSITION.length ? ITEM_HSHELF_POSITION.length : allowedItems.length;
       const shelfItems = allowedItems.splice(0, numItems);
@@ -176,7 +181,7 @@ export class BaseRoomScene implements IScene {
           this.localEntities.push(itemEntity);
         }
       }
-      
+
       this.localEntities.push(shelf);
       sceneManager.addEntity(shelf);
       this.collisionSystem.addEntity(shelf);
@@ -210,11 +215,30 @@ export class BaseRoomScene implements IScene {
     const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
       const deliveryEntity = new DeliveryController(deliveryPOS, 1);
-      
+
       this.localEntities.push(deliveryEntity);
       sceneManager.addEntity(deliveryEntity);
       this.collisionSystem.addEntity(deliveryEntity);
 
+      if (this.roomData.isParkingLot) {
+        const tempDeliveryPos: XY = { x: -400, y: 200 }
+
+        // const vehicle = new VehicleEntity(
+        //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
+        //   8, 
+        //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
+        // )
+        // sceneManager.addEntity(vehicle);
+        // this.collisionSystem.addEntity(vehicle);
+        // this.localEntities.push(vehicle);
+        // if (vehicle.getMovementSystem().getPosition().x > 1200) {
+        //   const vehicle = new VehicleEntity(
+        //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
+        //   6, 
+        //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
+        //   )
+        // }
+      }
     }
 
     /* Blood splatters */
@@ -226,10 +250,72 @@ export class BaseRoomScene implements IScene {
     }
 
     /* Floor texture */
-    const floor = new StoreFloor();
-    sceneManager.addEntity(floor);
-    this.collisionSystem.addEntity(floor);
-    this.localEntities.push(floor);
+    if (this.roomData.isParkingLot) {
+      const vehicle = new VehicleEntity(
+        { x: 510, y: 200 },
+        8
+      )
+      sceneManager.addEntity(vehicle);
+      this.collisionSystem.addEntity(vehicle);
+      this.localEntities.push(vehicle);
+
+      /** Create bush for collision handling */
+      const bush = new Bush();
+      sceneManager.addEntity(bush);
+      this.localEntities.push(bush);
+      this.collisionSystem.addEntity(bush);
+
+      /** Create balls for collision handling */
+      const ball1Pos = new staticPositionComponent({ x: 32, y: 37 });
+      const ball2Pos = new staticPositionComponent({ x: 352, y: 37 });
+      const ball3Pos = new staticPositionComponent({ x: 848, y: 37 });
+      const ball4Pos = new staticPositionComponent({ x: 1168, y: 37 });
+
+      const ball1 = new Ball(ball1Pos);
+      const ball2 = new Ball(ball2Pos);
+      const ball3 = new Ball(ball3Pos);
+      const ball4 = new Ball(ball4Pos);
+
+      sceneManager.addEntity(ball1);
+      sceneManager.addEntity(ball2);
+      sceneManager.addEntity(ball3);
+      sceneManager.addEntity(ball4);
+
+      this.localEntities.push(ball1);
+      this.localEntities.push(ball2);
+      this.localEntities.push(ball3);
+      this.localEntities.push(ball4);
+
+      this.collisionSystem.addEntity(ball1);
+      this.collisionSystem.addEntity(ball2);
+      this.collisionSystem.addEntity(ball3);
+      this.collisionSystem.addEntity(ball4);
+      // const ballPositions: XY[] = [
+      //   { x: 32, y: 37 }, { x: 352, y: 37 },
+      //   { x: 848, y: 37 }, { x: 1168, y: 37 }
+      // ];
+      // for (const ballPos of ballPositions) {
+      //   const ball = new Ball(ballPos);
+      //   sceneManager.addEntity(ball);
+      //   this.localEntities.push(ball);
+      //   this.collisionSystem.addEntity(ball);
+      //   console.debug("Ball created at " + ballPos.x + ", " + ballPos.y);
+      // }
+
+      /** Create parking lot sprite */
+      const lot = new ParkingLot();
+      sceneManager.addEntity(lot);
+      this.collisionSystem.addEntity(lot);
+      this.localEntities.push(lot);
+
+    } else {
+      const floor = new StoreFloor();
+      sceneManager.addEntity(floor);
+      this.collisionSystem.addEntity(floor);
+      this.localEntities.push(floor);
+    }
+
+
   }
 
   /**
@@ -244,7 +330,7 @@ export class BaseRoomScene implements IScene {
     const existingPlayer = sceneManager.getLevelEntities().find(
       entity => entity instanceof PlayerController
     );
-    
+
     if (existingPlayer) {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
@@ -259,7 +345,7 @@ export class BaseRoomScene implements IScene {
       sceneManager.addEntity(entity);
       this.collisionSystem.addEntity(entity);
     }
-    
+
     console.log("onResume complete");
   }
 

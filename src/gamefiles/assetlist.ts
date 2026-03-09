@@ -32,7 +32,9 @@ export const environmentAssets: IAssetList[] = [
   { id: "arrow", type: "img", location: "./assets/ArrowSpritesheet.png" },
   { id: "floor", type: "img", location: "./assets/StoreFloorTexture.png" },
   { id: "blood", type: "img", location: "./assets/BloodSplatter.png" },
-  { id: "shelfShadow", type: "img", location: "./assets/ShelfShadow.png" }
+  { id: "shelfShadow", type: "img", location: "./assets/ShelfShadow.png" },
+  { id: "parkingLot", type: "img", location: "./assets/ParkingLot.png" },
+  { id: "vehicles", type: "img", location: "./assets/VehicleSpritesheet.png" }
 ];
 
 /** Assets for items */
@@ -43,5 +45,5 @@ export const itemAssets: IAssetList[] = [
 
 /** Assets for Delivery */
 export const deliveryAssets: IAssetList [] = [
-  { id: "deliveryImage", type: "img", location: "./assets/primoChip.png"}
+  { id: "deliveryImage", type: "img", location: "./assets/DeliveryArea.png"}
 ];
