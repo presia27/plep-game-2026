@@ -237,21 +237,6 @@ export class GameState {
             y: movementComponent.getPosition().y
           }
         }
-        // // Create pause settings overlay using StartScreenScene
-        // this.pauseSettingsScene = new StartScreenScene(this.gsEventTrigger, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height);
-        // this.pauseSettingsScene.setInGame(true);
-        // this.pauseSettingsScene.setMenuState('SETTINGS');
-
-        // // Intercept entity additions to add to UI layer instead of clearing level entities.
-        // // StartScreenScene.onEnter() calls addEntity() and clearEntities(); mock to preserve level state.
-        // const mockSceneManager = {
-        //   addEntity: (entity: any) => {
-        //     this.sceneManager.addUIEntity(entity);
-        //     this.pauseEntities.push(entity);
-        //   },
-        //   clearEntities: () => { }
-        // } as any;
-        // this.pauseSettingsScene.onEnter(mockSceneManager);
 
       } else {
         this.sceneManager.loadLastScene();
@@ -265,16 +250,8 @@ export class GameState {
             y: this.playerLastPositionBeforePause.y
           });
         }
-        // // Remove pause settings entities from UI layer
-        // for (const entity of this.pauseEntities) {
-        //   const uiEntities = (this.sceneManager as any).uiEntities;
-        //   const index = uiEntities.indexOf(entity);
-        //   if (index > -1) {
-        //     uiEntities.splice(index, 1);
-        //   }
-        // }
-        // this.pauseEntities = [];
       }
+      
     }
   }
 
