@@ -4,6 +4,8 @@ import GameEngine from "../../gameengine.ts";
 import { InputSystem } from "../../inputsys.ts";
 import SceneManager from "../../sceneManager.ts";
 import { XY } from "../../typeinterfaces.ts";
+import { GameStateEventTrigger } from "../../gameStateEventTrigger.ts";
+import { InputAction } from "../../inputactionlist.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { PlayerController } from "../player/playerController.ts";
 import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shelves/shelfController.ts";
@@ -14,6 +16,7 @@ import { DoorData, roomData, ShelfData } from "./roomData.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
+import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
 import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
@@ -53,13 +56,15 @@ export class BaseRoomScene implements IScene {
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
   protected allowedRoomIds: string[];
+  protected orderLoop: OrderDeliveryLoop;
 
-  constructor(game: GameEngine, roomData: roomData, allowedRoomIds: string[]) {
+  constructor(game: GameEngine, roomData: roomData, allowedRoomIds: string[], orderLoop: OrderDeliveryLoop) {
     this.roomData = roomData;
 
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
+    this.orderLoop = orderLoop;
     this.allowedRoomIds = allowedRoomIds;
   }
 
@@ -176,6 +181,15 @@ export class BaseRoomScene implements IScene {
           itemPos.y = (itemPos.y * SHELF_SCALE) + shelfData.position.y;
 
           const itemEntity = new ItemEntity(shelfItem, itemPos);
+          // Register the item as an observer of the order loop
+          this.orderLoop?.subscribe(itemEntity);
+          // [hack] also determine if the item should be flashing upon instantiation; this method can be loaded after an order is already made active
+          if (this.orderLoop.getCurrentActiveOrder()) {
+            if (this.orderLoop.getCurrentActiveOrder()?.hasItem(itemEntity.getItemType())) {
+              itemEntity.enablePulsing();
+            }
+          }
+
           sceneManager.addEntity(itemEntity);
           this.collisionSystem.addEntity(itemEntity);
           this.localEntities.push(itemEntity);
