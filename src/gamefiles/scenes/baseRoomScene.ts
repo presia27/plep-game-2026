@@ -52,14 +52,15 @@ export class BaseRoomScene implements IScene {
   protected inputSystem: InputSystem;
   protected collisionSystem: CollisionSystem;
   protected localEntities: IEntity[];
+  protected allowedRoomIds: string[];
 
-  constructor(game: GameEngine, roomData: roomData) {
+  constructor(game: GameEngine, roomData: roomData, allowedRoomIds: string[]) {
     this.roomData = roomData;
 
     this.inputSystem = game.getInputSystem();
     this.collisionSystem = game.getCollisionSystem();
     this.localEntities = [];
-
+    this.allowedRoomIds = allowedRoomIds;
   }
 
   /**
@@ -83,10 +84,7 @@ export class BaseRoomScene implements IScene {
       player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition({
-          x: this.roomData.defaultSpawn.x,
-          y: this.roomData.defaultSpawn.y
-        });
+        this.movePlayer(movementComponent);
         /* Create and load monsters */
         for (const monsterSpawn of this.roomData.monsterSpawns) {
           const monster = new MonsterEntity(
@@ -197,16 +195,19 @@ export class BaseRoomScene implements IScene {
       }
 
       for (const door of this.roomData.doors) {
-        const trigger = new DoorTrigger(
-          door.position,
-          door.size,
-          door.targetSceneId,
-          sceneManager,
-          playerBoundingBox
-        );
-        this.localEntities.push(trigger);
-        sceneManager.addEntity(trigger);
-        this.collisionSystem.addEntity(trigger);
+        if (this.allowedRoomIds.includes(door.targetSceneId)) {
+          const trigger = new DoorTrigger(
+            door.position,
+            door.size,
+            door.targetSceneId,
+            door.direction,
+            sceneManager,
+            playerBoundingBox
+          );
+          this.localEntities.push(trigger);
+          sceneManager.addEntity(trigger);
+          this.collisionSystem.addEntity(trigger);
+        }
       }
     }
 
@@ -334,10 +335,7 @@ export class BaseRoomScene implements IScene {
       const player = existingPlayer as PlayerController;
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
-        movementComponent.setPosition({
-          x: this.roomData.defaultSpawn.x,
-          y: this.roomData.defaultSpawn.y
-        });
+        this.movePlayer(movementComponent);
       }
     }
 
@@ -362,8 +360,34 @@ export class BaseRoomScene implements IScene {
     }
   }
 
-  update(context: GameContext): void { }
-  draw(context: GameContext): void { }
+  update(context: GameContext): void {}
+  draw(context: GameContext): void {}
+  
+  private movePlayer(movementComponent: MovementComponent) {
+    // if (this.roomData.defaultSpawn) { // if a default spawn is used, 
+    //   movementComponent.setPosition({
+    //     x: this.roomData.defaultSpawn.x,
+    //     y: this.roomData.defaultSpawn.y
+    //   });
+    // }
+    const currentPosition: XY = {
+      x: movementComponent.getPosition().x,
+      y: movementComponent.getPosition().y
+    };
+    const spawnPts = this.roomData.spawnPoints.slice();
 
+    // invert coordinates to calculate proper destination
+    currentPosition.x = Math.abs(currentPosition.x - this.roomData.roomWidth);
+    currentPosition.y = Math.abs(currentPosition.y - this.roomData.roomHeight);
 
+    const nearestPoint = spawnPts.reduce((nearest: XY, candidate: XY) => {
+      const distanceTo = (point: XY) => Math.hypot(point.x - currentPosition.x, point.y - currentPosition.y);
+      return distanceTo(candidate) < distanceTo(nearest) ? candidate : nearest;
+    });
+    movementComponent.setPosition({
+      x: nearestPoint.x,
+      y: nearestPoint.y
+    });
+  }
+  
 }
