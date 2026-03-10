@@ -135,7 +135,7 @@ export default class AssetManager {
     const source = this.audioContext.createBufferSource();
     source.buffer = buffer;
     
-    if (loopStart && loopEnd) {
+    if (loopStart !== undefined && loopEnd !== undefined) {
       source.loop = true;
       source.loopStart = loopStart;
       source.loopEnd = loopEnd;

@@ -36,25 +36,32 @@ export class SatisfactionRenderer {
             ctx.font = 'bold 18px "Jersey-20", Arial';
             ctx.fillText(Math.ceil(satisfaction).toString(), (this.posX + PANELWIDTH) - 3 * (100 - satisfaction), this.posY + PANELHEIGHT - 5);
         }
+        // Get scale factor for boss icon animation
+        const iconScale = this.bossManager.getIconScale();
+        const scaledWidth = BOSS_ICON_WIDTH * 2 * iconScale;
+        const scaledHeight = BOSS_ICON_HEIGHT * 2 * iconScale;
+        // Center the scaled icon by offsetting based on size difference
+        const scaleOffsetX = (BOSS_ICON_WIDTH * 2 * (iconScale - 1)) / 2;
+        const scaleOffsetY = (BOSS_ICON_HEIGHT * 2 * (iconScale - 1)) / 2;
         // Draw boss icon next to satisfaction bar
         // note: ik this is very redundant but idc i am tired ill fix it later (maybe)
         if (satisfaction >= 90) { // pleased
-            ctx.drawImage(this.bossIcons, 1, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50, this.posY, BOSS_ICON_WIDTH * 2, BOSS_ICON_HEIGHT * 2);
+            ctx.drawImage(this.bossIcons, 1, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50 - scaleOffsetX, this.posY - scaleOffsetY, scaledWidth, scaledHeight);
         }
         else if (satisfaction >= 80) { // neutral
-            ctx.drawImage(this.bossIcons, 23, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50, this.posY, BOSS_ICON_WIDTH * 2, BOSS_ICON_HEIGHT * 2);
+            ctx.drawImage(this.bossIcons, 23, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50 - scaleOffsetX, this.posY - scaleOffsetY, scaledWidth, scaledHeight);
         }
         else if (satisfaction >= 60) { // annoyed
-            ctx.drawImage(this.bossIcons, 45, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50, this.posY, BOSS_ICON_WIDTH * 2, BOSS_ICON_HEIGHT * 2);
+            ctx.drawImage(this.bossIcons, 45, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50 - scaleOffsetX, this.posY - scaleOffsetY, scaledWidth, scaledHeight);
         }
         else if (satisfaction >= 40) { // angry
-            ctx.drawImage(this.bossIcons, 67, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50, this.posY, BOSS_ICON_WIDTH * 2, BOSS_ICON_HEIGHT * 2);
+            ctx.drawImage(this.bossIcons, 67, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50 - scaleOffsetX, this.posY - scaleOffsetY, scaledWidth, scaledHeight);
         }
         else if (satisfaction >= 20) { // rage
-            ctx.drawImage(this.bossIcons, 89, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50, this.posY, BOSS_ICON_WIDTH * 2, BOSS_ICON_HEIGHT * 2);
+            ctx.drawImage(this.bossIcons, 89, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50 - scaleOffsetX, this.posY - scaleOffsetY, scaledWidth, scaledHeight);
         }
         else { // furious
-            ctx.drawImage(this.bossIcons, 111, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50, this.posY, BOSS_ICON_WIDTH * 2, BOSS_ICON_HEIGHT * 2);
+            ctx.drawImage(this.bossIcons, 111, 1, BOSS_ICON_WIDTH, BOSS_ICON_HEIGHT, this.posX - 50 - scaleOffsetX, this.posY - scaleOffsetY, scaledWidth, scaledHeight);
         }
         ctx.restore();
     }

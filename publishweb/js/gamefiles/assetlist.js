@@ -45,5 +45,7 @@ export const soundEffects = [
     { id: "orderAppear", type: "audio", location: "./assets/Order.ogg" },
     { id: "itemPickup", type: "audio", location: "./assets/PickUp.ogg" },
     { id: "orderComplete", type: "audio", location: "./assets/Success.ogg" },
-    { id: "orderWrong", type: "audio", location: "./assets/Wrong.ogg" }
+    { id: "orderWrong", type: "audio", location: "./assets/Wrong.ogg" },
+    { id: "angry", type: "audio", location: "./assets/angry.ogg" },
+    { id: "happy", type: "audio", location: "./assets/happy.ogg" }
 ];

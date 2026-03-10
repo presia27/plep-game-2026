@@ -6,6 +6,8 @@ import { StartScreenRender } from "./startScreenRender.js";
 export const STARTSCREEN_SCENEID = "start";
 export class StartScreenScene {
     constructor(sceneTrigger, inputSystem, canvasWidth, canvasHeight) {
+        this.musicStarted = false;
+        this.introMusicNode = null;
         this.sceneTrigger = sceneTrigger;
         this.inputSystem = inputSystem;
         this.canvasWidth = canvasWidth;
@@ -14,19 +16,17 @@ export class StartScreenScene {
     }
     onEnter(sceneManager) {
         /* Start Game Procedure */
-        // Start Intro Music Loop: 0 to 12s
-        // We store it so we can modify the loop points later
-        let introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 0, 12);
+        // Music will start on first user interaction (handled in update())
         const handleStartGameClick = () => {
             var _a, _b;
             // Transition music to full loop: 12s to end
-            if (introMusicNode) {
-                introMusicNode.source.loopStart = 12;
-                introMusicNode.source.loopEnd = ((_a = introMusicNode.source.buffer) === null || _a === void 0 ? void 0 : _a.duration) || 100;
+            if (this.introMusicNode) {
+                this.introMusicNode.source.loopStart = 12;
+                this.introMusicNode.source.loopEnd = ((_a = this.introMusicNode.source.buffer) === null || _a === void 0 ? void 0 : _a.duration) || 100;
             }
             else {
                 // Fallback if intro didn't play (e.g. autoplay blocked)
-                introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, ((_b = ASSET_MANAGER.getAudioAsset("gameMusic")) === null || _b === void 0 ? void 0 : _b.duration) || 100, 11.8);
+                this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, ((_b = ASSET_MANAGER.getAudioAsset("gameMusic")) === null || _b === void 0 ? void 0 : _b.duration) || 100, 11.8);
             }
             this.sceneTrigger.assertChange(null, NEXT_SCENE);
         };
@@ -55,6 +55,17 @@ export class StartScreenScene {
         }
     }
     onExit() { }
-    update(context) { }
+    update(context) {
+        // Start music on first user interaction (click or mouse movement)
+        if (!this.musicStarted) {
+            const hasInteraction = this.inputSystem.getLeftClick() !== null ||
+                this.inputSystem.getCursorPosition() !== null;
+            if (hasInteraction) {
+                // Start Intro Music Loop: 0 to 12s
+                this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 0, 12);
+                this.musicStarted = true;
+            }
+        }
+    }
     draw(context) { }
 }
