@@ -66,7 +66,7 @@ export class SettingsScreenScene implements IScene {
 
     const button = new ButtonEntity(
       "BACK",
-      "#9E9E9E", // grey
+      "transparent",
       "white",
       (this.canvasWidth / 2) - 100,
       (this.canvasHeight / 2) + 80,

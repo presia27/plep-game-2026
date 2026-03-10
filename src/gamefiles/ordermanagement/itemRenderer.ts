@@ -126,7 +126,7 @@ export class ItemRenderer implements IRenderer{
       ctx.save();
       ctx.textAlign = "center";
       ctx.fillStyle = '#000000'
-      ctx.fillText("PRESS E TO PICKUP", positionX, positionY);
+      ctx.fillText("E TO PICKUP", positionX, positionY);
       ctx.restore()
 
       // Once everything is drawn, reset temporary state used when a collision occurs

@@ -26,6 +26,8 @@ export const bossAssets: IAssetList[] = [
 /** All environment assets, such as shelves, desks, obstacles, background music, and more */
 export const environmentAssets: IAssetList[] = [
   { id: "gameMusic", type: "audio", location: "./assets/gameMusic.ogg" },
+  { id: "startupMusic", type: "audio", location: "./assets/startupMusic.ogg" },
+  { id: "titleImage", type: "img", location: "./assets/ProjectRunnerTitle.png" },
   { id: "tempbg", type: "img", location: "./assets/tempbg.JPG" },
   { id: "titleScreen", type: "img", location: "./assets/title_screen_v2.png" },
   { id: "titleText", type: "img", location: "./assets/project_runner_title.png" },
@@ -56,5 +58,8 @@ export const soundEffects: IAssetList[] = [
   { id: "orderAppear", type: "audio", location: "./assets/Order.ogg" },
   { id: "itemPickup", type: "audio", location: "./assets/PickUp.ogg" },
   { id: "orderComplete", type: "audio", location: "./assets/Success.ogg" },
-  { id: "orderWrong", type: "audio", location: "./assets/Wrong.ogg" }
+  { id: "orderWrong", type: "audio", location: "./assets/Wrong.ogg" },
+  { id: "angry", type: "audio", location: "./assets/angry.ogg" },
+  { id: "happy", type: "audio", location: "./assets/happy.ogg" },
+  { id: "uiSound", type: "audio", location: "./assets/uiSound.ogg" }
 ];

@@ -14,6 +14,8 @@ export class StartScreenScene implements IScene {
   private inputSystem: InputSystem;
   private canvasWidth: number;
   private canvasHeight: number;
+  private musicStarted: boolean = false;
+  private introMusicNode: { source: AudioBufferSourceNode, gainNode: GainNode } | null = null;
 
   localEntities: IEntity[];
 
@@ -35,18 +37,16 @@ export class StartScreenScene implements IScene {
 
     /* Start Game Procedure */
 
-    // Start Intro Music Loop: 0 to 12s
-    // We store it so we can modify the loop points later
-    let introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 0, 12);
+    // Music will start on first user interaction (handled in update())
     const handleStartGameClick = () => {
       
       // Transition music to full loop: 12s to end
-      if (introMusicNode) {
-        introMusicNode.source.loopStart = 12;
-        introMusicNode.source.loopEnd = introMusicNode.source.buffer?.duration || 100;
+      if (this.introMusicNode) {
+        this.introMusicNode.source.loopStart = 12;
+        this.introMusicNode.source.loopEnd = this.introMusicNode.source.buffer?.duration || 100;
       } else {
         // Fallback if intro didn't play (e.g. autoplay blocked)
-        introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, ASSET_MANAGER.getAudioAsset("gameMusic")?.duration || 100, 11.8);
+        this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, ASSET_MANAGER.getAudioAsset("gameMusic")?.duration || 100, 11.8);
       }
 
       this.sceneTrigger.assertChange(null, NEXT_SCENE);
@@ -59,28 +59,30 @@ export class StartScreenScene implements IScene {
     /* Add buttons */
     const startBtn = new ButtonEntity(
       "PLAY",
-      "#4CAF50", // green game-like
+      "transparent",
       "white",
       72,
       (this.canvasHeight) - 272,
       200,
       50,
       this.inputSystem,
-      handleStartGameClick
+      handleStartGameClick,
+      "left"
     );
     sceneManager.addTransientUIEntity(startBtn);
     this.localEntities.push(startBtn);
 
     const settingsBtn = new ButtonEntity(
       "SETTINGS",
-      "#2196F3", // blue
+      "transparent",
       "white",
       72,
       (this.canvasHeight - 200),
       200,
       50,
       this.inputSystem,
-      handleSettingsClick
+      handleSettingsClick,
+      "left"
     );
     sceneManager.addTransientUIEntity(settingsBtn);
     this.localEntities.push(settingsBtn);
@@ -102,6 +104,19 @@ export class StartScreenScene implements IScene {
 
   onExit(): void {}
 
-  update(context: GameContext): void {}
+  update(context: GameContext): void {
+    // Start music on first user interaction (click or mouse movement)
+    if (!this.musicStarted) {
+      const hasInteraction = this.inputSystem.getLeftClick() !== null || 
+                            this.inputSystem.getCursorPosition() !== null;
+      
+      if (hasInteraction) {
+        // Start Intro Music Loop: 0 to 12s
+        this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 0, 12);
+        this.musicStarted = true;
+      }
+    }
+  }
+  
   draw(context: GameContext): void {}
 }

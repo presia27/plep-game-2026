@@ -32,6 +32,7 @@ export interface GameContext {
   gameTime: number;
   ctx: CanvasRenderingContext2D;
   debug: boolean;
+  isPaused: boolean;
 }
 
 /**

@@ -1,6 +1,7 @@
 import { GameContext, IRenderer } from "../../classinterfaces.ts";
 import { Entity } from "../../entity.ts";
 import { InputSystem } from "../../inputsys.ts";
+import { ASSET_MANAGER } from "../main.ts";
 
 export class SliderEntity extends Entity {
   private x: number;
@@ -12,6 +13,7 @@ export class SliderEntity extends Entity {
   private value: number; // 0 to 1
   private isDragging: boolean = false;
   private label: string;
+  private playedDragSound: boolean = false;
 
   constructor(
     label: string,
@@ -66,9 +68,14 @@ export class SliderEntity extends Entity {
 
       if (isOnHandle || (isOnTrack && !this.isDragging)) {
         this.isDragging = true;
+        if (!this.playedDragSound) {
+          ASSET_MANAGER.playMusic("uiSound");
+          this.playedDragSound = true;
+        }
       }
     } else {
       this.isDragging = false;
+      this.playedDragSound = false;
     }
 
     // Update slider value while dragging
