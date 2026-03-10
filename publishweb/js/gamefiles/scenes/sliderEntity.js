@@ -1,10 +1,8 @@
 import { Entity } from "../../entity.js";
-import { ASSET_MANAGER } from "../main.js";
 export class SliderEntity extends Entity {
     constructor(label, x, y, width, height, initialValue, inputsys, onChange) {
         super();
         this.isDragging = false;
-        this.playedDragSound = false;
         this.label = label;
         this.x = x;
         this.y = y;
@@ -27,15 +25,10 @@ export class SliderEntity extends Entity {
             const isOnTrack = this.containsCursor(clickState.x, clickState.y, this.x, this.y, this.width, this.height);
             if (isOnHandle || (isOnTrack && !this.isDragging)) {
                 this.isDragging = true;
-                if (!this.playedDragSound) {
-                    ASSET_MANAGER.playMusic("uiSound");
-                    this.playedDragSound = true;
-                }
             }
         }
         else {
             this.isDragging = false;
-            this.playedDragSound = false;
         }
         // Update slider value while dragging
         if (this.isDragging && clickState) {

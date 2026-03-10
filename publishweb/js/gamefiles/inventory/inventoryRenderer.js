@@ -18,19 +18,14 @@ export class InventoryRenderer {
         this.inventoryMgr = inventoryManager;
     }
     draw(context) {
-        // Don't render inventory when game is paused
-        if (context.isPaused) {
-            return;
-        }
         const ctx = context.ctx;
         ctx.save();
         // Pixel panel design colors
         const bgFill = '#d9d9d9';
         const borderOuter = '#808080';
         const slotFill = '#808080';
-        const selectedSlotFill = '#d9d9d9'; // Bright for selected
+        const selectedSlotFill = '#4d4d4d';
         const selectedSlotBorder = '#262626';
-        const unselectedSlotFill = '#4d4d4d'; // Grey for unselected
         // Get inventory state
         const inventory = this.inventoryMgr.getAllItems();
         const totalSize = this.inventoryMgr.getMaxItems();
@@ -41,7 +36,7 @@ export class InventoryRenderer {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(this.posX - padding, this.posY - 24 - padding, panelWidth + padding * 2, PANELHEIGHT + 24 + padding * 2);
         // Draw Title Label
-        ctx.font = 'bold 14px "Jersey-20", monospace';
+        ctx.font = 'bold 14px "Courier New", monospace';
         ctx.textAlign = 'left';
         ctx.fillStyle = 'white';
         const title = 'Inventory';
@@ -61,8 +56,8 @@ export class InventoryRenderer {
             const slotX = this.posX + OFFSET_X + (s * (ITEM_SIDE_WIDTH + BUFFER));
             const slotY = this.posY + offsetY;
             const isSelected = (s === selectedSlot);
-            // Slot background - bright for selected, grey for unselected
-            ctx.fillStyle = isSelected ? selectedSlotFill : unselectedSlotFill;
+            // Slot background
+            ctx.fillStyle = isSelected ? selectedSlotFill : bgFill;
             ctx.fillRect(slotX, slotY, ITEM_SIDE_WIDTH, ITEM_SIDE_WIDTH);
             // Slot border
             ctx.strokeStyle = isSelected ? selectedSlotBorder : borderOuter;
@@ -76,7 +71,7 @@ export class InventoryRenderer {
             const startY = this.posY + offsetY;
             ctx.drawImage(itemSprite, itemMeta.spriteFrameX, itemMeta.spriteFrameY, ITEM_WIDTH, ITEM_HEIGHT, startX + 2, startY + 2, ITEM_SIDE_WIDTH - 4, ITEM_SIDE_WIDTH - 4);
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 12px "Jersey-20", monospace';
+            ctx.font = 'bold 12px "Courier New", monospace';
             ctx.textAlign = 'right';
             ctx.fillText(value.toString(), startX + ITEM_SIDE_WIDTH - 4, startY + ITEM_SIDE_WIDTH - 4);
             ctx.textAlign = 'left';

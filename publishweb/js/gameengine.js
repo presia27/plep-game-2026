@@ -124,8 +124,7 @@ export default class GameEngine {
             clockTick: this.clockTick,
             gameTime: this.timer.getGameTime(),
             ctx: this.ctx,
-            debug: this.options.debugging,
-            isPaused: this.isPaused
+            debug: this.options.debugging
         };
     }
     /**

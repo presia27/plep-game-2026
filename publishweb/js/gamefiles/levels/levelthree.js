@@ -45,4 +45,5 @@ export function loadLevelThree(gameEngine, sceneManager, ctx, inventoryManager, 
     const vignette = new Vignette();
     sceneManager.addUIEntity(vignette);
     MSG_SERVICE.queueMessage("SHIFT 3");
+    MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }

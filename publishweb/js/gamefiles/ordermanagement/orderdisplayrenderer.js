@@ -6,9 +6,6 @@ const ITEM_SIDE_LENGTH = 50;
 const BUFFER = 8;
 const OFFSET_X = 4;
 const MIN_ITEM_DISPLAY_CAPACITY = 5;
-// The number of minutes since 00:00 (or 12:00 AM) to determine starting display time
-const VIRTUAL_CLOCK_OFFSET_MIN = 1080;
-const TIME_WARNING_SEC = 10;
 export class OrderDisplayRenderer {
     constructor(x, y, orderLoop, getLevelNumber) {
         // Note: x parameter is ignored; panel is right-aligned with fixed margin
@@ -18,10 +15,6 @@ export class OrderDisplayRenderer {
         this.rightMargin = 30;
     }
     draw(context) {
-        // Don't render order display when game is paused
-        if (context.isPaused) {
-            return;
-        }
         const ctx = context.ctx;
         ctx.save();
         // Pixel panel design colors
@@ -47,10 +40,10 @@ export class OrderDisplayRenderer {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(posX - padding, this.posY - 24 - padding, panelWidth + padding * 2, PANELHEIGHT + 24 + padding * 2);
         // Draw "Night X" on the left
-        ctx.font = 'bold 14px "Jersey-20", monospace';
+        ctx.font = 'bold 14px "Courier New", monospace';
         ctx.textAlign = 'left';
         ctx.fillStyle = 'white';
-        const nightTitle = 'Shift #' + this.getLevelNumber();
+        const nightTitle = 'Night ' + this.getLevelNumber();
         ctx.fillText(nightTitle, posX, this.posY - 8);
         // Draw "Order X / Y" on the right
         ctx.textAlign = 'right';
@@ -61,44 +54,11 @@ export class OrderDisplayRenderer {
         if (itemSprite === null) {
             throw new Error("Order Display Renderer: Failed to load spritesheet for items");
         }
-        // Draw clock
-        this.drawClock(context, posX + panelWidth, this.posY - 64);
         // Draw active orders
         if (currentOrder !== undefined && currentOrder !== null) {
             this.drawActiveOrder(ctx, posX, currentOrder, itemSprite, bgFill, borderOuter, slotFill, completedBorder, incompleteBorder, overcountBorder);
         }
         ctx.restore();
-    }
-    drawClock(context, posX, posY) {
-        const ctx = context.ctx;
-        ctx.save();
-        const yOffset = 24; // offset between the current time and end time
-        const totalTimePrefix = "SHIFT ENDS AT: ";
-        const remainingTime = Math.max(Math.ceil((this.orderLoop.getStartTime() + this.orderLoop.getLevelDuration()) - context.gameTime), 0);
-        const convertedGameTime = this.getVirtualGameTime(remainingTime, VIRTUAL_CLOCK_OFFSET_MIN, this.orderLoop.getLevelDuration());
-        const timeFormatted = convertedGameTime.hours + ":" + convertedGameTime.minutes.toString().padStart(2, '0');
-        const totalTime = this.getVirtualGameTime(0, VIRTUAL_CLOCK_OFFSET_MIN, this.orderLoop.getLevelDuration());
-        const totalTimeFormatted = totalTime.hours + ":" + totalTime.minutes.toString().padStart(2, '0');
-        // Draw current game time
-        ctx.font = 'bold 24px "Jersey-20", monospace';
-        ctx.textAlign = "right";
-        ctx.fillStyle = remainingTime > TIME_WARNING_SEC ? "black" : "red";
-        ctx.fillText(timeFormatted, posX, posY);
-        ctx.strokeStyle = "#cacaca";
-        ctx.strokeText(timeFormatted, posX, posY);
-        // Draw end time
-        ctx.font = 'bold 20px "Jersey-20", monospace';
-        ctx.fillStyle = "black";
-        ctx.fillText(totalTimePrefix + totalTimeFormatted, posX, posY + yOffset);
-        ctx.strokeText(totalTimePrefix + totalTimeFormatted, posX, posY + yOffset);
-        ctx.restore();
-    }
-    getVirtualGameTime(timerValue, startOffsetMinutes = VIRTUAL_CLOCK_OFFSET_MIN, levelDuration) {
-        const totalMinutes = startOffsetMinutes + (levelDuration - timerValue);
-        return {
-            hours: Math.floor(totalMinutes / 60) % 24,
-            minutes: totalMinutes % 60
-        };
     }
     drawActiveOrder(ctx, posX, order, itemSprite, bgFill, borderOuter, slotFill, completedBorder, incompleteBorder, overcountBorder) {
         const items = order.getAllItems();
@@ -134,7 +94,7 @@ export class OrderDisplayRenderer {
             ctx.drawImage(itemSprite, itemMeta.spriteFrameX, itemMeta.spriteFrameY, ITEM_WIDTH, ITEM_HEIGHT, startX + 2, startY + 2, ITEM_SIDE_LENGTH - 4, ITEM_SIDE_LENGTH - 4);
             // Draw item quantity
             ctx.fillStyle = "black";
-            ctx.font = 'bold 12px "Jersey-20", monospace';
+            ctx.font = 'bold 12px "Courier New", monospace';
             ctx.textAlign = 'right';
             ctx.fillText(value.toString(), startX + ITEM_SIDE_LENGTH - 4, startY + ITEM_SIDE_LENGTH - 4);
             ctx.textAlign = 'left';
