@@ -69,7 +69,7 @@ export class ItemRenderer {
             ctx.save();
             ctx.textAlign = "center";
             ctx.fillStyle = '#000000';
-            ctx.fillText("PRESS E TO PICKUP", positionX, positionY);
+            ctx.fillText("E TO PICKUP", positionX, positionY);
             ctx.restore();
             // Once everything is drawn, reset temporary state used when a collision occurs
             this.showHintText = false;

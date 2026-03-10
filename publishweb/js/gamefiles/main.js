@@ -20,7 +20,7 @@ if (ctx === null || ctx === undefined) {
     throw new Error("Unable to get 2D canvas context");
 }
 const sceneManager = new SceneManager();
-const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
+const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: false });
 export const ASSET_MANAGER = new AssetManager();
 export const MSG_SERVICE = new MessengerService();
 // Download assets and start the game engine and related systems

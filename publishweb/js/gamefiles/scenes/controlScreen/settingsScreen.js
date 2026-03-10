@@ -32,8 +32,7 @@ export class SettingsScreenScene {
         const slider = new SliderEntity("Volume", (this.canvasWidth / 2) - 150, (this.canvasHeight / 2) - 20, 300, 15, ASSET_MANAGER.getVolume(), this.inputSystem, handleVolumeChange);
         sceneManager.addTransientUIEntity(slider);
         this.localEntities.push(slider);
-        const button = new ButtonEntity("BACK", "#9E9E9E", // grey
-        "white", (this.canvasWidth / 2) - 100, (this.canvasHeight / 2) + 80, 200, 50, this.inputSystem, handleBackClick);
+        const button = new ButtonEntity("BACK", "transparent", "white", (this.canvasWidth / 2) - 100, (this.canvasHeight / 2) + 80, 200, 50, this.inputSystem, handleBackClick);
         sceneManager.addTransientUIEntity(button);
         this.localEntities.push(button);
         /* Add Background */

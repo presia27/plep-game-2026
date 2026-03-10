@@ -1,6 +1,7 @@
 import { Entity } from "../../entity.js";
 import { OBS_NEW_ACTIVE_ORDER, OBS_ORDER_COMPLETE } from "../../observerinterfaces.js";
 import { LEVEL_OVER } from "../../gameStateEventTrigger.js";
+import { ASSET_MANAGER } from "../main.js";
 const MAX_SATISFACTION = 100; // If > MIN_SATISFACTION, the player can continue playing
 const MIN_SATISFACTION = 0; // The minimum satisfaction points, if reached, the game is over and the player loses
 const START_SATISFACTION = 50; // Level starts with this many satisfaction points
@@ -28,6 +29,10 @@ export class BossSatisfaction extends Entity {
         this.decreaseRate = 0;
         this.activeOrder = null;
         this.errorWeight = 0;
+        this.previousSatisfaction = 0;
+        this.angryThresholdTriggered = false;
+        this.happyThresholdTriggered = false;
+        this.iconScaleTimer = 0;
     }
     /**
      * Initialize the state of the boss satisfaction controller
@@ -39,18 +44,34 @@ export class BossSatisfaction extends Entity {
         this.decreaseRate = duration / MAX_SATISFACTION; // the rate per sec at which satisfaction decrease
         this.activeOrder = null;
         this.errorWeight = 0;
+        this.previousSatisfaction = this.satisfaction;
+        this.angryThresholdTriggered = false;
+        this.happyThresholdTriggered = false;
+        this.iconScaleTimer = 0;
     }
     reset() {
         this.satisfaction = 0;
         this.decreaseRate = 0;
         this.activeOrder = null;
         this.errorWeight = 0;
+        this.previousSatisfaction = 0;
+        this.angryThresholdTriggered = false;
+        this.happyThresholdTriggered = false;
     }
     update(context) {
         super.update(context);
         if (this.activeOrder) { // satisfaction only affected if an order is active
-            if (this.satisfaction > MIN_SATISFACTION) // only decrease satisfaction if the game is not already over
+            if (this.satisfaction > MIN_SATISFACTION) { // only decrease satisfaction if the game is not already over
                 this.satisfaction = this.satisfaction - (this.decreaseRate * context.clockTick); // @TODO: multiply by elapsed time since start of level
+                this.checkSatisfactionThresholds();
+            }
+        }
+        // Update icon scale animation timer
+        if (this.iconScaleTimer > 0) {
+            this.iconScaleTimer -= context.clockTick;
+            if (this.iconScaleTimer < 0) {
+                this.iconScaleTimer = 0;
+            }
         }
         this.checkLoseCondition();
     }
@@ -77,6 +98,35 @@ export class BossSatisfaction extends Entity {
             satisfaction = MIN_SATISFACTION;
         }
         this.satisfaction = satisfaction;
+        this.checkSatisfactionThresholds();
+    }
+    /**
+     * Checks if satisfaction has crossed threshold levels (25 or 75) and plays appropriate sounds.
+     * Angry sound plays when satisfaction drops to or below 25.
+     * Happy sound plays when satisfaction rises to or above 75.
+     */
+    checkSatisfactionThresholds() {
+        // Check if satisfaction dropped to or below 25 (angry threshold)
+        if (this.satisfaction <= 25 && this.previousSatisfaction > 25) {
+            ASSET_MANAGER.playMusic("angry");
+            this.iconScaleTimer = 0.4; // Trigger 0.4 second scale animation
+            this.angryThresholdTriggered = true;
+            this.happyThresholdTriggered = false; // Reset happy threshold when crossing into angry territory
+        }
+        // Check if satisfaction rose to or above 75 (happy threshold, woo good job employee!!)
+        else if (this.satisfaction >= 75 && this.previousSatisfaction < 75) {
+            ASSET_MANAGER.playMusic("happy");
+            this.happyThresholdTriggered = true;
+            this.angryThresholdTriggered = false; // Reset angry threshold when crossing into happy territory
+        }
+        // Reset flags if we're back in the middle zone (aka lock in)
+        else if (this.satisfaction > 25 && this.satisfaction < 75) {
+            if (this.previousSatisfaction <= 25 || this.previousSatisfaction >= 75) {
+                this.angryThresholdTriggered = false;
+                this.happyThresholdTriggered = false;
+            }
+        }
+        this.previousSatisfaction = this.satisfaction;
     }
     /** Receive observer updates from order loop */
     observerUpdate(data, propertyName) {
@@ -157,5 +207,31 @@ export class BossSatisfaction extends Entity {
      */
     getDecreaseRate() {
         return this.decreaseRate;
+    }
+    /**
+     * Code for boss icon scaling during anger noise (for responsiveness so player isn't like wtf just played)
+     *
+     * Gets the current scale multiplier for the boss icon animation.
+     * Returns 1.0 (normal size) when not animating, scales up to 1.5 during animation.
+     *
+     * @returns scale multiplier for the boss icon (1.0 to 1.5)
+     */
+    getIconScale() {
+        if (this.iconScaleTimer <= 0) {
+            return 1.0; // Normal size
+        }
+        // Animation: scale up in first half, scale down in second half
+        const animDuration = 0.4;
+        const progress = this.iconScaleTimer / animDuration;
+        if (progress > 0.5) {
+            // First half: scale from 1.0 to 1.5
+            const scaleProgress = (progress - 0.5) * 2; // 0 to 1
+            return 1.0 + (scaleProgress * 0.5);
+        }
+        else {
+            // Second half: scale from 1.5 back to 1.0
+            const scaleProgress = progress * 2; // 1 to 0
+            return 1.0 + (scaleProgress * 0.5);
+        }
     }
 }
