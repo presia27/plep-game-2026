@@ -31,6 +31,7 @@ import { Ball } from "./storeExterior/ballController.ts";
 import { Bush } from "./storeExterior/bushController.ts";
 import { VehicleEntity } from "./storeExterior/vehicleEntity.ts";
 import { VehicleState } from "./storeExterior/vehicleMovementSystem.ts";
+import { FloorGrid } from "./storeInterior/floorGrid.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -122,7 +123,7 @@ export class BaseRoomScene implements IScene {
     const topWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 0 }),
       1280, 3, 5
-    );
+    ); 
     const bottomWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 705 }),
       1280, 3, 5
@@ -323,6 +324,10 @@ export class BaseRoomScene implements IScene {
       this.localEntities.push(lot);
 
     } else {
+      const floorGrid = new FloorGrid();
+      sceneManager.addEntity(floorGrid);
+      this.collisionSystem.addEntity(floorGrid);
+      this.localEntities.push(floorGrid);
       const floor = new StoreFloor();
       sceneManager.addEntity(floor);
       this.collisionSystem.addEntity(floor);
