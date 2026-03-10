@@ -44,8 +44,7 @@ export class VolumeScreenScene {
         sceneManager.addTransientUIEntity(slider);
         this.localEntities.push(slider);
         /* Add continue button */
-        const continueBtn = new ButtonEntity("CONTINUE", "#4CAF50", // green
-        "white", (this.canvasWidth / 2) - 100, (this.canvasHeight / 2) + 50, 200, 50, this.inputSystem, handleContinueClick);
+        const continueBtn = new ButtonEntity("CONTINUE", "transparent", "white", (this.canvasWidth / 2) - 100, (this.canvasHeight / 2) + 50, 200, 50, this.inputSystem, handleContinueClick);
         sceneManager.addTransientUIEntity(continueBtn);
         this.localEntities.push(continueBtn);
         /* Add Background */

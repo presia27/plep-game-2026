@@ -34,12 +34,10 @@ export class StartScreenScene {
             sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
         };
         /* Add buttons */
-        const startBtn = new ButtonEntity("PLAY", "#4CAF50", // green game-like
-        "white", 72, (this.canvasHeight) - 272, 200, 50, this.inputSystem, handleStartGameClick);
+        const startBtn = new ButtonEntity("PLAY", "transparent", "white", 72, (this.canvasHeight) - 272, 200, 50, this.inputSystem, handleStartGameClick, "left");
         sceneManager.addTransientUIEntity(startBtn);
         this.localEntities.push(startBtn);
-        const settingsBtn = new ButtonEntity("SETTINGS", "#2196F3", // blue
-        "white", 72, (this.canvasHeight - 200), 200, 50, this.inputSystem, handleSettingsClick);
+        const settingsBtn = new ButtonEntity("SETTINGS", "transparent", "white", 72, (this.canvasHeight - 200), 200, 50, this.inputSystem, handleSettingsClick, "left");
         sceneManager.addTransientUIEntity(settingsBtn);
         this.localEntities.push(settingsBtn);
         /* Add Background */

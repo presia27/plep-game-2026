@@ -78,7 +78,7 @@ export class VolumeScreenScene implements IScene {
     /* Add continue button */
     const continueBtn = new ButtonEntity(
       "CONTINUE",
-      "#4CAF50", // green
+      "transparent",
       "white",
       (this.canvasWidth / 2) - 100,
       (this.canvasHeight / 2) + 50,

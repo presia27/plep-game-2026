@@ -59,28 +59,30 @@ export class StartScreenScene implements IScene {
     /* Add buttons */
     const startBtn = new ButtonEntity(
       "PLAY",
-      "#4CAF50", // green game-like
+      "transparent",
       "white",
       72,
       (this.canvasHeight) - 272,
       200,
       50,
       this.inputSystem,
-      handleStartGameClick
+      handleStartGameClick,
+      "left"
     );
     sceneManager.addTransientUIEntity(startBtn);
     this.localEntities.push(startBtn);
 
     const settingsBtn = new ButtonEntity(
       "SETTINGS",
-      "#2196F3", // blue
+      "transparent",
       "white",
       72,
       (this.canvasHeight - 200),
       200,
       50,
       this.inputSystem,
-      handleSettingsClick
+      handleSettingsClick,
+      "left"
     );
     sceneManager.addTransientUIEntity(settingsBtn);
     this.localEntities.push(settingsBtn);
