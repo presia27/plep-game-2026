@@ -60,5 +60,6 @@ export const soundEffects: IAssetList[] = [
   { id: "orderComplete", type: "audio", location: "./assets/Success.ogg" },
   { id: "orderWrong", type: "audio", location: "./assets/Wrong.ogg" },
   { id: "angry", type: "audio", location: "./assets/angry.ogg" },
-  { id: "happy", type: "audio", location: "./assets/happy.ogg" }
+  { id: "happy", type: "audio", location: "./assets/happy.ogg" },
+  { id: "uiSound", type: "audio", location: "./assets/uiSound.ogg" }
 ];

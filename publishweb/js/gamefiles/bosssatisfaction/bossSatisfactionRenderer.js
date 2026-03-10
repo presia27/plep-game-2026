@@ -18,6 +18,10 @@ export class SatisfactionRenderer {
         this.arrow = arrow;
     }
     draw(context) {
+        // Don't render boss satisfaction when game is paused
+        if (context.isPaused) {
+            return;
+        }
         const ctx = context.ctx;
         ctx.save();
         // draw boss sprite bar

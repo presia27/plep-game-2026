@@ -18,6 +18,10 @@ export class InventoryRenderer {
         this.inventoryMgr = inventoryManager;
     }
     draw(context) {
+        // Don't render inventory when game is paused
+        if (context.isPaused) {
+            return;
+        }
         const ctx = context.ctx;
         ctx.save();
         // Pixel panel design colors
@@ -36,7 +40,7 @@ export class InventoryRenderer {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(this.posX - padding, this.posY - 24 - padding, panelWidth + padding * 2, PANELHEIGHT + 24 + padding * 2);
         // Draw Title Label
-        ctx.font = 'bold 14px "Courier New", monospace';
+        ctx.font = 'bold 14px "Jersey-20", monospace';
         ctx.textAlign = 'left';
         ctx.fillStyle = 'white';
         const title = 'Inventory';
@@ -71,7 +75,7 @@ export class InventoryRenderer {
             const startY = this.posY + offsetY;
             ctx.drawImage(itemSprite, itemMeta.spriteFrameX, itemMeta.spriteFrameY, ITEM_WIDTH, ITEM_HEIGHT, startX + 2, startY + 2, ITEM_SIDE_WIDTH - 4, ITEM_SIDE_WIDTH - 4);
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 12px "Courier New", monospace';
+            ctx.font = 'bold 12px "Jersey-20", monospace';
             ctx.textAlign = 'right';
             ctx.fillText(value.toString(), startX + ITEM_SIDE_WIDTH - 4, startY + ITEM_SIDE_WIDTH - 4);
             ctx.textAlign = 'left';

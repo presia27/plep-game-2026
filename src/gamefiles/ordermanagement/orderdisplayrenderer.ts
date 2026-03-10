@@ -30,6 +30,11 @@ export class OrderDisplayRenderer implements IRenderer {
   }
 
   draw(context: GameContext): void {
+    // Don't render order display when game is paused
+    if (context.isPaused) {
+      return;
+    }
+
     const ctx = context.ctx;
     ctx.save();
 

@@ -1,6 +1,7 @@
 import { GameContext, IRenderer } from "../../classinterfaces.ts";
 import { Entity } from "../../entity.ts";
 import { InputSystem } from "../../inputsys.ts";
+import { ASSET_MANAGER } from "../main.ts";
 
 export class ButtonEntity extends Entity {
   private text: string;
@@ -12,6 +13,7 @@ export class ButtonEntity extends Entity {
   private height: number;
   private inputsys: InputSystem;
   private onClick: () => void;
+  private isHovering: boolean = false;
 
   constructor(
     text: string,
@@ -39,6 +41,28 @@ export class ButtonEntity extends Entity {
   }
 
   public override update(context: GameContext): void {
+    // Check for hover state
+    const cursorPos = this.inputsys.getCursorPosition();
+    if (cursorPos) {
+      const isInBounds = this.containsCursor(
+        cursorPos.x,
+        cursorPos.y,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+
+      // Play hover sound when entering button area
+      if (isInBounds && !this.isHovering) {
+        ASSET_MANAGER.playMusic("uiSound");
+        this.isHovering = true;
+      } else if (!isInBounds && this.isHovering) {
+        this.isHovering = false;
+      }
+    }
+
+    // Check for click
     const clickState = this.inputsys.getLeftClick();
     if (clickState) {
       // Determine if it's in the button area
@@ -52,6 +76,7 @@ export class ButtonEntity extends Entity {
       );
 
       if (isInBounds) {
+        ASSET_MANAGER.playMusic("uiSound");
         this.onClick();
       }
     }

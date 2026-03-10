@@ -9,6 +9,11 @@ export class MessageRenderer implements IRenderer {
   }
 
   draw(context: GameContext): void {
+    // Don't render messages when game is paused
+    if (context.isPaused) {
+      return;
+    }
+
     const currentMsg = this.currentMessageComponent.getCurrentMessasge();
     const ctx = context.ctx;
     const panelWidth = 640;

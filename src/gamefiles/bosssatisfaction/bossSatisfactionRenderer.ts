@@ -29,6 +29,11 @@ export class SatisfactionRenderer implements IRenderer {
   }
 
   draw(context: GameContext): void {
+    // Don't render boss satisfaction when game is paused
+    if (context.isPaused) {
+      return;
+    }
+
     const ctx = context.ctx;
     ctx.save();
 

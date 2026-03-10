@@ -44,7 +44,7 @@ export class GameState {
         /* Initialize the global key (pause) controller */
         this.globalKeyEntity = new GlobalKeyListenerEntity(this.gameEngine.getInputSystem(), this.gsEventTrigger);
         // Load the initialized classes into their respective places
-        this.loadState();
+        //this.loadState();
         /* Load level or scene */
         // Load the function reference from the list of levels, then call it to load the level
         // const levelLoadProcedure = levelLoaders[0];
