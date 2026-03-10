@@ -33,7 +33,7 @@ class Renderer implements IRenderer {
     }
 
     // Apply dark filter overlay
-    //ctx.fillStyle = "rgba(0, 0, 20, 0.2)"; // slightly blue/dark tint
+    ctx.fillStyle = "rgba(0, 0, 20, 0.1)"; // slightly blue/dark tint
 
     // Draw Title Text
     const title = this.getTitle();
