@@ -29,6 +29,8 @@ export const environmentAssets: IAssetList[] = [
   { id: "startupMusic", type: "audio", location: "./assets/startupMusic.ogg" },
   { id: "titleImage", type: "img", location: "./assets/ProjectRunnerTitle.png" },
   { id: "tempbg", type: "img", location: "./assets/tempbg.JPG" },
+  { id: "titleScreen", type: "img", location: "./assets/title_screen_v2.png" },
+  { id: "titleText", type: "img", location: "./assets/project_runner_title.png" },
   { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "AllHShelves", type: "img", location: "./assets/AllHShelves.png" },
