@@ -79,5 +79,4 @@ export function loadLevelFour(
   sceneManager.addUIEntity(vignette);
 
   MSG_SERVICE.queueMessage("SHIFT 4");
-  MSG_SERVICE.queueMessage("You have " + levelParams.duration + " seconds");
 }
