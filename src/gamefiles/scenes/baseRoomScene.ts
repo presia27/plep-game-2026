@@ -31,9 +31,8 @@ import { Ball } from "./storeExterior/ballController.ts";
 import { Bush } from "./storeExterior/bushController.ts";
 import { VehicleEntity } from "./storeExterior/vehicleEntity.ts";
 import { VehicleState } from "./storeExterior/vehicleMovementSystem.ts";
-import { stat } from "node:fs";
-import { OBS_VEHICLE_EXITED, Observer } from "../../observerinterfaces";
 import { BasicLifecycle } from "../../componentLibrary/lifecycle";
+import { Order } from "../ordermanagement/order.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -232,13 +231,13 @@ export class BaseRoomScene implements IScene /*, Observer */{
     const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
       const deliveryEntity = new DeliveryController(deliveryPOS, 1);
-      const vehicle = new VehicleEntity({ x: -200, y: 200 }, 8)
+      const vehicle = new VehicleEntity({ x: -200, y: 200 }, 8 /*,sceneManager*/);
 
       // draw vehicle before entity to display in proper order
       sceneManager.addEntity(vehicle);
       this.collisionSystem.addEntity(vehicle);
       this.localEntities.push(vehicle);
-      this.orderLoop?.subscribe(vehicle.getMovementSystem());
+      this.orderLoop?.subscribe(vehicle);
 
       this.localEntities.push(deliveryEntity);
       sceneManager.addEntity(deliveryEntity);
@@ -380,19 +379,4 @@ export class BaseRoomScene implements IScene /*, Observer */{
       y: nearestPoint.y
     });
   }
-
-  // public observerUpdate(data: any, propertyName: string): void {
-  //   if (OBS_VEHICLE_EXITED === propertyName) {
-  //     const vehicleExited = data as VehicleEntity;
-  //     if (vehicleExited) {
-  //       vehicleExited.getComponent(BasicLifecycle)?.die;
-  //       if (this.roomData.isParkingLot) {
-  //        const vehicle = new VehicleEntity({x: -200, y: 200 }, 2);
-  //         this.collisionSystem.addEntity(vehicle);
-  //         this.localEntities.push(vehicle);
-  //         this.orderLoop?.subscribe(vehicle.getMovementSystem());
-  //       }
-  //     }
-  //   }
-  // }
 }

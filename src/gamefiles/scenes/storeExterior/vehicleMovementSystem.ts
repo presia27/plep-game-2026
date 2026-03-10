@@ -12,21 +12,19 @@ export enum VehicleState {
 }
 const EXIT_X: number = 1400; // far enough off the right side to despawn
 
-export class VehicleMovementSys implements IComponent, Observer, Observable {
+export class VehicleMovementSys implements IComponent {
   private movementComponent: MovementComponent;
   private stopPosition: XY;
   private state: VehicleState = VehicleState.DRIVING_IN;
   private speed: number;
   private currentDirection: XY = { x: 1, y: 0 };
   private observers: Observer[];
-  private activeOrder: Order | null;
 
   constructor(
     movementComponent: MovementComponent,
   ) {
     this.movementComponent = movementComponent;
     this.speed = 0;
-    this.activeOrder = null;
     this.stopPosition = {x: 515, y: this.movementComponent.getPosition().y};
     this.observers = [];
   }
@@ -85,36 +83,6 @@ export class VehicleMovementSys implements IComponent, Observer, Observable {
   public moveRight(): void {
     this.currentDirection = { x: 1, y: 0 };
     this.speed = 200;
-  }
-
-  public observerUpdate(data: any, propertyName: string): void {
-    if (OBS_NEW_ACTIVE_ORDER === propertyName) {
-      const newOrderDataCast = data as Order;
-      if (newOrderDataCast) {
-        this.activeOrder = newOrderDataCast;
-        this.state = VehicleState.DRIVING_IN;
-      }
-    }
-
-    if (OBS_ORDER_COMPLETE === propertyName) {
-      const completedOrder = data as Order;
-      //this.activeOrder = null;
-      this.state = VehicleState.DRIVING_OUT;
-    }
-  }
-
-  public subscribe(observer: Observer): void {
-    this.observers.push(observer);
-  }
-
-  public unsubscribe(observer: Observer): void {
-    this.observers = this.observers.filter(obs => obs !== observer);
-  }
-
-  public notifyObservers(data: any, notificationType: string): void {
-    for (const observer of this.observers) {
-      observer.observerUpdate(data, notificationType);
-    }
   }
 
   public setVehicleState(state: VehicleState): void {
