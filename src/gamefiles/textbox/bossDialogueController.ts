@@ -147,9 +147,9 @@ export class BossDialogueController extends Entity implements IComponent {
   }
 
   private showLevelStartMessage(): void {
-    this.textboxManager.showMessage(
-      "Your shift begins NOW. Don't disappoint me.",
-      4.0
-    );
+    this.textboxManager
+      .showMessage("Your shift begins NOW. Don't disappoint me.", 4.0)
+      .setFontSize(35)  // Make it bigger! (default is 16)
+      .setPadding(20);
   }
 }

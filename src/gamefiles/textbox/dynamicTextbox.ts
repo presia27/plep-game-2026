@@ -95,24 +95,49 @@ export class DynamicTextbox extends Entity {
   /**
    * Set the text color
    */
-  public setTextColor(color: string): void {
+  public setTextColor(color: string): DynamicTextbox {
     this.textColor = color;
+    return this;
   }
 
   /**
    * Set the font size
    */
-  public setFontSize(size: number): void {
+  public setFontSize(size: number): DynamicTextbox {
     this.fontSize = size;
+    return this;
   }
 
   /**
    * Set the padding inside the textbox
    */
-  public setPadding(padding: number): void {
+  public setPadding(padding: number): DynamicTextbox {
     this.padding = padding;
+    return this;
+  }
+  
+  /**
+   * Set the position
+   */
+  public setPosition(x: number, y: number): DynamicTextbox {
+    this.x = x;
+    this.y = y;
+    return this;
+  }
+  
+  /**
+   * Set the size
+   */
+  public setSize(width: number, height: number): DynamicTextbox {
+    this.width = width;
+    this.height = height;
+    return this;
   }
 
+  public setBackgroundSprite(sprite: HTMLImageElement | null): DynamicTextbox {
+    this.backgroundSprite = sprite;
+    return this;
+  }
   /**
    * Get the currently revealed portion of the text
    */

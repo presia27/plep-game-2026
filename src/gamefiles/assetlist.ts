@@ -45,3 +45,7 @@ export const itemAssets: IAssetList[] = [
 export const deliveryAssets: IAssetList [] = [
   { id: "deliveryImage", type: "img", location: "./assets/primoChip.png"}
 ];
+
+export const uiAssets: IAssetList [] = [
+  { id: "dialogueBox", type: "img", location: "./assets/dialogueBox.png"}
+];

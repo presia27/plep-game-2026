@@ -73,26 +73,18 @@ export class TextboxManager {
    * Show a message in a textbox
    * @param text The message to display
    * @param duration How long to show the message after it's fully revealed (in seconds)
-   * @param x Optional X position (uses default if not provided)
-   * @param y Optional Y position (uses default if not provided)
-   * @param width Optional width (uses default if not provided)
-   * @param height Optional height (uses default if not provided)
-   * @returns The created DynamicTextbox entity
+   * @returns The created DynamicTextbox entity (chainable for customization)
    */
   public showMessage(
     text: string,
-    duration?: number,
-    x?: number,
-    y?: number,
-    width?: number,
-    height?: number
+    duration?: number
   ): DynamicTextbox {
     const textbox = new DynamicTextbox(
       text,
-      x ?? this.defaultX,
-      y ?? this.defaultY,
-      width ?? this.defaultWidth,
-      height ?? this.defaultHeight,
+      this.defaultX,
+      this.defaultY,
+      this.defaultWidth,
+      this.defaultHeight,
       duration ?? this.defaultDuration,
       this.assetManager,
       this.backgroundSpriteId ?? undefined,

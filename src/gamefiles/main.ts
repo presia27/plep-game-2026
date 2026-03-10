@@ -1,7 +1,7 @@
 import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
-import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets } from "./assetlist.ts";
+import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets, uiAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
 import { GameState } from "../gameState.ts";
 import { MessengerService } from "../messengerService.ts";
@@ -34,6 +34,8 @@ bossAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, 
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+
+uiAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 
 // Configure Fonts
 const pixelFont = new FontFace(

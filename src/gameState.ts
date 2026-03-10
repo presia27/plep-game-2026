@@ -74,11 +74,11 @@ export class GameState {
     this.textboxManager = new TextboxManager(
       sceneManager,
       ASSET_MANAGER,
-      270,
-      40,
-      760,
-      140,
-      "dialogueBox"
+      400, //default X
+      0, //default Y
+      498, //default width
+      133, //default height
+      "dialogueBox" //img
     );
 
     this.textboxManager.setDefaultDuration(4.0);
