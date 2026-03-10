@@ -31,6 +31,9 @@ import { Ball } from "./storeExterior/ballController.ts";
 import { Bush } from "./storeExterior/bushController.ts";
 import { VehicleEntity } from "./storeExterior/vehicleEntity.ts";
 import { VehicleState } from "./storeExterior/vehicleMovementSystem.ts";
+import { stat } from "node:fs";
+import { OBS_VEHICLE_EXITED, Observer } from "../../observerinterfaces";
+import { BasicLifecycle } from "../../componentLibrary/lifecycle";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -49,7 +52,7 @@ const ITEM_HSHELF_POSITION: XY[] = [
  * 
  * @author Luke Willis, Claude Sonnet 4.5, Preston Sia
  */
-export class BaseRoomScene implements IScene {
+export class BaseRoomScene implements IScene /*, Observer */{
   protected roomData: roomData;
 
   protected inputSystem: InputSystem;
@@ -225,34 +228,21 @@ export class BaseRoomScene implements IScene {
       }
     }
 
-    /* Delivery Entity */
+    /* Delivery Entity and Vehicle Entity */
     const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
       const deliveryEntity = new DeliveryController(deliveryPOS, 1);
+      const vehicle = new VehicleEntity({ x: -200, y: 200 }, 8)
+
+      // draw vehicle before entity to display in proper order
+      sceneManager.addEntity(vehicle);
+      this.collisionSystem.addEntity(vehicle);
+      this.localEntities.push(vehicle);
+      this.orderLoop?.subscribe(vehicle.getMovementSystem());
 
       this.localEntities.push(deliveryEntity);
       sceneManager.addEntity(deliveryEntity);
       this.collisionSystem.addEntity(deliveryEntity);
-
-      if (this.roomData.isParkingLot) {
-        const tempDeliveryPos: XY = { x: -400, y: 200 }
-
-        // const vehicle = new VehicleEntity(
-        //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
-        //   8, 
-        //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
-        // )
-        // sceneManager.addEntity(vehicle);
-        // this.collisionSystem.addEntity(vehicle);
-        // this.localEntities.push(vehicle);
-        // if (vehicle.getMovementSystem().getPosition().x > 1200) {
-        //   const vehicle = new VehicleEntity(
-        //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
-        //   6, 
-        //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
-        //   )
-        // }
-      }
     }
 
     /* Blood splatters */
@@ -265,13 +255,13 @@ export class BaseRoomScene implements IScene {
 
     /* Floor texture */
     if (this.roomData.isParkingLot) {
-      const vehicle = new VehicleEntity(
-        { x: 510, y: 200 },
-        8
-      )
-      sceneManager.addEntity(vehicle);
-      this.collisionSystem.addEntity(vehicle);
-      this.localEntities.push(vehicle);
+      // const vehicle = new VehicleEntity(
+      //   { x: -200, y: 200 },
+      //   8
+      // )
+      // sceneManager.addEntity(vehicle);
+      // this.collisionSystem.addEntity(vehicle);
+      // this.localEntities.push(vehicle);
 
       /** Create bush for collision handling */
       const bush = new Bush();
@@ -304,17 +294,6 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(ball2);
       this.collisionSystem.addEntity(ball3);
       this.collisionSystem.addEntity(ball4);
-      // const ballPositions: XY[] = [
-      //   { x: 32, y: 37 }, { x: 352, y: 37 },
-      //   { x: 848, y: 37 }, { x: 1168, y: 37 }
-      // ];
-      // for (const ballPos of ballPositions) {
-      //   const ball = new Ball(ballPos);
-      //   sceneManager.addEntity(ball);
-      //   this.localEntities.push(ball);
-      //   this.collisionSystem.addEntity(ball);
-      //   console.debug("Ball created at " + ballPos.x + ", " + ballPos.y);
-      // }
 
       /** Create parking lot sprite */
       const lot = new ParkingLot();
@@ -328,8 +307,6 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(floor);
       this.localEntities.push(floor);
     }
-
-
   }
 
   /**
@@ -403,5 +380,19 @@ export class BaseRoomScene implements IScene {
       y: nearestPoint.y
     });
   }
-  
+
+  // public observerUpdate(data: any, propertyName: string): void {
+  //   if (OBS_VEHICLE_EXITED === propertyName) {
+  //     const vehicleExited = data as VehicleEntity;
+  //     if (vehicleExited) {
+  //       vehicleExited.getComponent(BasicLifecycle)?.die;
+  //       if (this.roomData.isParkingLot) {
+  //        const vehicle = new VehicleEntity({x: -200, y: 200 }, 2);
+  //         this.collisionSystem.addEntity(vehicle);
+  //         this.localEntities.push(vehicle);
+  //         this.orderLoop?.subscribe(vehicle.getMovementSystem());
+  //       }
+  //     }
+  //   }
+  // }
 }

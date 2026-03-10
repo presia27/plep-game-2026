@@ -14,7 +14,7 @@ const VEHICLE_SCALE: number = 5;
 
 export class VehicleEntity extends Entity {
   private vehicleNum: number;
-  //private vehicleMovementSys: VehicleMovementSys; 
+  private vehicleMovementSys: VehicleMovementSys; 
   constructor(
     defaultXY: XY,
     vehicleNum: number, // will be some random value to pick the car we want to use
@@ -35,18 +35,21 @@ export class VehicleEntity extends Entity {
     // set vehicle location, size, and movement system
     const vehicleMovementAndPosition = new MovementComponent(defaultXY);
     const vehicleSize = new BasicSize(vehicleWidth, vehicleHeight, VEHICLE_SCALE);
-    //this.vehicleMovementSys = new VehicleMovementSys(vehicleMovementAndPosition, deliveryPos);
+    const vehicleMovementSystem = new VehicleMovementSys(vehicleMovementAndPosition);
+    this.vehicleMovementSys = vehicleMovementSystem;
 
     // create vehicle bounding box and collision handler
     const vehicleBBSize = new BasicSize(vehicleWidth, vehicleHeight/2, VEHICLE_SCALE);
     const vehicleBB = new BoundingBox(vehicleMovementAndPosition, vehicleBBSize);
-    const vehicleCollisionHandler = new VehicleCollisionHandler(vehicleMovementAndPosition, /*this.vehicleMovementSys, */ vehicleBB);
+    const vehicleCollisionHandler = new VehicleCollisionHandler(vehicleMovementAndPosition, this.vehicleMovementSys, vehicleBB);
+    //const lifecycle = new BasicLifecycle();
 
     // add components
     super.addComponent(vehicleMovementAndPosition);
     super.addComponent(vehicleBB);
     super.addComponent(vehicleCollisionHandler);
-    //super.addComponent(this.vehicleMovementSys);
+    super.addComponent(vehicleMovementSystem);
+    //super.addComponent(lifecycle);
 
     const renderer = new VehicleRender(
       vehicleSprite,
@@ -62,7 +65,7 @@ export class VehicleEntity extends Entity {
 
     super.setRenderer(renderer);
   }
-  // public getMovementSystem(): VehicleMovementSys {
-  //   return this.vehicleMovementSys;
-  // }
+  public getMovementSystem(): VehicleMovementSys {
+    return this.vehicleMovementSys;
+  }
 }
