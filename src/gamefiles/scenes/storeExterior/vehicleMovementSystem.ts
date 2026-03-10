@@ -25,7 +25,7 @@ export class VehicleMovementSys implements IComponent {
   ) {
     this.movementComponent = movementComponent;
     this.speed = 0;
-    this.stopPosition = {x: 515, y: this.movementComponent.getPosition().y};
+    this.stopPosition = {x: 515, y: this.movementComponent.getPosition().y}; // the spot the car should stop while waiting for order to be fulfilled (had to hard code this)
     this.observers = [];
   }
 

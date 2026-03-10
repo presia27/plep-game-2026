@@ -7,6 +7,9 @@ import { PlayerController } from "../../player/playerController.ts";
 import { VehicleMovementSys, VehicleState } from "./vehicleMovementSystem.ts";
 import { VehicleRender } from "./vehicleRenderer.ts";
 
+/**
+ * Note: while this is used, it doesn't really do anything rn
+ */
 export class VehicleCollisionHandler extends AbstractCollisionHandler {
   private movementComponent: MovementComponent;
   private movementSys: VehicleMovementSys;

@@ -231,7 +231,8 @@ export class BaseRoomScene implements IScene /*, Observer */{
     const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
       const deliveryEntity = new DeliveryController(deliveryPOS, 1);
-      const vehicle = new VehicleEntity({ x: -200, y: 200 }, 8 /*,sceneManager*/);
+      // create one vehicle to be "recycled"
+      const vehicle = new VehicleEntity({ x: -300, y: 200 }, 8);
 
       // draw vehicle before entity to display in proper order
       sceneManager.addEntity(vehicle);
