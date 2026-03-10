@@ -330,22 +330,6 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     return times;
   }
 
-  /** Im not sure how order satisfaction is found at this moment */
-public getSatisfaction(): number {
-  if (this.doneOrders.length === 0) return 50;
-  
-  const totalAccuracy = this.doneOrders.reduce((sum, order) => {
-    const accuracy = order.getFulfillAccuracy();
-    return sum + (accuracy !== null ? accuracy : 0);  // Handle null
-  }, 0);
-  const avgAccuracy = totalAccuracy / this.doneOrders.length;
-  return Math.round(avgAccuracy * 100);
-}
-
-  public getTimeRemaining(): number {
-    const endTime = this.startTime + this.duration;
-    return Math.max(0, endTime - this.lastClockTime);
-  }
 
   /** 
    * From
