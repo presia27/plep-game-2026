@@ -41,8 +41,9 @@ export class InventoryRenderer implements IRenderer {
     const bgFill = '#d9d9d9';
     const borderOuter = '#808080';
     const slotFill = '#808080';
-    const selectedSlotFill = '#4d4d4d';
+    const selectedSlotFill = '#d9d9d9'; // Bright for selected
     const selectedSlotBorder = '#262626';
+    const unselectedSlotFill = '#4d4d4d'; // Grey for unselected
 
     // Get inventory state
     const inventory = this.inventoryMgr.getAllItems();
@@ -88,8 +89,8 @@ export class InventoryRenderer implements IRenderer {
 
       const isSelected = (s === selectedSlot);
 
-      // Slot background
-      ctx.fillStyle = isSelected ? selectedSlotFill : bgFill;
+      // Slot background - bright for selected, grey for unselected
+      ctx.fillStyle = isSelected ? selectedSlotFill : unselectedSlotFill;
       ctx.fillRect(slotX, slotY, ITEM_SIDE_WIDTH, ITEM_SIDE_WIDTH);
       
       // Slot border

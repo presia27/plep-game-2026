@@ -35,10 +35,11 @@ class Renderer implements IRenderer {
     // Draw title image in center
     const titleImg = ASSET_MANAGER.getImageAsset("titleImage");
     if (titleImg) {
-      const imgWidth = titleImg.width;
-      const imgHeight = titleImg.height;
+      const scale = 4;
+      const imgWidth = titleImg.width * scale;
+      const imgHeight = titleImg.height * scale;
       const x = (this.canvasWidth / 2) - (imgWidth / 2);
-      const y = (this.canvasHeight / 2) - (imgHeight / 2) - 50; // Slightly above center to leave room for button
+      const y = (this.canvasHeight / 2) - (imgHeight / 2) - 150; // Moved up more
       
       ctx.drawImage(titleImg, x, y, imgWidth, imgHeight);
     }
