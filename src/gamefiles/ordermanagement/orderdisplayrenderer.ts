@@ -11,6 +11,10 @@ const BUFFER = 8;
 const OFFSET_X = 4;
 const MIN_ITEM_DISPLAY_CAPACITY = 5;
 
+// The number of minutes since 00:00 (or 12:00 AM) to determine starting display time
+const VIRTUAL_CLOCK_OFFSET_MIN: number = 1080;
+const TIME_WARNING_SEC: number = 10;
+
 export class OrderDisplayRenderer implements IRenderer {
   private posY: number;
   private orderLoop: OrderDeliveryLoop;
@@ -62,10 +66,10 @@ export class OrderDisplayRenderer implements IRenderer {
     );
 
     // Draw "Night X" on the left
-    ctx.font = 'bold 14px "Courier New", monospace';
+    ctx.font = 'bold 14px "Jersey-20", monospace';
     ctx.textAlign = 'left';
     ctx.fillStyle = 'white';
-    const nightTitle = 'Night ' + this.getLevelNumber();
+    const nightTitle = 'Shift #' + this.getLevelNumber();
     ctx.fillText(nightTitle, posX, this.posY - 8);
 
     // Draw "Order X / Y" on the right
@@ -79,12 +83,77 @@ export class OrderDisplayRenderer implements IRenderer {
       throw new Error("Order Display Renderer: Failed to load spritesheet for items");
     }
 
+    // Draw clock
+    this.drawClock(context, posX + panelWidth, this.posY - 64);
+
     // Draw active orders
     if (currentOrder !== undefined && currentOrder !== null) {
       this.drawActiveOrder(ctx, posX, currentOrder, itemSprite, bgFill, borderOuter, slotFill, completedBorder, incompleteBorder, overcountBorder);
     }
 
     ctx.restore();
+  }
+
+  private drawClock(
+    context: GameContext,
+    posX: number,
+    posY: number,
+  ) {
+    const ctx = context.ctx;
+    ctx.save();
+
+    const yOffset = 24; // offset between the current time and end time
+    const totalTimePrefix: string = "SHIFT ENDS AT: ";
+
+    const remainingTime = Math.max(Math.ceil((this.orderLoop.getStartTime() + this.orderLoop.getLevelDuration()) - context.gameTime), 0);
+    const convertedGameTime = this.getVirtualGameTime(remainingTime, VIRTUAL_CLOCK_OFFSET_MIN, this.orderLoop.getLevelDuration());
+    const timeFormatted: string = convertedGameTime.hours + ":" + convertedGameTime.minutes.toString().padStart(2, '0');
+    const totalTime = this.getVirtualGameTime(0, VIRTUAL_CLOCK_OFFSET_MIN, this.orderLoop.getLevelDuration());
+    const totalTimeFormatted: string = totalTime.hours + ":" + totalTime.minutes.toString().padStart(2, '0');
+
+    // Draw current game time
+    ctx.font = 'bold 24px "Jersey-20", monospace';
+    ctx.textAlign = "right";
+    ctx.fillStyle = remainingTime > TIME_WARNING_SEC ? "black" : "red";
+    ctx.fillText(
+      timeFormatted,
+      posX,
+      posY
+    );
+    ctx.strokeStyle = "#cacaca";
+    ctx.strokeText(
+      timeFormatted,
+      posX,
+      posY
+    );
+
+    // Draw end time
+    ctx.font = 'bold 20px "Jersey-20", monospace';
+    ctx.fillStyle = "black";
+    ctx.fillText(
+      totalTimePrefix + totalTimeFormatted,
+      posX,
+      posY + yOffset
+    );
+    ctx.strokeText(
+      totalTimePrefix + totalTimeFormatted,
+      posX,
+      posY + yOffset
+    );
+
+    ctx.restore();
+  }
+
+  private getVirtualGameTime(
+    timerValue: number,
+    startOffsetMinutes: number = VIRTUAL_CLOCK_OFFSET_MIN,
+    levelDuration: number
+  ): { hours: number, minutes: number } {
+    const totalMinutes = startOffsetMinutes + (levelDuration - timerValue);
+    return {
+      hours: Math.floor(totalMinutes / 60) % 24,
+      minutes: totalMinutes % 60
+    }
   }
 
   private drawActiveOrder(
@@ -147,7 +216,7 @@ export class OrderDisplayRenderer implements IRenderer {
 
       // Draw item quantity
       ctx.fillStyle = "black";
-      ctx.font = 'bold 12px "Courier New", monospace';
+      ctx.font = 'bold 12px "Jersey-20", monospace';
       ctx.textAlign = 'right';
       ctx.fillText(
         value.toString(),

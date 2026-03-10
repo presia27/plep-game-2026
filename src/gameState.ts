@@ -80,7 +80,7 @@ export class GameState {
     );
 
     // Load the initialized classes into their respective places
-    this.loadState();
+    //this.loadState();
 
     /* Load level or scene */
     // Load the function reference from the list of levels, then call it to load the level
