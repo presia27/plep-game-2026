@@ -199,9 +199,9 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
       this.notifyObservers(currentlyActive, OBS_ORDER_COMPLETE);
       if (this.getCurrentActiveOrder() !== null)
         this.notifyObservers(this.getCurrentActiveOrder(), OBS_NEW_ACTIVE_ORDER);
-        if (this.bossDialogue) {
-          this.bossDialogue.onNewOrder();
-        }
+        // if (this.bossDialogue) {
+        //   this.bossDialogue.onNewOrder();
+        // }
     }
   }
 

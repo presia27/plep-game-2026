@@ -84,7 +84,7 @@ export class GameState {
     this.textboxManager.setDefaultDuration(4.0);
     this.textboxManager.setDefaultRevealSpeed(35);
 
-    this.bossDialogue = new BossDialogueController(this.textboxManager, this.orderLoop);
+    this.bossDialogue = new BossDialogueController(this.textboxManager, this.orderLoop, this.bossSatisfaction);
 
     this.orderLoop.setBossDialogue(this.bossDialogue);
 
