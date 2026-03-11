@@ -9,9 +9,9 @@ import { loadLevelFive } from "./levelfive.ts";
  * This is a list of function references.
  */
 export const levelLoaders = [
-  loadLevelFive,
   loadLevelOne,
   loadLevelTwo,
   loadLevelThree,
-  loadLevelFour
+  loadLevelFour,
+  loadLevelFive
 ];

@@ -23,7 +23,7 @@ if (ctx === null || ctx === undefined) {
 }
 
 const sceneManager = new SceneManager();
-const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: true });
+const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: false });
 export const ASSET_MANAGER = new AssetManager();
 export const MSG_SERVICE = new MessengerService();
 
