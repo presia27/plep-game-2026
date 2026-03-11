@@ -1,7 +1,7 @@
 import AssetManager from "../assetmanager.ts";
 import GameEngine from "../gameengine.ts";
 import { myInputMap } from "./inputmap.ts";
-import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets, uiAssets } from "./assetlist.ts";
+import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets, soundEffects, uiAssets } from "./assetlist.ts";
 import SceneManager from "../sceneManager.ts";
 import { GameState } from "../gameState.ts";
 import { MessengerService } from "../messengerService.ts";
@@ -34,13 +34,14 @@ bossAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, 
 environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+soundEffects.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 
 uiAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 
 // Configure Fonts
 const pixelFont = new FontFace(
   "Jersey-20",
-  'url("/assets/Jersey20-Regular.ttf")'
+  'url("./assets/Jersey20-Regular.ttf")'
 );
 
 document.fonts.add(pixelFont);
@@ -64,13 +65,3 @@ document.getElementById("btnDebug")?.addEventListener("click", () => {
   gameEngine.toggleDebugging();
 });
 
-document.getElementById("btnMusic")?.addEventListener("click", () => {
-  const bgAudio = ASSET_MANAGER.getAudioAsset("YMCAMusic");
-  if (bgAudio) {
-    if (bgAudio.paused) {
-      bgAudio.play();
-    } else {
-      bgAudio.pause();
-    }
-  }
-})

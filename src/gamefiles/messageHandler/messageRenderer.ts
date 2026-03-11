@@ -9,9 +9,14 @@ export class MessageRenderer implements IRenderer {
   }
 
   draw(context: GameContext): void {
+    // Don't render messages when game is paused
+    if (context.isPaused) {
+      return;
+    }
+
     const currentMsg = this.currentMessageComponent.getCurrentMessasge();
     const ctx = context.ctx;
-    const panelWidth = 300;
+    const panelWidth = 640;
     const panelHeight = 50;
     const posX = (ctx.canvas.width / 2) - (panelWidth / 2);
     const posY = ctx.canvas.height - (panelHeight * 2);
@@ -27,12 +32,13 @@ export class MessageRenderer implements IRenderer {
     ctx.strokeRect(posX, posY, panelWidth, panelHeight);
 
     // draw text
+    const textYOffset = 4;
     ctx.fillStyle = "white";
-    ctx.font = "bold 20px Arial";
+    ctx.font = "bold 24px 'Jersey-20', Arial";
     ctx.strokeStyle = "black";
     ctx.lineWidth = 1;
     ctx.textAlign = "center";
-    ctx.fillText(currentMsg, posX + (panelWidth / 2), posY + (panelHeight / 2));
+    ctx.fillText(currentMsg, posX + (panelWidth / 2), posY + (panelHeight / 2 + textYOffset));
     }
 
     ctx.restore();

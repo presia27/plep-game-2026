@@ -1,43 +1,41 @@
 import { INVENTORY_MAX_SLOTS } from "../../gameState.js";
-import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.js";
-import { TemporarySatisfactionDisplayEntity } from "../bosssatisfaction/temporarySatisfactionDisplayEntity.js";
-import { OrderDisplayEntity } from "../ordermanagement/orderdisplayentity.js";
-import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.js";
-import { CleaningScene } from "../scenes/rooms/cleaningScene.js";
-import { FoodScene } from "../scenes/rooms/foodScene.js";
-import { PharmaScene } from "../scenes/rooms/pharmaScene.js";
+import { MSG_SERVICE } from "../main.js";
+import { BaseRoomScene } from "../scenes/baseRoomScene.js";
+import { CheckoutRoom, DeliveryRoom, PharmaRoom } from "../scenes/roomData.js";
+import { Vignette } from "../scenes/storeInterior/vignetteController.js";
 /**
  * Represents concrete level data/parameters
  * @author Preston Sia
  */
 const levelParams = {
-    duration: 120,
+    duration: 60,
     orderPromptVariability: 6,
-    totalOrders: 10
+    totalOrders: 2
 };
-export function loadLevelOne(gameEngine, sceneManager, ctx, inventoryManager) {
+export function loadLevelOne(gameEngine, sceneManager, ctx, inventoryManager, orderLoop, bossSatisfaction) {
     // Create rooms
-    const pharmaScene = new PharmaScene(gameEngine);
-    const cleaningScene = new CleaningScene(gameEngine);
-    const foodScene = new FoodScene(gameEngine);
+    const allowedRoomIds = [
+        PharmaRoom.sceneId,
+        CheckoutRoom.sceneId,
+        DeliveryRoom.sceneId
+    ];
     // Get list of all allowed items for the level
-    const allowedItems = pharmaScene.getAllowedItems()
-        .concat(cleaningScene.getAllowedItems())
-        .concat(foodScene.getAllowedItems());
+    const allowedItems = PharmaRoom.allowedItems;
+    const pharmaScene = new BaseRoomScene(gameEngine, PharmaRoom, allowedRoomIds, orderLoop);
+    const checkoutScene = new BaseRoomScene(gameEngine, CheckoutRoom, allowedRoomIds, orderLoop);
+    const deliveryScene = new BaseRoomScene(gameEngine, DeliveryRoom, allowedRoomIds, orderLoop);
     // Pre-register all rooms so they're ready when the player walks through doors
-    sceneManager.registerScene(cleaningScene.getRoomId(), cleaningScene);
-    sceneManager.registerScene(foodScene.getRoomId(), foodScene);
-    sceneManager.loadScene(pharmaScene.getRoomId(), pharmaScene);
-    // Add order loop
-    const orderLoop = new OrderDeliveryLoop(gameEngine.getGameContext().gameTime, levelParams.duration, levelParams.orderPromptVariability, levelParams.totalOrders, INVENTORY_MAX_SLOTS, allowedItems);
+    sceneManager.registerScene(DeliveryRoom.sceneId, deliveryScene);
+    sceneManager.registerScene(PharmaRoom.sceneId, pharmaScene);
+    sceneManager.loadScene(CheckoutRoom.sceneId, checkoutScene);
+    // Initialize order loop
+    orderLoop.init(gameEngine.getGameContext().gameTime, levelParams.duration, levelParams.orderPromptVariability, levelParams.totalOrders, INVENTORY_MAX_SLOTS, allowedItems);
     sceneManager.addLevelEntity(orderLoop);
-    const orderDisplayEntity = new OrderDisplayEntity(720, ctx.canvas.height - 96, orderLoop);
-    sceneManager.addUIEntity(orderDisplayEntity);
-    // Register the order loop as a listener of the inventory
-    inventoryManager.subscribe(orderLoop);
-    // Add boss satisfaction manager
-    const bossSatisfaction = new BossSatisfaction(orderLoop);
+    // Initialize boss satisfaction
+    bossSatisfaction.initialize(levelParams.duration);
     sceneManager.addLevelEntity(bossSatisfaction);
-    const temporarySatisfactionDisplayEntity = new TemporarySatisfactionDisplayEntity(900, 30, bossSatisfaction);
-    sceneManager.addUIEntity(temporarySatisfactionDisplayEntity); // temporarily add an entity to display the boss satisfaction renderer since the scene manager is still in progress
+    /* Create vignette */
+    const vignette = new Vignette();
+    sceneManager.addUIEntity(vignette);
+    MSG_SERVICE.queueMessage("SHIFT 1");
 }

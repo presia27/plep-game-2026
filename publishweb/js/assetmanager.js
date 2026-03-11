@@ -14,6 +14,11 @@ export default class AssetManager {
         this.imageCache = new Map();
         this.audioCache = new Map();
         this.downloadQueue = [];
+        this.globalVolume = 1.0;
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.masterGainNode = this.audioContext.createGain();
+        this.masterGainNode.gain.value = this.globalVolume;
+        this.masterGainNode.connect(this.audioContext.destination);
     }
     ;
     /**
@@ -86,21 +91,45 @@ export default class AssetManager {
             this.successCount++;
         }
     }
-    buildAudioObj(data, itemId) {
-        if (data.type.split('/')[0] !== 'audio') {
-            this.errorCount++;
-            console.error(`Error on ${itemId}: Type mismatch. Expected an audio object but got MIME type ${data.type}`);
-        }
-        else {
-            const audio = new Audio();
-            const audioObjectUrl = URL.createObjectURL(data);
-            audio.src = audioObjectUrl;
-            audio.onload = () => {
-                URL.revokeObjectURL(audioObjectUrl);
-            };
-            this.audioCache.set(itemId, audio);
+    async buildAudioObj(data, itemId) {
+        try {
+            const arrayBuffer = await data.arrayBuffer();
+            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+            this.audioCache.set(itemId, audioBuffer);
             this.successCount++;
         }
+        catch (e) {
+            this.errorCount++;
+            console.error(`Failed to decode audio data for ${itemId}`, e);
+        }
+    }
+    getAudioContext() {
+        return this.audioContext;
+    }
+    playMusic(id, loopStart, loopEnd, offset = 0) {
+        const buffer = this.audioCache.get(id);
+        if (!buffer)
+            return null;
+        // Resume context if suspended
+        if (this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+        const source = this.audioContext.createBufferSource();
+        source.buffer = buffer;
+        if (loopStart !== undefined && loopEnd !== undefined) {
+            source.loop = true;
+            source.loopStart = loopStart;
+            source.loopEnd = loopEnd;
+        }
+        else {
+            source.loop = false;
+        }
+        const gainNode = this.audioContext.createGain();
+        gainNode.gain.value = 1.0; // Individual gain, master gain controls overall volume
+        source.connect(gainNode);
+        gainNode.connect(this.masterGainNode);
+        source.start(0, offset);
+        return { source, gainNode };
     }
     /**
      * Returns the asset blob of a generic asset without a type specified
@@ -133,7 +162,7 @@ export default class AssetManager {
     /**
      * Returns the audio asset of the specified asset ID
      * @param assetId ID of the audio asset
-     * @returns An HTMLAudioElement of the audio object
+     * @returns An AudioBuffer of the audio object
      */
     getAudioAsset(assetId) {
         const audio = this.audioCache.get(assetId);
@@ -143,6 +172,13 @@ export default class AssetManager {
         else {
             return audio;
         }
+    }
+    setVolume(volume) {
+        this.globalVolume = Math.max(0, Math.min(1, volume));
+        this.masterGainNode.gain.value = this.globalVolume;
+    }
+    getVolume() {
+        return this.globalVolume;
     }
 }
 ;

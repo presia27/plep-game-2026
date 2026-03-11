@@ -29,6 +29,11 @@ export class SatisfactionRenderer implements IRenderer {
   }
 
   draw(context: GameContext): void {
+    // Don't render boss satisfaction when game is paused
+    if (context.isPaused) {
+      return;
+    }
+
     const ctx = context.ctx;
     ctx.save();
 
@@ -64,6 +69,14 @@ export class SatisfactionRenderer implements IRenderer {
       ctx.fillText(Math.ceil(satisfaction).toString(), (this.posX + PANELWIDTH) - 3 * (100 - satisfaction), this.posY + PANELHEIGHT - 5);
     }
 
+    // Get scale factor for boss icon animation
+    const iconScale = this.bossManager.getIconScale();
+    const scaledWidth = BOSS_ICON_WIDTH * 2 * iconScale;
+    const scaledHeight = BOSS_ICON_HEIGHT * 2 * iconScale;
+    // Center the scaled icon by offsetting based on size difference
+    const scaleOffsetX = (BOSS_ICON_WIDTH * 2 * (iconScale - 1)) / 2;
+    const scaleOffsetY = (BOSS_ICON_HEIGHT * 2 * (iconScale - 1)) / 2;
+
     // Draw boss icon next to satisfaction bar
     // note: ik this is very redundant but idc i am tired ill fix it later (maybe)
     if (satisfaction >= 90) { // pleased
@@ -72,10 +85,10 @@ export class SatisfactionRenderer implements IRenderer {
       1, 1,
       BOSS_ICON_WIDTH,
       BOSS_ICON_HEIGHT,
-      this.posX - 50,
-      this.posY,
-      BOSS_ICON_WIDTH * 2,
-      BOSS_ICON_HEIGHT * 2,
+      this.posX - 50 - scaleOffsetX,
+      this.posY - scaleOffsetY,
+      scaledWidth,
+      scaledHeight,
     );
     } else if (satisfaction >= 80) { // neutral
       ctx.drawImage(
@@ -83,10 +96,10 @@ export class SatisfactionRenderer implements IRenderer {
       23, 1,
       BOSS_ICON_WIDTH,
       BOSS_ICON_HEIGHT,
-      this.posX - 50,
-      this.posY,
-      BOSS_ICON_WIDTH * 2,
-      BOSS_ICON_HEIGHT * 2,
+      this.posX - 50 - scaleOffsetX,
+      this.posY - scaleOffsetY,
+      scaledWidth,
+      scaledHeight,
     );
     } else if (satisfaction >= 60) { // annoyed
       ctx.drawImage(
@@ -94,10 +107,10 @@ export class SatisfactionRenderer implements IRenderer {
       45, 1,
       BOSS_ICON_WIDTH,
       BOSS_ICON_HEIGHT,
-      this.posX - 50,
-      this.posY,
-      BOSS_ICON_WIDTH * 2,
-      BOSS_ICON_HEIGHT * 2,
+      this.posX - 50 - scaleOffsetX,
+      this.posY - scaleOffsetY,
+      scaledWidth,
+      scaledHeight,
     );
     } else if (satisfaction >= 40) { // angry
       ctx.drawImage(
@@ -105,10 +118,10 @@ export class SatisfactionRenderer implements IRenderer {
       67, 1,
       BOSS_ICON_WIDTH,
       BOSS_ICON_HEIGHT,
-      this.posX - 50,
-      this.posY,
-      BOSS_ICON_WIDTH * 2,
-      BOSS_ICON_HEIGHT * 2,
+      this.posX - 50 - scaleOffsetX,
+      this.posY - scaleOffsetY,
+      scaledWidth,
+      scaledHeight,
     );
     } else if (satisfaction >= 20) { // rage
       ctx.drawImage(
@@ -116,10 +129,10 @@ export class SatisfactionRenderer implements IRenderer {
       89, 1,
       BOSS_ICON_WIDTH,
       BOSS_ICON_HEIGHT,
-      this.posX - 50,
-      this.posY,
-      BOSS_ICON_WIDTH * 2,
-      BOSS_ICON_HEIGHT * 2,
+      this.posX - 50 - scaleOffsetX,
+      this.posY - scaleOffsetY,
+      scaledWidth,
+      scaledHeight,
     );
     } else { // furious
       ctx.drawImage(
@@ -127,10 +140,10 @@ export class SatisfactionRenderer implements IRenderer {
       111, 1,
       BOSS_ICON_WIDTH,
       BOSS_ICON_HEIGHT,
-      this.posX - 50,
-      this.posY,
-      BOSS_ICON_WIDTH * 2,
-      BOSS_ICON_HEIGHT * 2,
+      this.posX - 50 - scaleOffsetX,
+      this.posY - scaleOffsetY,
+      scaledWidth,
+      scaledHeight,
     );
     }
 

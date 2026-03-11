@@ -19,10 +19,10 @@ import { DeliveryRenderer } from "./deliveryRenderer.ts";
 // const PLAYER_BOUND_OFFSET_X: number = 13;
 // const PLAYER_BOUND_OFFSET_Y: number = 11;
 
-    const SIZE_WIDTH: number = 300;
-    const SIZE_HEIGHT: number = 300;
+const SIZE_WIDTH: number = 340;
+const SIZE_HEIGHT: number = 164;
 
-    const RADIUS_MULTIPLIER: number = 2;
+const RADIUS_MULTIPLIER: number = 2;
 
 /**
  * This is the main entity controller for the player.
@@ -47,10 +47,10 @@ export class DeliveryController extends Entity {
     const deliveryPosition = new staticPositionComponent(defaultXY);
     const deliverySize = new BasicSize(SIZE_WIDTH, SIZE_HEIGHT, scale);
     const deliveryBoundSize = new BasicSize(SIZE_WIDTH * RADIUS_MULTIPLIER, SIZE_HEIGHT * RADIUS_MULTIPLIER, scale);
-   
+
     const deliveryBoundingBox = new BoundingBox(
-        deliveryPosition, 
-        deliveryBoundSize, 
+      deliveryPosition,
+      deliveryBoundSize,
       -((SIZE_WIDTH * RADIUS_MULTIPLIER - SIZE_WIDTH) / 2),
       -((SIZE_HEIGHT * RADIUS_MULTIPLIER - SIZE_HEIGHT) / 2)
     );
@@ -67,7 +67,7 @@ export class DeliveryController extends Entity {
       throw new Error("Failed to load asset for the deliveryEntity");
     }
     const renderer = new DeliveryRenderer(deliveryImage, 0, 0, deliveryImage.width, deliveryImage.height,
-         deliveryPosition, deliverySize, deliveryBoundingBox);
+      deliveryPosition, deliverySize, deliveryBoundingBox);
     super.setRenderer(renderer);
   }
 }

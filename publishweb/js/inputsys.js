@@ -53,6 +53,10 @@ export class InputSystem {
             state.justPressed = false;
             state.justReleased = false;
         });
+        // Clear mouse events
+        this.leftClick = null;
+        this.rightClick = null;
+        this.wheel = null;
     }
     /**
      * Query whether an action is present based on current peripheral input.
@@ -87,6 +91,22 @@ export class InputSystem {
             }
         }
         return false;
+    }
+    /** Get left click status */
+    getLeftClick() {
+        return this.leftClick;
+    }
+    /** Get right click status */
+    getRightClick() {
+        return this.rightClick;
+    }
+    /** Get cursor position */
+    getCursorPosition() {
+        return this.cursor;
+    }
+    /** Get wheel state */
+    getWheelState() {
+        return this.wheel;
     }
     startInput() {
         const getXandY = (e) => ({

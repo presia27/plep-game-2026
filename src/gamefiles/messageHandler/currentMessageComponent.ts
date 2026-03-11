@@ -1,6 +1,8 @@
 import { GameContext, IComponent } from "../../classinterfaces.ts";
 import { MSG_SERVICE } from "../main.ts";
 
+const DEFAULT_CHARS_PER_SECOND: number = 60;
+
 /**
  * Check if there are any messages.
  * If there are, processes them one by one
@@ -10,6 +12,9 @@ export class CurrentMessageComponent implements IComponent {
   private currentMessage: string | null;
   private messageInterval: number; // delay time between each message in seconds
   private lastPromptTime: number;
+
+  private displayLength: number;
+  private charsPerSecond: number;
   
   /**
    * 
@@ -19,6 +24,8 @@ export class CurrentMessageComponent implements IComponent {
     this.currentMessage = null;
     this.messageInterval = messageInterval;
     this.lastPromptTime = 0;
+    this.displayLength = 0;
+    this.charsPerSecond = DEFAULT_CHARS_PER_SECOND;
   }
 
   update(context: GameContext): void {
@@ -26,14 +33,27 @@ export class CurrentMessageComponent implements IComponent {
       if (!MSG_SERVICE.isEmpty()) {
         this.currentMessage = MSG_SERVICE.receiveMessage(); // get message
         this.lastPromptTime = context.gameTime;
-        console.log(this.currentMessage);
+
+        this.displayLength = 0; // reset on new message
+
+        if (context.debug) {
+          console.log("Received MSG: " + this.currentMessage);
+        }
       } else {
         this.currentMessage = null;
       }
-    } 
+    }
+
+    if (this.currentMessage) {
+      this.displayLength = Math.min(
+        this.currentMessage.length,
+        this.displayLength + this.charsPerSecond * context.clockTick
+      )
+    }
   }
 
   public getCurrentMessasge(): string | null {
-    return this.currentMessage;
+    if (!this.currentMessage) return null;
+    return this.currentMessage.slice(0, Math.floor(this.displayLength));
   }
 }

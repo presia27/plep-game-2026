@@ -8,18 +8,22 @@ import { levelLoaders } from "./gamefiles/levels/levelLoaders.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
-import { GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE } from "./gameStateEventTrigger.ts";
+import { GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE, TOGGLE_PAUSE } from "./gameStateEventTrigger.ts";
 import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.ts";
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
-import { StartScreenScene } from "./gamefiles/scenes/startScreen/startScreenScene.ts";
 import { BossSatisfaction } from "./gamefiles/bosssatisfaction/bossSatisfactionController.ts";
 import { SatisfactionDisplayEntity } from "./gamefiles/bosssatisfaction/satisfactionDisplayEntity.ts";
 import { TextboxManager } from "./gamefiles/textbox/textboxManager.ts";
 import { BossDialogueController } from "./gamefiles/textbox/bossDialogueController.ts";
+import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.ts";
+import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScreenLoader.ts";
+import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.ts";
+import { XY } from "./typeinterfaces.ts";
+import { MovementComponent } from "./componentLibrary/movementComponent.ts";
 
-export const INVENTORY_MAX_SLOTS = 6;
+export const INVENTORY_MAX_SLOTS = 5;
 
 /**
  * Holds all global state that persists across rooms and scenes.
@@ -36,6 +40,11 @@ export class GameState {
   private orderLoop: OrderDeliveryLoop;
   private bossSatisfaction: BossSatisfaction
   private player: PlayerController;
+  private globalKeyEntity: GlobalKeyListenerEntity;
+
+  // For loading in game
+  private pauseSettingsScene: SettingsScreenScene | null = null;
+  private playerLastPositionBeforePause: XY | null = null; // reload the player's last position on resume from pause screen
 
   private levelNumber: number;
   private levelActive: boolean;
@@ -49,7 +58,7 @@ export class GameState {
 
     this.levelNumber = 0; // 0 based level number to load
     this.levelActive = false;
-    
+
     this.gameEngine = gameEngine;
     this.sceneManager = sceneManager;
     this.ctx = ctx;
@@ -65,7 +74,7 @@ export class GameState {
     this.player = new PlayerController(
       ASSET_MANAGER,
       gameEngine.getInputSystem(),
-      {x: 0, y: 0}, 5,
+      { x: 0, y: 0 }, 5,
       this.inventoryManager,
       this.orderLoop
     );
@@ -86,12 +95,29 @@ export class GameState {
 
     this.bossDialogue = new BossDialogueController(this.textboxManager, this.bossSatisfaction);
 
-    this.sceneManager.loadScene("start", new StartScreenScene(
-      this.gsEventTrigger,
+    /* Initialize the global key (pause) controller */
+    this.globalKeyEntity = new GlobalKeyListenerEntity(
       this.gameEngine.getInputSystem(),
-      this.ctx.canvas.width,
-      this.ctx.canvas.height
-    ));
+      this.gsEventTrigger
+    );
+
+    // Load the initialized classes into their respective places
+    //this.loadState();
+
+    /* Load level or scene */
+    // Load the function reference from the list of levels, then call it to load the level
+    // const levelLoadProcedure = levelLoaders[0];
+    // if (levelLoadProcedure) {
+    //   levelLoadProcedure(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
+    //   this.levelActive = true;
+    // }
+    
+    loadControlScreen(
+      this.sceneManager,
+      this.gameEngine.getInputSystem(),
+      this.ctx,
+      this.gsEventTrigger
+    );
   }
 
   /**
@@ -105,8 +131,8 @@ export class GameState {
 
     // add inventory renderer
     const inventoryDisplayEntity = new InventoryDisplayEntity(
-      256,
-      this.ctx.canvas.height - 96,
+      30,
+      this.ctx.canvas.height - 70,
       this.inventoryManager,
       this.gameEngine.getInputSystem()
     );
@@ -114,9 +140,10 @@ export class GameState {
 
     // add order display renderer
     const orderDisplayEntity = new OrderDisplayEntity(
-      720,
-      this.ctx.canvas.height - 96,
-      this.orderLoop
+      this.ctx.canvas.width - 270,
+      this.ctx.canvas.height - 70,
+      this.orderLoop,
+      () => this.levelNumber + 1
     );
     this.sceneManager.addUIEntity(orderDisplayEntity);
 
@@ -141,7 +168,8 @@ export class GameState {
     this.orderLoop.reset();
     this.bossSatisfaction.reset();
     this.gameEngine.getCollisionSystem().clearEntities();
-
+    this.pauseSettingsScene = null;
+    this.playerLastPositionBeforePause = null;
   }
 
   /**
@@ -161,8 +189,12 @@ export class GameState {
     this.sceneManager.addLevelEntity(this.player);
     this.gameEngine.getCollisionSystem().addEntity(this.player);
 
+    // add bossDialogue (British)
     this.sceneManager.addLevelEntity(this.bossDialogue);
-  }
+    
+    // Add pause controller
+    this.sceneManager.addLevelEntity(this.globalKeyEntity);
+  }    
 
   /**
    * Perform a hard reset of the game state system.
@@ -171,6 +203,10 @@ export class GameState {
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
     this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
     this.sceneManager.resetAll();
+    this.levelNumber = 0;
+    this.levelActive = false;
+    this.pauseSettingsScene = null;
+    this.playerLastPositionBeforePause = null;
   }
 
   public stateChangeHandler(data: any, eventType: string) {
@@ -219,6 +255,46 @@ export class GameState {
           this.sceneManager.loadScene("winScreen", new WinScreenScene(this.gsEventTrigger));
         }, 3000);
       }
+    }
+
+    if (TOGGLE_PAUSE === eventType) {
+      this.gameEngine.togglePause();
+
+      if (this.gameEngine.gameIsPaused()) {
+        // create and register scene if not done already
+        if (!this.pauseSettingsScene) {
+          this.pauseSettingsScene = new SettingsScreenScene(
+            this.gsEventTrigger,
+            this.gameEngine.getInputSystem(),
+            this.ctx.canvas.width,
+            this.ctx.canvas.height,
+            true
+          );
+          this.sceneManager.registerScene(SETTINGSSCREEN_SCENEID, this.pauseSettingsScene);
+        }
+        this.sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
+        const movementComponent = this.player.getComponent(MovementComponent);
+        if (movementComponent) {
+          this.playerLastPositionBeforePause = {
+            x: movementComponent.getPosition().x,
+            y: movementComponent.getPosition().y
+          }
+        }
+
+      } else {
+        this.sceneManager.loadLastScene();
+
+        // Snap the player back to its position before pause
+        // Otherwiser, the last scene will snap it to the nearest spawn point
+        const movementComponent = this.player.getComponent(MovementComponent);
+        if (movementComponent && this.playerLastPositionBeforePause) {
+          movementComponent.setPosition({
+            x: this.playerLastPositionBeforePause.x,
+            y: this.playerLastPositionBeforePause.y
+          });
+        }
+      }
+      
     }
   }
 

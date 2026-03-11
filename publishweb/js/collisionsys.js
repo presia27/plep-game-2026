@@ -20,6 +20,9 @@ export class CollisionSystem {
             this.entities.splice(index, 1);
         }
     }
+    clearEntities() {
+        this.entities = [];
+    }
     /**
      * Performs a narrow phase collision check
      * on all entities registered with the system.

@@ -15,11 +15,12 @@ import { BasicLifecycle } from "./componentLibrary/lifecycle.js";
 export default class SceneManager {
     constructor() {
         this.currentScene = null;
+        this.lastScene = null;
         this.currentScene = null;
-        this.gameState = null;
         this.roomEntities = [];
         this.levelEntities = [];
         this.uiEntities = [];
+        this.transientUIEntities = [];
         this.sceneCache = new Map();
     }
     /**
@@ -40,8 +41,14 @@ export default class SceneManager {
     addUIEntity(entity) {
         this.uiEntities.push(entity);
     }
+    addTransientUIEntity(entity) {
+        this.transientUIEntities.push(entity);
+    }
     clearEntities() {
         this.roomEntities = [];
+    }
+    clearTransientUIEntities() {
+        this.transientUIEntities = [];
     }
     getLevelEntities() {
         return this.levelEntities;
@@ -62,9 +69,9 @@ export default class SceneManager {
      * (e.g. reset game state)
      * @param gs GameState instance
      */
-    enrollGameState(gs) {
-        this.gameState = gs;
-    }
+    // public enrollGameState(gs: GameState) {
+    //   this.gameState = gs;
+    // }
     /**
      * Clears the scene cache and resets all global state.
      * Use this when starting a new level or resetting the game.
@@ -74,15 +81,10 @@ export default class SceneManager {
         this.clearEntities();
         this.levelEntities = [];
         this.uiEntities = [];
+        this.transientUIEntities = [];
         this.currentScene = null;
-        if (this.gameState !== null)
-            this.gameState.reset();
     }
-    update(context) {
-        var _a;
-        // Update scene logic
-        (_a = this.currentScene) === null || _a === void 0 ? void 0 : _a.update(context);
-        //update UI entities
+    updateUI(context) {
         this.uiEntities = this.uiEntities.filter((entity) => {
             const lifecycle = entity.getComponent(BasicLifecycle);
             return !lifecycle || lifecycle.isAlive();
@@ -90,6 +92,20 @@ export default class SceneManager {
         this.uiEntities.forEach((entity) => {
             entity.update(context);
         });
+        this.transientUIEntities = this.transientUIEntities.filter((entity) => {
+            const lifecycle = entity.getComponent(BasicLifecycle);
+            return !lifecycle || lifecycle.isAlive();
+        });
+        this.transientUIEntities.forEach((entity) => {
+            entity.update(context);
+        });
+    }
+    update(context) {
+        var _a;
+        // Update scene logic
+        (_a = this.currentScene) === null || _a === void 0 ? void 0 : _a.update(context);
+        //update UI entities
+        this.updateUI(context);
         // Update level entities (these persist across rooms)
         this.levelEntities = this.levelEntities.filter((entity) => {
             const lifecycle = entity.getComponent(BasicLifecycle);
@@ -110,7 +126,7 @@ export default class SceneManager {
         });
     }
     draw(context) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f;
         (_a = this.currentScene) === null || _a === void 0 ? void 0 : _a.draw(context);
         //draw in order: shelves --> items/player --> UI
         // 1. Room entities (shelves, doors)
@@ -127,9 +143,12 @@ export default class SceneManager {
         for (let i = this.levelEntities.length - 1; i >= 0; i--) {
             (_d = this.levelEntities[i]) === null || _d === void 0 ? void 0 : _d.draw(context);
         }
-        // 3. UI entities (drawn on top of everything)
+        for (let i = this.transientUIEntities.length - 1; i >= 0; i--) {
+            (_e = this.transientUIEntities[i]) === null || _e === void 0 ? void 0 : _e.draw(context);
+        }
+        // 4. UI entities (drawn on top of everything)
         for (let i = this.uiEntities.length - 1; i >= 0; i--) {
-            (_e = this.uiEntities[i]) === null || _e === void 0 ? void 0 : _e.draw(context);
+            (_f = this.uiEntities[i]) === null || _f === void 0 ? void 0 : _f.draw(context);
         }
     }
     /**
@@ -142,7 +161,9 @@ export default class SceneManager {
     loadScene(sceneId, scene) {
         var _a, _b;
         (_a = this.currentScene) === null || _a === void 0 ? void 0 : _a.onExit();
+        this.lastScene = this.currentScene;
         this.clearEntities();
+        this.clearTransientUIEntities();
         if (this.sceneCache.has(sceneId)) {
             const cachedScene = this.sceneCache.get(sceneId);
             // Check if this scene has been entered before by checking if it has entities
@@ -167,6 +188,30 @@ export default class SceneManager {
         }
         else {
             console.error(`Scene "${sceneId}" not found in cache and no scene instance was provided.`);
+        }
+    }
+    /**
+     * If a previous scene is registered as the "last scene" before
+     * the currently loaded scene, reload it. This assumes that
+     * the scene was already loaded before, hence no scene ID
+     * is needed and it is already registered in the scene cache
+     * (I hope).
+     */
+    loadLastScene() {
+        var _a, _b;
+        if (this.lastScene) {
+            (_a = this.currentScene) === null || _a === void 0 ? void 0 : _a.onExit();
+            this.clearEntities();
+            this.clearTransientUIEntities();
+            this.currentScene = this.lastScene;
+            //this.currentScene?.onEnter(this);
+            const hasBeenEntered = ((_b = this.lastScene.localEntities) === null || _b === void 0 ? void 0 : _b.length) > 0;
+            if (hasBeenEntered) {
+                this.currentScene.onResume(this);
+            }
+            else {
+                this.currentScene.onEnter(this);
+            }
         }
     }
 }

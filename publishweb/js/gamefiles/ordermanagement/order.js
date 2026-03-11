@@ -7,7 +7,9 @@ export class Order {
     constructor() {
         this.items = new Map();
         this.arrivalTime = null;
-        this.fulfilTime = null;
+        this.fulfillTime = null;
+        this.fulfillMistakeCount = null;
+        this.fulfillAccuracy = null;
     }
     addItem(item) {
         var _a;
@@ -39,11 +41,38 @@ export class Order {
     getArrivalTime() {
         return this.arrivalTime;
     }
-    setFulfilTime(time) {
-        this.fulfilTime = time;
+    setFulfillTime(time) {
+        this.fulfillTime = time;
     }
     getFulfilTime() {
-        return this.fulfilTime;
+        return this.fulfillTime;
+    }
+    /** Record the fulfillment accuracy as a decimal percentage between 0 and 1 inclusive */
+    setFulfillAccuracy(percent) {
+        if (percent < 0) {
+            this.fulfillAccuracy = 0;
+        }
+        else if (percent > 1) {
+            this.fulfillAccuracy = 1;
+        }
+        else {
+            this.fulfillAccuracy = percent;
+        }
+    }
+    getFulfillAccuracy() {
+        return this.fulfillAccuracy;
+    }
+    /** Set the number of mistakes made in the order */
+    setFulfillMistakeCount(count) {
+        if (count < 0) {
+            this.fulfillMistakeCount = 0;
+        }
+        else {
+            this.fulfillMistakeCount = count;
+        }
+    }
+    getFulfillMistakeCount() {
+        return this.fulfillMistakeCount;
     }
     getItems() {
         return this.items;

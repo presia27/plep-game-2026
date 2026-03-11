@@ -127,7 +127,7 @@ export class MonsterCollisionHandler extends AbstractCollisionHandler {
     // handle player collision
     if (other instanceof PlayerController) {
       const player = other as PlayerController;
-      console.log("Monster ran into player");
+      //console.log("Monster ran into player");
     }
 
     if (other instanceof WallEntity && this.updatePointCooldown <= 0) {
