@@ -1,23 +1,31 @@
 export class VehicleRender {
-    constructor(spritesheet, spriteXstart, spriteYstart, spriteWidth, spriteHeight, positionComponent, 
-    //movementSys: VehicleMovementSys,
-    sizeComponent, boundingBox) {
+    constructor(spritesheet, spriteXstart, spriteYstart, spriteWidth, spriteHeight, positionComponent, sizeComponent, boundingBox) {
         this.sprite = spritesheet;
         this.sx = spriteXstart;
         this.sy = spriteYstart;
         this.sw = spriteWidth;
         this.sh = spriteHeight;
         this.pos = positionComponent;
-        //this.movSys = movementSys;
         this.size = sizeComponent;
         this.bBox = boundingBox !== null && boundingBox !== void 0 ? boundingBox : null;
-        // this.animation = new Animator(
-        //   sprite,
-        //   sx, sy,
-        //   sw, sh,
-        //   1, 0.2, 0,
-        //   false, true, false
-        // )
+    }
+    /**
+     * Change what is rendered based on passed values
+     *
+     * @param sx starting x on spritesheet
+     * @param sy starting y on spritesheet
+     * @param sw sprite width
+     * @param sh sprite height
+     * @param size size of entity
+     * @param bBox size of bounding box (if applicable)
+     */
+    setSprite(sx, sy, sw, sh, size, bBox) {
+        this.sx = sx;
+        this.sy = sy;
+        this.sw = sw;
+        this.sh = sh;
+        this.size = size;
+        this.bBox = bBox !== null && bBox !== void 0 ? bBox : null;
     }
     // extend the functionality of draw to be able to draw hint text
     draw(context) {

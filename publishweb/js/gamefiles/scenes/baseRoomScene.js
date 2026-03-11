@@ -17,6 +17,10 @@ import { ParkingLot } from "./storeExterior/parkingLotController.js";
 import { Ball } from "./storeExterior/ballController.js";
 import { Bush } from "./storeExterior/bushController.js";
 import { VehicleEntity } from "./storeExterior/vehicleEntity.js";
+import { FloorGrid } from "./storeInterior/floorGrid.js";
+import { PlayerLight } from "../player/playerLight.js";
+import { SelfCheckout } from "./storeInterior/selfCheckoutController.js";
+import { ShoppingCart } from "./storeInterior/shoppingCartController.js";
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION = [
     { x: 30, y: 20 },
@@ -48,7 +52,7 @@ export class BaseRoomScene {
      * @param sceneManager Scene manager
      */
     onEnter(sceneManager) {
-        var _a, _b, _c, _d, _e, _f;
+        var _a, _b, _c, _d, _e, _f, _g;
         console.log("Loading scene " + this.roomData.sceneId);
         // Attempt to find the current player
         let player;
@@ -62,11 +66,15 @@ export class BaseRoomScene {
                 this.movePlayer(movementComponent);
                 /* Create and load monsters */
                 for (const monsterSpawn of this.roomData.monsterSpawns) {
-                    const monster = new MonsterEntity(monsterSpawn, 5, movementComponent, this.roomData.updatePoints.slice()); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+                    const monster = new MonsterEntity(monsterSpawn, 5, movementComponent, this.roomData.updatePoints.slice());
                     sceneManager.addEntity(monster);
                     this.localEntities.push(monster);
                     this.collisionSystem.addEntity(monster);
                 }
+                /* Create player light */
+                const playerLight = new PlayerLight(movementComponent);
+                sceneManager.addEntity(playerLight);
+                this.localEntities.push(playerLight);
             }
         }
         else {
@@ -81,10 +89,10 @@ export class BaseRoomScene {
             this.collisionSystem.addEntity(pointTrigger);
         }
         /* Create walls */
-        const topWall = new WallEntity(new staticPositionComponent({ x: 0, y: 0 }), 1280, 3, 5);
-        const bottomWall = new WallEntity(new staticPositionComponent({ x: 0, y: 705 }), 1280, 3, 5);
-        const leftWall = new WallEntity(new staticPositionComponent({ x: 0, y: 0 }), 3, 720, 5);
-        const rightWall = new WallEntity(new staticPositionComponent({ x: 1265, y: 0 }), 3, 720, 5);
+        const topWall = new WallEntity(new staticPositionComponent({ x: 0, y: 0 }), 1280, 5, 15, 1280, 5);
+        const bottomWall = new WallEntity(new staticPositionComponent({ x: 0, y: 705 }), 1280, 5, 1297, 1280, 5);
+        const leftWall = new WallEntity(new staticPositionComponent({ x: 0, y: 0 }), 5, 720, 1, 5, 720);
+        const rightWall = new WallEntity(new staticPositionComponent({ x: 1265, y: 0 }), 5, 720, 8, 5, 720);
         sceneManager.addEntity(topWall);
         sceneManager.addEntity(bottomWall);
         sceneManager.addEntity(leftWall);
@@ -154,31 +162,57 @@ export class BaseRoomScene {
                 }
             }
         }
-        /* Delivery Entity */
+        if (this.roomData.isCheckout) {
+            for (let i = 0; i < 3; i++) {
+                // render checkout room sprites from bottom to top to layer properly
+                // NOTE: i know this is prob not the best way to do this but it's easier 
+                // than making a whole nother class to deal w this small logic
+                let regSX = 75; /** render bottom checkout + cart */
+                let regYPos = 450;
+                let cartPos = { x: 1100, y: 105 };
+                let cartSX = 41;
+                let cartSW = 21;
+                let cartSH = 19;
+                if (i == 1) { /** render middle checkout + cart */
+                    regSX = 38;
+                    regYPos = 250;
+                    cartPos = { x: 410, y: 590 };
+                    cartSX = 26;
+                    cartSW = 13;
+                    cartSH = 21;
+                }
+                else if (i == 2) { /** render top checkout + cart */
+                    regSX = 1;
+                    regYPos = 50;
+                    cartPos = { x: 330, y: 140 };
+                    cartSX = 1;
+                    cartSW = 23;
+                    cartSH = 15;
+                }
+                const checkout = new SelfCheckout({ x: 50, y: regYPos }, regSX);
+                const cart = new ShoppingCart(cartPos, cartSX, cartSW, cartSH);
+                this.localEntities.push(checkout);
+                sceneManager.addEntity(checkout);
+                this.collisionSystem.addEntity(checkout);
+                this.localEntities.push(cart);
+                sceneManager.addEntity(cart);
+                this.collisionSystem.addEntity(cart);
+            }
+        }
+        /* Delivery Entity and Vehicle Entity */
         const deliveryPOS = this.roomData.deliveryEntityPosition;
         if (deliveryPOS) {
             const deliveryEntity = new DeliveryController(deliveryPOS, 1);
+            // create one vehicle to be "recycled"
+            const vehicle = new VehicleEntity({ x: -300, y: 200 }, 8);
+            // draw vehicle before entity to display in proper order
+            sceneManager.addEntity(vehicle);
+            this.collisionSystem.addEntity(vehicle);
+            this.localEntities.push(vehicle);
+            (_g = this.orderLoop) === null || _g === void 0 ? void 0 : _g.subscribe(vehicle);
             this.localEntities.push(deliveryEntity);
             sceneManager.addEntity(deliveryEntity);
             this.collisionSystem.addEntity(deliveryEntity);
-            if (this.roomData.isParkingLot) {
-                const tempDeliveryPos = { x: -400, y: 200 };
-                // const vehicle = new VehicleEntity(
-                //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
-                //   8, 
-                //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
-                // )
-                // sceneManager.addEntity(vehicle);
-                // this.collisionSystem.addEntity(vehicle);
-                // this.localEntities.push(vehicle);
-                // if (vehicle.getMovementSystem().getPosition().x > 1200) {
-                //   const vehicle = new VehicleEntity(
-                //   {x: 0, y: this.roomData.deliveryEntityPosition?.y ?? 50}, 
-                //   6, 
-                //   this.roomData.deliveryEntityPosition ?? tempDeliveryPos
-                //   )
-                // }
-            }
         }
         /* Blood splatters */
         for (const bloodPos of this.roomData.bloodLocations) {
@@ -189,10 +223,13 @@ export class BaseRoomScene {
         }
         /* Floor texture */
         if (this.roomData.isParkingLot) {
-            const vehicle = new VehicleEntity({ x: 510, y: 200 }, 8);
-            sceneManager.addEntity(vehicle);
-            this.collisionSystem.addEntity(vehicle);
-            this.localEntities.push(vehicle);
+            // const vehicle = new VehicleEntity(
+            //   { x: -200, y: 200 },
+            //   8
+            // )
+            // sceneManager.addEntity(vehicle);
+            // this.collisionSystem.addEntity(vehicle);
+            // this.localEntities.push(vehicle);
             /** Create bush for collision handling */
             const bush = new Bush();
             sceneManager.addEntity(bush);
@@ -219,17 +256,6 @@ export class BaseRoomScene {
             this.collisionSystem.addEntity(ball2);
             this.collisionSystem.addEntity(ball3);
             this.collisionSystem.addEntity(ball4);
-            // const ballPositions: XY[] = [
-            //   { x: 32, y: 37 }, { x: 352, y: 37 },
-            //   { x: 848, y: 37 }, { x: 1168, y: 37 }
-            // ];
-            // for (const ballPos of ballPositions) {
-            //   const ball = new Ball(ballPos);
-            //   sceneManager.addEntity(ball);
-            //   this.localEntities.push(ball);
-            //   this.collisionSystem.addEntity(ball);
-            //   console.debug("Ball created at " + ballPos.x + ", " + ballPos.y);
-            // }
             /** Create parking lot sprite */
             const lot = new ParkingLot();
             sceneManager.addEntity(lot);
@@ -237,6 +263,10 @@ export class BaseRoomScene {
             this.localEntities.push(lot);
         }
         else {
+            const floorGrid = new FloorGrid();
+            sceneManager.addEntity(floorGrid);
+            this.collisionSystem.addEntity(floorGrid);
+            this.localEntities.push(floorGrid);
             const floor = new StoreFloor();
             sceneManager.addEntity(floor);
             this.collisionSystem.addEntity(floor);

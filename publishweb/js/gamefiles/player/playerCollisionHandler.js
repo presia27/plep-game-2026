@@ -9,6 +9,8 @@ import { ASSET_MANAGER } from "../main.js";
 import { Ball } from "../scenes/storeExterior/ballController.js";
 import { Bush } from "../scenes/storeExterior/bushController.js";
 import { VehicleEntity } from "../scenes/storeExterior/vehicleEntity.js";
+import { SelfCheckout } from "../scenes/storeInterior/selfCheckoutController.js";
+import { ShoppingCart } from "../scenes/storeInterior/shoppingCartController.js";
 /**
  * Player collision handler that prevents the player from
  * moving through solid objects
@@ -198,6 +200,54 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
                     pos.y = vehicleTop - (yOffset + bbHeight);
                 else
                     pos.y = vehicleBottom - yOffset;
+            }
+        }
+        if (other instanceof SelfCheckout) {
+            const checkoutLeft = otherBounds.getLeft();
+            const checkoutRight = otherBounds.getRight();
+            const checkoutTop = otherBounds.getTop();
+            const checkoutBottom = otherBounds.getBottom();
+            const overlapLeft = playerRight - checkoutLeft;
+            const overlapRight = checkoutRight - playerLeft;
+            const overlapTop = playerBottom - checkoutTop;
+            const overlapBottom = checkoutBottom - playerTop;
+            const minOverlapX = Math.min(overlapLeft, overlapRight);
+            const minOverlapY = Math.min(overlapTop, overlapBottom);
+            if (minOverlapX < minOverlapY) {
+                if (overlapLeft < overlapRight)
+                    pos.x = checkoutLeft - (xOffset + bbWidth);
+                else
+                    pos.x = checkoutRight - xOffset;
+            }
+            else {
+                if (overlapTop < overlapBottom)
+                    pos.y = checkoutTop - (yOffset + bbHeight);
+                else
+                    pos.y = checkoutBottom - yOffset;
+            }
+        }
+        if (other instanceof ShoppingCart) {
+            const cartLeft = otherBounds.getLeft();
+            const cartRight = otherBounds.getRight();
+            const cartTop = otherBounds.getTop();
+            const cartBottom = otherBounds.getBottom();
+            const overlapLeft = playerRight - cartLeft;
+            const overlapRight = cartRight - playerLeft;
+            const overlapTop = playerBottom - cartTop;
+            const overlapBottom = cartBottom - playerTop;
+            const minOverlapX = Math.min(overlapLeft, overlapRight);
+            const minOverlapY = Math.min(overlapTop, overlapBottom);
+            if (minOverlapX < minOverlapY) {
+                if (overlapLeft < overlapRight)
+                    pos.x = cartLeft - (xOffset + bbWidth);
+                else
+                    pos.x = cartRight - xOffset;
+            }
+            else {
+                if (overlapTop < overlapBottom)
+                    pos.y = cartTop - (yOffset + bbHeight);
+                else
+                    pos.y = cartBottom - yOffset;
             }
         }
     }

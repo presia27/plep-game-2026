@@ -19,14 +19,14 @@ export class StartScreenScene {
         // Music will start on first user interaction (handled in update())
         const handleStartGameClick = () => {
             var _a, _b;
-            // Transition music to full loop: 12s to end
+            // Transition music to full loop: 12s to end (minus 4s empty space at loop)
             if (this.introMusicNode) {
                 this.introMusicNode.source.loopStart = 12;
-                this.introMusicNode.source.loopEnd = ((_a = this.introMusicNode.source.buffer) === null || _a === void 0 ? void 0 : _a.duration) || 100;
+                this.introMusicNode.source.loopEnd = (((_a = this.introMusicNode.source.buffer) === null || _a === void 0 ? void 0 : _a.duration) || 100) - 4;
             }
             else {
                 // Fallback if intro didn't play (e.g. autoplay blocked)
-                this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, ((_b = ASSET_MANAGER.getAudioAsset("gameMusic")) === null || _b === void 0 ? void 0 : _b.duration) || 100, 11.8);
+                this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, (((_b = ASSET_MANAGER.getAudioAsset("gameMusic")) === null || _b === void 0 ? void 0 : _b.duration) || 100) - 4, 11.8);
             }
             this.sceneTrigger.assertChange(null, NEXT_SCENE);
         };

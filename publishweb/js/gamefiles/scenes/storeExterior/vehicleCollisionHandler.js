@@ -1,11 +1,12 @@
 import { AbstractCollisionHandler } from "../../../componentLibrary/AbstractCollisionHandler.js";
+/**
+ * Note: while this is used, it doesn't really do anything rn
+ */
 export class VehicleCollisionHandler extends AbstractCollisionHandler {
-    constructor(movementComponent, 
-    //movementSys: VehicleMovementSys,
-    boundingBox) {
+    constructor(movementComponent, movementSys, boundingBox) {
         super();
         this.movementComponent = movementComponent;
-        //this.movementSys = movementSys;
+        this.movementSys = movementSys;
         this.boundingBox = boundingBox;
     }
     handleCollision(other, otherBounds) {
