@@ -45,6 +45,7 @@ export interface roomData {
   allowedItems: ItemType[];
   deliveryEntityPosition?: XY;
   isParkingLot?: boolean;
+  isCheckout?: boolean;
 }
 
 
@@ -90,12 +91,12 @@ export const CheckoutRoom: roomData = {
     { x: 540, y: 570 },  // from delivery
   ],
   monsterSpawns: [
-    { x: 60, y: 600 },
+    // { x: 60, y: 600 },
   ],
   updatePoints: [
-    {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
-    {x: 50, y: 280},                  {x: 1200, y: 280},
-    {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
+    // {x: 50, y: 40}, {x: 600, y: 40}, {x: 1200, y: 40},  
+    // {x: 50, y: 280},                  {x: 1200, y: 280},
+    // {x: 50, y: 600}, {x: 600, y: 600}, {x: 1200, y: 600}
   ],
   shelves : [],
   doors: [
@@ -118,6 +119,7 @@ export const CheckoutRoom: roomData = {
       direction: DoorDirection.DOWN
     },
   ],
+  isCheckout: true,
   allowedItems: [],
 }
 

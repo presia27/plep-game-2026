@@ -32,6 +32,9 @@ import { Bush } from "./storeExterior/bushController.ts";
 import { VehicleEntity } from "./storeExterior/vehicleEntity.ts";
 import { VehicleState } from "./storeExterior/vehicleMovementSystem.ts";
 import { FloorGrid } from "./storeInterior/floorGrid.ts";
+import { PlayerLight } from "../player/playerLight.ts";
+import { SelfCheckout } from "./storeInterior/selfCheckoutController.ts";
+import { ShoppingCart } from "./storeInterior/shoppingCartController.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -91,6 +94,7 @@ export class BaseRoomScene implements IScene {
       const movementComponent = player.getComponent(MovementComponent);
       if (movementComponent) {
         this.movePlayer(movementComponent);
+
         /* Create and load monsters */
         for (const monsterSpawn of this.roomData.monsterSpawns) {
           const monster = new MonsterEntity(
@@ -98,11 +102,15 @@ export class BaseRoomScene implements IScene {
             5,
             movementComponent,
             this.roomData.updatePoints.slice()
-          ); // FIGURE OUT HOW TO INTEGRATE MOVEMENT SYSTEM PROPERLY
+          );
           sceneManager.addEntity(monster);
           this.localEntities.push(monster);
           this.collisionSystem.addEntity(monster);
         }
+        /* Create player light */
+        const playerLight = new PlayerLight(movementComponent);
+        sceneManager.addEntity(playerLight);
+        this.localEntities.push(playerLight);
       }
     } else {
       player = null;
@@ -122,19 +130,19 @@ export class BaseRoomScene implements IScene {
     /* Create walls */
     const topWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 0 }),
-      1280, 3, 5
-    ); 
+      1280, 5, 15, 1280, 5
+    );
     const bottomWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 705 }),
-      1280, 3, 5
+      1280, 5, 1297, 1280, 5
     );
     const leftWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 0 }),
-      3, 720, 5
+      5, 720, 1, 5, 720
     );
     const rightWall = new WallEntity(
       new staticPositionComponent({ x: 1265, y: 0 }),
-      3, 720, 5
+      5, 720, 8, 5, 720
     );
 
     sceneManager.addEntity(topWall);
@@ -225,7 +233,42 @@ export class BaseRoomScene implements IScene {
         }
       }
     }
-
+    if (this.roomData.isCheckout) {
+      for (let i = 0; i < 3; i++) {
+        // render checkout room sprites from bottom to top to layer properly
+        // NOTE: i know this is prob not the best way to do this but it's easier 
+        // than making a whole nother class to deal w this small logic
+        let regSX = 75; /** render bottom checkout + cart */
+        let regYPos = 450;
+        let cartPos: XY = { x: 1100, y: 105 };
+        let cartSX = 41;
+        let cartSW = 21;
+        let cartSH = 19;
+        if (i == 1) { /** render middle checkout + cart */
+          regSX = 38;
+          regYPos = 250;
+          cartPos = { x: 410, y: 590 };
+          cartSX = 26;
+          cartSW = 13;
+          cartSH = 21;
+        } else if (i == 2) { /** render top checkout + cart */
+          regSX = 1;
+          regYPos = 50;
+          cartPos = { x: 330, y: 140 };
+          cartSX = 1;
+          cartSW = 23;
+          cartSH = 15;
+        }
+        const checkout = new SelfCheckout({ x: 50, y: regYPos }, regSX);
+        const cart = new ShoppingCart(cartPos, cartSX, cartSW, cartSH);
+        this.localEntities.push(checkout);
+        sceneManager.addEntity(checkout);
+        this.collisionSystem.addEntity(checkout);
+        this.localEntities.push(cart);
+        sceneManager.addEntity(cart);
+        this.collisionSystem.addEntity(cart);
+      }
+    }
     /* Delivery Entity */
     const deliveryPOS = this.roomData.deliveryEntityPosition;
     if (deliveryPOS) {
@@ -379,9 +422,9 @@ export class BaseRoomScene implements IScene {
     }
   }
 
-  update(context: GameContext): void {}
-  draw(context: GameContext): void {}
-  
+  update(context: GameContext): void { }
+  draw(context: GameContext): void { }
+
   private movePlayer(movementComponent: MovementComponent) {
     // if (this.roomData.defaultSpawn) { // if a default spawn is used, 
     //   movementComponent.setPosition({
@@ -408,5 +451,5 @@ export class BaseRoomScene implements IScene {
       y: nearestPoint.y
     });
   }
-  
+
 }
