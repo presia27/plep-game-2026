@@ -84,20 +84,8 @@ export class GameState {
     this.textboxManager.setDefaultDuration(4.0);
     this.textboxManager.setDefaultRevealSpeed(35);
 
-    this.bossDialogue = new BossDialogueController(this.textboxManager, this.orderLoop, this.bossSatisfaction);
+    this.bossDialogue = new BossDialogueController(this.textboxManager, this.bossSatisfaction);
 
-    this.orderLoop.setBossDialogue(this.bossDialogue);
-
-    // Load the initialized classes into their respective places
-    //this.loadState();
-
-    /* Load level or scene */
-    // Load the function reference from the list of levels, then call it to load the level
-    // const levelLoadProcedure = levelLoaders[0];
-    // if (levelLoadProcedure) {
-    //   levelLoadProcedure(gameEngine, sceneManager, ctx, this.inventoryManager, this.orderLoop);
-    //   this.levelActive = true;
-    // }
     this.sceneManager.loadScene("start", new StartScreenScene(
       this.gsEventTrigger,
       this.gameEngine.getInputSystem(),
@@ -168,6 +156,7 @@ export class GameState {
   public loadState() {
     this.inventoryManager.subscribe(this.orderLoop);
     this.orderLoop.subscribe(this.bossSatisfaction);
+    this.orderLoop.subscribe(this.bossDialogue);
     this.initDisplayEntities();   // load display entities
     this.sceneManager.addLevelEntity(this.player);
     this.gameEngine.getCollisionSystem().addEntity(this.player);

@@ -1,34 +1,44 @@
-import { GameContext, IComponent } from "../../classinterfaces.ts";
+import { GameContext } from "../../classinterfaces.ts";
 import { TextboxManager } from "./textboxManager.ts";
-import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { Entity } from "../../entity.ts";
 import { ASSET_MANAGER } from "../main.ts";
-import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController";
+import { BossSatisfaction } from "../bosssatisfaction/bossSatisfactionController.ts";
+import { OBS_ORDER_COMPLETE, Observer } from "../../observerinterfaces.ts";
+import { Order } from "../ordermanagement/order.ts";
 
 
 
-export class BossDialogueController extends Entity implements IComponent {
+export class BossDialogueController extends Entity implements Observer{
   private textboxManager: TextboxManager;      // Shows the textboxes
-  private orderLoop: OrderDeliveryLoop;        // Gets satisfaction/time data
   private bossSatisfaction: BossSatisfaction;
   
   private dialogueBoxSmall: HTMLImageElement | null;
   
   // Track state to prevent duplicate messages
-  private previousSatisfaction: number = 50;
-  private hasShown80Satisfaction: boolean = false;
-  private hasShown60Satisfaction: boolean = false;
+  //private previousSatisfaction: number = 50;
+  //private hasShown80Satisfaction: boolean = false;
+  //private hasShown60Satisfaction: boolean = false;
   private hasShown40Satisfaction: boolean = false;
   private hasShown20Satisfaction: boolean = false;
   private levelStartMessageShown: boolean = false;
 
-  constructor(textboxManager: TextboxManager, orderLoop: OrderDeliveryLoop, bossSatisfaction: BossSatisfaction) {
+  constructor(textboxManager: TextboxManager, bossSatisfaction: BossSatisfaction) {
     super();
 
     this.textboxManager = textboxManager;
-    this.orderLoop = orderLoop;
     this.bossSatisfaction = bossSatisfaction;
     this.dialogueBoxSmall = ASSET_MANAGER.getImageAsset("dialogueBoxSmall");
+  }
+
+  observerUpdate(data: any, propertyName: string): void {
+    if (OBS_ORDER_COMPLETE === propertyName) { //check if order is complete
+      if (data) {
+        const currentlyActive = data as Order;
+        const accuracy = currentlyActive.getFulfillAccuracy();
+        const isCorrect = accuracy !== null && accuracy >= 1.0;
+        this.onOrderDelivered(isCorrect);
+      }
+    } 
   }
 
   // Main update loop - called every frame
