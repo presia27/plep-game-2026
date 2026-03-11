@@ -36,9 +36,17 @@ export const environmentAssets: IAssetList[] = [
   { id: "AllHShelves", type: "img", location: "./assets/AllHShelves.png" },
   { id: "arrow", type: "img", location: "./assets/ArrowSpritesheet.png" },
   { id: "floor", type: "img", location: "./assets/StoreFloorTexture.png" },
+  { id: "floorGrid", type: "img", location: "./assets/FloorGrid.png" },
+  { id: "light", type: "img", location: "./assets/light.png" },
+  { id: "empLight", type: "img", location: "./assets/EmployeeLight.png" },
+  { id: "empShad", type: "img", location: "./assets/EmployeeShadow.png" },
   { id: "blood", type: "img", location: "./assets/BloodSplatter.png" },
   { id: "shelfShadow", type: "img", location: "./assets/ShelfShadow.png" },
   { id: "parkingLot", type: "img", location: "./assets/ParkingLot.png" },
+  { id: "selfCheckout", type: "img", location: "./assets/SelfCheckout.png" },
+  { id: "shoppingCart", type: "img", location: "./assets/ShoppingCart.png" },
+  { id: "walls", type: "img", location: "./assets/Walls.png" },
+  { id: "corners", type: "img", location: "./assets/Corners.png" },
   { id: "vehicles", type: "img", location: "./assets/VehicleSpritesheet.png" }
 ];
 

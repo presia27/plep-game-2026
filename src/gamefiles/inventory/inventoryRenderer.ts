@@ -51,7 +51,7 @@ export class InventoryRenderer implements IRenderer {
 
     // Calculate panel width dynamically based on number of slots
     const panelWidth = (2 * OFFSET_X) + (totalSize * ITEM_SIDE_WIDTH) + ((totalSize - 1) * BUFFER);
-
+    
     // Draw 50% opaque border/background around entire UI
     const padding = 8;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
