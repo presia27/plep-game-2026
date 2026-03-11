@@ -2,7 +2,7 @@ var _a;
 import AssetManager from "../assetmanager.js";
 import GameEngine from "../gameengine.js";
 import { myInputMap } from "./inputmap.js";
-import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets, soundEffects } from "./assetlist.js";
+import { deliveryAssets, environmentAssets, monsterAssets, itemAssets, playerAssets, bossAssets, soundEffects, uiAssets } from "./assetlist.js";
 import SceneManager from "../sceneManager.js";
 import { GameState } from "../gameState.js";
 import { MessengerService } from "../messengerService.js";
@@ -31,6 +31,7 @@ environmentAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset
 itemAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 deliveryAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 soundEffects.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
+uiAssets.forEach((asset) => ASSET_MANAGER.queueDownload(asset.id, asset.type, asset.location));
 // Configure Fonts
 const pixelFont = new FontFace("Jersey-20", 'url("./assets/Jersey20-Regular.ttf")');
 document.fonts.add(pixelFont);

@@ -54,3 +54,7 @@ export const soundEffects = [
     { id: "happy", type: "audio", location: "./assets/happy.ogg" },
     { id: "uiSound", type: "audio", location: "./assets/uiSound.ogg" }
 ];
+export const uiAssets = [
+    { id: "dialogueBox", type: "img", location: "./assets/dialogueBox.png" },
+    { id: "dialogueBoxSmall", type: "img", location: "./assets/dialogueBoxSmall.png" }
+];
