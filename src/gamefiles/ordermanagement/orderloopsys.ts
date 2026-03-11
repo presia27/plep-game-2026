@@ -41,6 +41,8 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
   private observers: Observer[];
   private sceneTrigger: GameStateEventTrigger;
 
+
+
   /**
    * Initialize everything to null or 0.
    * Use init to initialize with proper values.
@@ -326,6 +328,7 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
 
     return times;
   }
+
 
   /** 
    * From

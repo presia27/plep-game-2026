@@ -15,6 +15,8 @@ import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.t
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 import { BossSatisfaction } from "./gamefiles/bosssatisfaction/bossSatisfactionController.ts";
 import { SatisfactionDisplayEntity } from "./gamefiles/bosssatisfaction/satisfactionDisplayEntity.ts";
+import { TextboxManager } from "./gamefiles/textbox/textboxManager.ts";
+import { BossDialogueController } from "./gamefiles/textbox/bossDialogueController.ts";
 import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.ts";
 import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScreenLoader.ts";
 import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.ts";
@@ -47,6 +49,10 @@ export class GameState {
   private levelNumber: number;
   private levelActive: boolean;
 
+  // boss dialogue controls
+  private textboxManager: TextboxManager;
+  private bossDialogue: BossDialogueController;
+
   constructor(gameEngine: GameEngine, sceneManager: SceneManager, ctx: CanvasRenderingContext2D) {
     this.gsEventTrigger = new GameStateEventTrigger(this);
 
@@ -72,6 +78,22 @@ export class GameState {
       this.inventoryManager,
       this.orderLoop
     );
+
+    // boss dialogue
+    this.textboxManager = new TextboxManager(
+      sceneManager,
+      ASSET_MANAGER,
+      400, //default X
+      0, //default Y
+      498, //default width
+      133, //default height
+      "dialogueBox" //img
+    );
+
+    this.textboxManager.setDefaultDuration(4.0);
+    this.textboxManager.setDefaultRevealSpeed(35);
+
+    this.bossDialogue = new BossDialogueController(this.textboxManager, this.bossSatisfaction);
 
     /* Initialize the global key (pause) controller */
     this.globalKeyEntity = new GlobalKeyListenerEntity(
@@ -140,6 +162,7 @@ export class GameState {
    * re-instantiated.
    */
   public cleanState() {
+    this.textboxManager.clearAll(); // clear textboxes
     this.inventoryManager.clearItems();
     this.sceneManager.resetAll();
     this.orderLoop.reset();
@@ -161,10 +184,14 @@ export class GameState {
   public loadState() {
     this.inventoryManager.subscribe(this.orderLoop);
     this.orderLoop.subscribe(this.bossSatisfaction);
+    this.orderLoop.subscribe(this.bossDialogue);
     this.initDisplayEntities();   // load display entities
     this.sceneManager.addLevelEntity(this.player);
     this.gameEngine.getCollisionSystem().addEntity(this.player);
 
+    // add bossDialogue (British)
+    this.sceneManager.addLevelEntity(this.bossDialogue);
+    
     // Add pause controller
     this.sceneManager.addLevelEntity(this.globalKeyEntity);
   }    
@@ -218,6 +245,8 @@ export class GameState {
         if (levelLoadProcedure) {
           levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop, this.bossSatisfaction);
           this.levelActive = true;
+
+          this.bossDialogue.onLevelStart();
         }
       } else {
         MSG_SERVICE.queueMessage("The game is over.");
@@ -267,6 +296,14 @@ export class GameState {
       }
       
     }
+  }
+
+  public getTextboxManager(): TextboxManager {
+    return this.textboxManager;
+  }
+
+  public getBossDialogue(): BossDialogueController {
+    return this.bossDialogue;
   }
 
   public getInventoryManager(): InventoryManager {
