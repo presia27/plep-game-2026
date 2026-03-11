@@ -40,13 +40,13 @@ export class StartScreenScene implements IScene {
     // Music will start on first user interaction (handled in update())
     const handleStartGameClick = () => {
       
-      // Transition music to full loop: 12s to end
+      // Transition music to full loop: 12s to end (minus 4s empty space at loop)
       if (this.introMusicNode) {
         this.introMusicNode.source.loopStart = 12;
-        this.introMusicNode.source.loopEnd = this.introMusicNode.source.buffer?.duration || 100;
+        this.introMusicNode.source.loopEnd = (this.introMusicNode.source.buffer?.duration || 100) - 4;
       } else {
         // Fallback if intro didn't play (e.g. autoplay blocked)
-        this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, ASSET_MANAGER.getAudioAsset("gameMusic")?.duration || 100, 11.8);
+        this.introMusicNode = ASSET_MANAGER.playMusic("gameMusic", 11.8, (ASSET_MANAGER.getAudioAsset("gameMusic")?.duration || 100) - 4, 11.8);
       }
 
       this.sceneTrigger.assertChange(null, NEXT_SCENE);
