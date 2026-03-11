@@ -166,7 +166,6 @@ export class BossSatisfaction extends Entity implements Observer {
             if (newOrderDataCast) {
                 this.activeOrder = newOrderDataCast;
                 this.errorWeight = SUCCESSFUL_ORDER_POINTS / this.activeOrder!.getTotalItems();
-                console.log("New active order with weight" + this.errorWeight);
             }
             
         }

@@ -116,7 +116,8 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
       const item = other as ItemEntity;
       const itemType = item.getItemType();
       if (this.inputSys.isActionActiveSingle(InputAction.PICK_UP)) {
-        console.log("Picking up " + itemType);
+        //console.debug("Picking up " + itemType);
+        
         // Pickup component and remove the component from the canvas
         this.inventoryMgr.addItem(itemType).then(
           function () {
