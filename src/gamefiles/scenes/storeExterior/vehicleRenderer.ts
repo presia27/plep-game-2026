@@ -12,7 +12,6 @@ export class VehicleRender implements IRenderer {
   private sw: number;
   private sh: number;
   private pos: IPosition;
-  //private movSys: VehicleMovementSys;
   private size: ISize;
   private bBox?: BoundingBox | null;
 
@@ -23,7 +22,6 @@ export class VehicleRender implements IRenderer {
     spriteWidth: number,
     spriteHeight: number,
     positionComponent: IPosition,
-    //movementSys: VehicleMovementSys,
     sizeComponent: ISize,
     boundingBox?: BoundingBox | null
   ) {
@@ -33,17 +31,27 @@ export class VehicleRender implements IRenderer {
     this.sw = spriteWidth;
     this.sh = spriteHeight;
     this.pos = positionComponent;
-    //this.movSys = movementSys;
     this.size = sizeComponent;
     this.bBox = boundingBox ?? null;
+  }
 
-    // this.animation = new Animator(
-    //   sprite,
-    //   sx, sy,
-    //   sw, sh,
-    //   1, 0.2, 0,
-    //   false, true, false
-    // )
+  /**
+   * Change what is rendered based on passed values
+   * 
+   * @param sx starting x on spritesheet 
+   * @param sy starting y on spritesheet
+   * @param sw sprite width
+   * @param sh sprite height
+   * @param size size of entity
+   * @param bBox size of bounding box (if applicable)
+   */
+  public setSprite(sx: number, sy: number, sw: number, sh: number, size: ISize, bBox?: BoundingBox | null ) {
+    this.sx = sx;
+    this.sy = sy;
+    this.sw = sw;
+    this.sh = sh;
+    this.size = size;
+    this.bBox = bBox ?? null;
   }
 
   // extend the functionality of draw to be able to draw hint text

@@ -7,20 +7,23 @@ import { PlayerController } from "../../player/playerController.ts";
 import { VehicleMovementSys, VehicleState } from "./vehicleMovementSystem.ts";
 import { VehicleRender } from "./vehicleRenderer.ts";
 
+/**
+ * Note: while this is used, it doesn't really do anything rn
+ */
 export class VehicleCollisionHandler extends AbstractCollisionHandler {
   private movementComponent: MovementComponent;
-  //private movementSys: VehicleMovementSys;
+  private movementSys: VehicleMovementSys;
   private boundingBox: BoundingBox;
 
   constructor(
     movementComponent: MovementComponent,
-    //movementSys: VehicleMovementSys,
+    movementSys: VehicleMovementSys,
     boundingBox: BoundingBox
   ) {
     super();
 
     this.movementComponent = movementComponent;
-    //this.movementSys = movementSys;
+    this.movementSys = movementSys;
     this.boundingBox = boundingBox;
   }
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {

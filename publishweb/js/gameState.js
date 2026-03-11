@@ -12,6 +12,8 @@ import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.j
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.js";
 import { BossSatisfaction } from "./gamefiles/bosssatisfaction/bossSatisfactionController.js";
 import { SatisfactionDisplayEntity } from "./gamefiles/bosssatisfaction/satisfactionDisplayEntity.js";
+import { TextboxManager } from "./gamefiles/textbox/textboxManager.js";
+import { BossDialogueController } from "./gamefiles/textbox/bossDialogueController.js";
 import { GlobalKeyListenerEntity } from "./gamefiles/globalKeyListenerEntity.js";
 import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScreenLoader.js";
 import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.js";
@@ -41,6 +43,16 @@ export class GameState {
         this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger);
         /* Initialize the player */
         this.player = new PlayerController(ASSET_MANAGER, gameEngine.getInputSystem(), { x: 0, y: 0 }, 5, this.inventoryManager, this.orderLoop);
+        // boss dialogue
+        this.textboxManager = new TextboxManager(sceneManager, ASSET_MANAGER, 400, //default X
+        0, //default Y
+        498, //default width
+        133, //default height
+        "dialogueBox" //img
+        );
+        this.textboxManager.setDefaultDuration(4.0);
+        this.textboxManager.setDefaultRevealSpeed(35);
+        this.bossDialogue = new BossDialogueController(this.textboxManager, this.bossSatisfaction);
         /* Initialize the global key (pause) controller */
         this.globalKeyEntity = new GlobalKeyListenerEntity(this.gameEngine.getInputSystem(), this.gsEventTrigger);
         // Load the initialized classes into their respective places
@@ -82,6 +94,7 @@ export class GameState {
      * re-instantiated.
      */
     cleanState() {
+        this.textboxManager.clearAll(); // clear textboxes
         this.inventoryManager.clearItems();
         this.sceneManager.resetAll();
         this.orderLoop.reset();
@@ -102,9 +115,12 @@ export class GameState {
     loadState() {
         this.inventoryManager.subscribe(this.orderLoop);
         this.orderLoop.subscribe(this.bossSatisfaction);
+        this.orderLoop.subscribe(this.bossDialogue);
         this.initDisplayEntities(); // load display entities
         this.sceneManager.addLevelEntity(this.player);
         this.gameEngine.getCollisionSystem().addEntity(this.player);
+        // add bossDialogue (British)
+        this.sceneManager.addLevelEntity(this.bossDialogue);
         // Add pause controller
         this.sceneManager.addLevelEntity(this.globalKeyEntity);
     }
@@ -155,6 +171,7 @@ export class GameState {
                 if (levelLoadProcedure) {
                     levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop, this.bossSatisfaction);
                     this.levelActive = true;
+                    this.bossDialogue.onLevelStart();
                 }
             }
             else {
@@ -195,6 +212,12 @@ export class GameState {
                 }
             }
         }
+    }
+    getTextboxManager() {
+        return this.textboxManager;
+    }
+    getBossDialogue() {
+        return this.bossDialogue;
     }
     getInventoryManager() {
         return this.inventoryManager;
