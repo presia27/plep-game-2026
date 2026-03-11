@@ -51,7 +51,7 @@ const ITEM_HSHELF_POSITION: XY[] = [
  * 
  * @author Luke Willis, Claude Sonnet 4.5, Preston Sia
  */
-export class BaseRoomScene implements IScene /*, Observer */{
+export class BaseRoomScene implements IScene {
   protected roomData: roomData;
 
   protected inputSystem: InputSystem;
