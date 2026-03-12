@@ -2,6 +2,7 @@ import { GameContext, IRenderer } from "../../classinterfaces.ts";
 import { Entity } from "../../entity.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { ASSET_MANAGER } from "../main.ts";
+import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 
 export class ButtonEntity extends Entity {
   private text: string;
@@ -41,6 +42,8 @@ export class ButtonEntity extends Entity {
     this.onClick = onClick;
     this.textAlign = textAlign;
 
+    // Add lifecycle component so button can be shown/hidden (for the lose screen)
+    super.addComponent(new BasicLifecycle());
   }
 
   public override update(context: GameContext): void {

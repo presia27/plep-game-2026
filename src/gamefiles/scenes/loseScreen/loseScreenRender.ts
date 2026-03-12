@@ -48,8 +48,9 @@ class Renderer implements IRenderer {
 
       ctx.fillStyle = 'white';
       ctx.font = '40px "Jersey-20", Arial';
+      ctx.textAlign = 'center';
       let textToFill = "YOU LOST - " + this.loseText;
-      ctx.fillText(textToFill, 250, ctx.canvas.height / 2 + 10);
+      ctx.fillText(textToFill, ctx.canvas.width / 2, ctx.canvas.height / 2 + 10);
   
       ctx.restore();
     }
