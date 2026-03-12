@@ -4,8 +4,6 @@ import GameEngine from "../../gameengine.ts";
 import { InputSystem } from "../../inputsys.ts";
 import SceneManager from "../../sceneManager.ts";
 import { XY } from "../../typeinterfaces.ts";
-import { GameStateEventTrigger } from "../../gameStateEventTrigger.ts";
-import { InputAction } from "../../inputactionlist.ts";
 import { ASSET_MANAGER } from "../main.ts";
 import { PlayerController } from "../player/playerController.ts";
 import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shelves/shelfController.ts";
@@ -13,13 +11,10 @@ import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { DoorData, roomData, ShelfData } from "./roomData.ts";
-import { ItemType } from "../ordermanagement/itemTypes.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
-import { monsterAssets } from "../assetlist.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
-import { MonsterMovementSystem } from "../monster/monsterMovementSystem.ts";
 import { StoreFloor } from "./storeInterior/storeFloorController.ts";
 import { BloodController } from "./storeInterior/bloodSplatterController.ts";
 import { ShelfShadow } from "./storeInterior/shelfShadowController.ts";
@@ -379,12 +374,12 @@ export class BaseRoomScene implements IScene {
 
     // Re-add room entities
     for (const entity of this.localEntities) {
-      console.log("Re-adding entity:", entity.constructor.name);
+      //console.debug("Re-adding entity:", entity.constructor.name);
       sceneManager.addEntity(entity);
       this.collisionSystem.addEntity(entity);
     }
 
-    console.log("onResume complete");
+    //console.debug("onResume complete");
   }
 
   /**

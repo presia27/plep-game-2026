@@ -210,7 +210,11 @@ export class GameState {
   }
 
   public stateChangeHandler(data: any, eventType: string) {
-    console.log("Received state change assertion: ", eventType);
+    if (this.gameEngine.getGameContext().debug) {
+      // Show debug info if enabled
+      console.log("Received state change assertion: ", eventType);
+    }
+    
     if (LEVEL_OVER === eventType) {
       // Evaluate win/lose state
       const levelState = data as LevelResult;

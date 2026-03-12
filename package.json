@@ -27,7 +27,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "buildserver": "tsc -p tsconfig.server.json",
-    "start": "node srvbuild/server.js"
+    "start": "node srvbuild/server.js",
+    "clean": "rimraf jsbuild/",
+    "export": "esbuild jsbuild/gamefiles/main.js --bundle --minify --sourcemap --outfile=publishweb/js/prjrun_bun.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -40,6 +42,8 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.0.6"
+    "@types/node": "^25.0.6",
+    "esbuild": "^0.27.3",
+    "rimraf": "^6.1.3"
   }
 }

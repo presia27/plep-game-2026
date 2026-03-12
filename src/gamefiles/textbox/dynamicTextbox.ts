@@ -279,6 +279,9 @@ class TextboxRenderer implements IRenderer {
     let line = '';
     let yPos = y;
 
+    const currentFontSize = ctx.font.split(" ")[0];
+    ctx.font = `${currentFontSize} 'Jersey-20'`;
+
     for (let i = 0; i < words.length; i++) {
       const testLine = line + words[i] + ' ';
       const metrics = ctx.measureText(testLine);
