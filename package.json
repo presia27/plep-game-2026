@@ -29,7 +29,7 @@
     "buildserver": "tsc -p tsconfig.server.json",
     "start": "node srvbuild/server.js",
     "clean": "rimraf jsbuild/",
-    "export": "esbuild jsbuild/gamefiles/main.js --bundle --minify --sourcemap --outfile=publishweb/js/prjrun_bun.js"
+    "export": "esbuild jsbuild/gamefiles/main.js --bundle --minify --sourcemap --target=es2017 --outfile=publishweb/js/prjrun_bun.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
