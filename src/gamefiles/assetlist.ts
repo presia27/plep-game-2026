@@ -28,23 +28,22 @@ export const environmentAssets: IAssetList[] = [
   { id: "gameMusic", type: "audio", location: "./assets/gameMusic.ogg" },
   { id: "startupMusic", type: "audio", location: "./assets/startupMusic.ogg" },
   { id: "titleImage", type: "img", location: "./assets/ProjectRunnerTitle.png" },
-  { id: "tempbg", type: "img", location: "./assets/tempbg.JPG" },
+  //{ id: "tempbg", type: "img", location: "./assets/tempbg.JPG" },
   { id: "titleScreen", type: "img", location: "./assets/title_screen_v2.png" },
   { id: "titleText", type: "img", location: "./assets/project_runner_title.png" },
-  { id: "HShelvesNoVines", type: "img", location: "./assets/HShelvesNoVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
-  { id: "HShelvesVines", type: "img", location: "./assets/HShelvesVines.png" }, // OLD horizontal shelf spritesheet - should not be used unless error with new one
   { id: "AllHShelves", type: "img", location: "./assets/AllHShelves.png" },
   { id: "arrow", type: "img", location: "./assets/ArrowSpritesheet.png" },
   { id: "floor", type: "img", location: "./assets/StoreFloorTexture.png" },
   { id: "floorGrid", type: "img", location: "./assets/FloorGrid.png" },
-  { id: "light", type: "img", location: "./assets/light.png" },
+  //{ id: "light", type: "img", location: "./assets/light.png" },
   { id: "empLight", type: "img", location: "./assets/EmployeeLight.png" },
-  { id: "empShad", type: "img", location: "./assets/EmployeeShadow.png" },
+  //{ id: "empShad", type: "img", location: "./assets/EmployeeShadow.png" },
   { id: "blood", type: "img", location: "./assets/BloodSplatter.png" },
   { id: "shelfShadow", type: "img", location: "./assets/ShelfShadow.png" },
   { id: "parkingLot", type: "img", location: "./assets/ParkingLot.png" },
   { id: "selfCheckout", type: "img", location: "./assets/SelfCheckout.png" },
   { id: "shoppingCart", type: "img", location: "./assets/ShoppingCart.png" },
+  { id: "deliveryImage", type: "img", location: "./assets/DeliveryArea.png"},
   { id: "walls", type: "img", location: "./assets/Walls.png" },
   { id: "corners", type: "img", location: "./assets/Corners.png" },
   { id: "vehicles", type: "img", location: "./assets/VehicleSpritesheet.png" }
@@ -52,14 +51,10 @@ export const environmentAssets: IAssetList[] = [
 
 /** Assets for items */
 export const itemAssets: IAssetList[] = [
-  { id: "items", type: "img", location: "./assets/items.png" }, // OLD item image - should not be used unless error with new one
   { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
 ];
 
-/** Assets for Delivery */
-export const deliveryAssets: IAssetList [] = [
-  { id: "deliveryImage", type: "img", location: "./assets/DeliveryArea.png"}
-];
+
 
 /** Sound effects for gameplay events */
 export const soundEffects: IAssetList[] = [

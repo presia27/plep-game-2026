@@ -1,3 +1,5 @@
+import { ISize } from "../../classinterfaces";
+import { BasicSize } from "../../componentLibrary/BasicSize";
 import { XY } from "../../typeinterfaces.ts";
 import { ItemType } from "../ordermanagement/itemTypes.ts";
 
@@ -32,6 +34,37 @@ export interface DoorData {
   direction: DoorDirection;
 }
 
+/**
+ * Locations for wall sprites
+ */
+export enum WallSpriteDirection {
+  LEFT = 0,
+  RIGHT = 1,
+  TOP = 2,
+  BOTTOM = 3
+}
+
+/**
+ * Corner sprite types for corner sprites
+ */
+export enum CornerSpriteType {
+  TL = 0,
+  TR = 1,
+  //BL = 2, // never used
+  BR = 2
+}
+
+/** 
+ * Describes a wall sprite's location and which wall it applies to
+ */
+export interface WallSpriteData {
+  direction: WallSpriteDirection; 
+  position: XY; // position to be drawn
+  size: BasicSize; // destination dimensions
+  cornerType?: CornerSpriteType;
+  cornerPos?: XY;
+}
+
 export interface roomData {
   sceneId: string;
   roomWidth: number;
@@ -46,8 +79,8 @@ export interface roomData {
   deliveryEntityPosition?: XY;
   isParkingLot?: boolean;
   isCheckout?: boolean;
+  wallSprites: WallSpriteData[];
 }
-
 
 export const DeliveryRoom: roomData = {
   sceneId: "delivery",
@@ -72,7 +105,8 @@ export const DeliveryRoom: roomData = {
   ],
   allowedItems: [],
   deliveryEntityPosition: { x: 500, y: 200 },
-  isParkingLot: true
+  isParkingLot: true,
+  wallSprites: []
 }
 
 export const CheckoutRoom: roomData = {
@@ -121,6 +155,11 @@ export const CheckoutRoom: roomData = {
   ],
   isCheckout: true,
   allowedItems: [],
+  wallSprites: [{
+    direction: WallSpriteDirection.LEFT,
+    position: {x: 0, y: 0},
+    size: new BasicSize(5, 720, 4),
+  }]
 }
 
 export const PharmaRoom: roomData = {
@@ -193,6 +232,11 @@ export const PharmaRoom: roomData = {
     ItemType.LOTION,
     ItemType.MOISTURIZER
   ],
+  wallSprites: [{
+    direction: WallSpriteDirection.BOTTOM,
+    position: {x: 0, y: 1260},
+    size: new BasicSize(1280, 5, 4),
+  }]
 }
 
 /** Cleaning Section */
@@ -256,6 +300,17 @@ export const CleaningRoom: roomData = {
     ItemType.BUCKET,
     ItemType.DETERGENT,
   ],
+  wallSprites: [{
+    direction: WallSpriteDirection.BOTTOM,
+    position: {x: -20, y: 1260}, 
+    size: new BasicSize(1280, 5, 4),
+  }, {
+    direction: WallSpriteDirection.RIGHT,
+    position: {x: 1260, y: 0},
+    size: new BasicSize(5, 720, 4),
+    cornerType: CornerSpriteType.BR,
+    cornerPos: {x: 1260, y: 700},
+  }]
 }
 
 /** Food Section */
@@ -331,6 +386,17 @@ export const FoodRoom: roomData = {
     ItemType.PIZZA,
     ItemType.ICECREAM
   ],
+  wallSprites: [{
+    direction: WallSpriteDirection.TOP,
+    position: {x: -20, y: 0},
+    size: new BasicSize(1280, 5, 4),
+  }, {
+    direction: WallSpriteDirection.RIGHT,
+    position: {x: 1260, y: 0},
+    size: new BasicSize(5, 720, 4),
+    cornerType: CornerSpriteType.TR,
+    cornerPos: {x: 1260, y: 0},
+  }]
 }
 
 export const HousingRoom: roomData = {
@@ -401,7 +467,12 @@ export const HousingRoom: roomData = {
     ItemType.SPOON,
     ItemType.FORK,
     ItemType.KNIFE
-  ]
+  ],
+  wallSprites: [{
+    direction: WallSpriteDirection.TOP,
+    position: {x: 0, y: 0},
+    size: new BasicSize(1280, 5, 4)
+  }]
 }
 
 export const ElectronicsRoom: roomData = {
@@ -457,6 +528,17 @@ export const ElectronicsRoom: roomData = {
     ItemType.SPEAKER,
     ItemType.MICROPHONE,
     ItemType.PHONE
-  ]
+  ],
+  wallSprites: [{
+    direction: WallSpriteDirection.TOP,
+    position: {x: 20, y: 0},
+    size: new BasicSize(1280, 5, 4),
+  }, {
+    direction: WallSpriteDirection.LEFT,
+    position: {x: 0, y: 20},
+    size: new BasicSize(5, 720, 4),
+    cornerType: CornerSpriteType.TL,
+    cornerPos: {x: 0, y: 0},
+  }]
 }
 
