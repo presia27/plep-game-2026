@@ -82,7 +82,7 @@ export class VehicleMovementSys implements IComponent {
 
   public moveRight(): void {
     this.currentDirection = { x: 1, y: 0 };
-    this.speed = 200;
+    this.speed = 400;
   }
 
   public setVehicleState(state: VehicleState): void {

@@ -1,13 +1,13 @@
-import { GameContext, IPosition, IRenderer, ISize } from "../../../classinterfaces.ts";
-import { BasicSize } from "../../../componentLibrary/BasicSize";
-import { XY } from "../../../typeinterfaces";
-
+import { IRenderer, GameContext } from "../../../classinterfaces.ts";
+import { XY } from "../../../typeinterfaces.ts";
+import { BasicSize } from "../../../componentLibrary/BasicSize.ts";
 
 export class WallSpriteRenderer implements IRenderer {
   private wallSprite: HTMLImageElement;
   private wallSXY: XY; // wall spritesheet x + y
+  private wallSSize: BasicSize; // wall sprite size
   private wallPos: XY; // position to place wall
-  private wallSize: BasicSize; // wall size
+  private wallSize: BasicSize; // wall destination size
   private cornerSprite: HTMLImageElement | null;
   private cornerSXY: XY | null; // corner spritesheet x + y
   private cornerPos: XY | null; // position to place corner
@@ -15,15 +15,17 @@ export class WallSpriteRenderer implements IRenderer {
   constructor(
     wallSprite: HTMLImageElement,
     wallSXY: XY, // wall spritesheet x + y
+    wallSSize: BasicSize, // wall sprite size
     wallPos: XY, // position to place wall
-    wallSize: BasicSize, // wall size
+    wallSize: BasicSize, // wall destination size
     cornerSprite?: HTMLImageElement,
-    cornerSXY?: XY, // corner spritesheet x + y
+    cornerSXY?: XY, // corn er spritesheet x + y
     cornerPos?: XY, // position to place corner
   ) {
     /* Initialize wall variables */
     this.wallSprite = wallSprite;
     this.wallSXY = wallSXY;
+    this.wallSSize = wallSSize;
     this.wallPos = wallPos;
     this.wallSize = wallSize;
 
@@ -33,14 +35,13 @@ export class WallSpriteRenderer implements IRenderer {
     this.cornerPos = cornerPos ?? null;
   }
 
-  // extend the functionality of draw to be able to draw hint text
   public draw(context: GameContext): void {
     context.ctx.drawImage(
       this.wallSprite,
       this.wallSXY.x, this.wallSXY.y,
-      this.wallSize.getWidth(), this.wallSize.getWidth(),
+      this.wallSSize.getWidth(), this.wallSSize.getHeight(),
       this.wallPos.x, this.wallPos.y,
-      this.wallSize.getWidth() * this.wallSize.getScale(), this.wallSize.getWidth() * this.wallSize.getScale()
+      this.wallSize.getWidth(), this.wallSize.getHeight()
     )
     if (this.cornerSprite && this.cornerSXY && this.cornerPos) {
       context.ctx.drawImage(
@@ -51,6 +52,5 @@ export class WallSpriteRenderer implements IRenderer {
         5 * this.wallSize.getScale(), 5 * this.wallSize.getScale()
       )
     }
-    context.ctx.restore();
   }
 }

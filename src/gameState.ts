@@ -148,7 +148,7 @@ export class GameState {
     this.sceneManager.addUIEntity(orderDisplayEntity);
 
     // add boss satisfaction renderer
-    const satisfactionDisplay = new SatisfactionDisplayEntity(950, 20, this.bossSatisfaction);
+    const satisfactionDisplay = new SatisfactionDisplayEntity(1075, 30, this.bossSatisfaction);
     this.sceneManager.addUIEntity(satisfactionDisplay);
   }
 

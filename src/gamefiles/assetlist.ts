@@ -19,7 +19,7 @@ export const monsterAssets: IAssetList[] = [
 
 /** All boss assets */
 export const bossAssets: IAssetList[] = [
-  { id: "satisfactionBar", type: "img", location: "./assets/BossSatisfactionBar.png" },
+  { id: "satisfactionBar", type: "img", location: "./assets/BossSatisfactionBar3.png" },
   { id: "bossIcons", type: "img", location: "./assets/BossSpriteSheet.png" },
 ];
 
@@ -46,12 +46,14 @@ export const environmentAssets: IAssetList[] = [
   { id: "deliveryImage", type: "img", location: "./assets/DeliveryArea.png"},
   { id: "walls", type: "img", location: "./assets/Walls.png" },
   { id: "corners", type: "img", location: "./assets/Corners.png" },
-  { id: "vehicles", type: "img", location: "./assets/VehicleSpritesheet.png" }
+  { id: "vehicles", type: "img", location: "./assets/VehicleSpritesheet.png" },
+  { id: "interact", type: "img", location: "./assets/InteractIcon.png" }
 ];
 
 /** Assets for items */
 export const itemAssets: IAssetList[] = [
-  { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
+  //{ id: "items2", type: "img", location: "./assets/AllItemsSpritesheet.png" }
+  { id: "items2", type: "img", location: "./assets/AllItemsSpritesheet2.png" }
 ];
 
 
