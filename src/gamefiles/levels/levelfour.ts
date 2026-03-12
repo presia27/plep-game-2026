@@ -74,9 +74,9 @@ export function loadLevelFour(
   bossSatisfaction.initialize(levelParams.duration);
   sceneManager.addLevelEntity(bossSatisfaction);
 
-  /* Create vignette */
-  const vignette = new Vignette();
-  sceneManager.addUIEntity(vignette);
+  // /* Create vignette */
+  // const vignette = new Vignette();
+  // sceneManager.addUIEntity(vignette);
 
   MSG_SERVICE.queueMessage("SHIFT 4");
 }

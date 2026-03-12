@@ -64,7 +64,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 181,      // x, y start
       20, 19,      // width, height
-      4, 0.2,      // frame count, frame duration
+      4, 0.15,      // frame count, frame duration
       0,           // frame padding
       false,       // reverse
       true,        // loop
@@ -76,7 +76,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 201, 
       20, 19, 
-      4, 0.2, 
+      4, 0.15, 
       0, false, true, false
     ));
     
@@ -85,7 +85,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 221, 
       20, 19, 
-      4, 0.2, 
+      4, 0.15, 
       0, false, true, false
     ));
     
@@ -94,7 +94,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 241, 
       20, 19, 
-      4, 0.2, 
+      4, 0.15, 
       0, false, true, false
     ));
     
@@ -103,7 +103,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 261, 
       20, 19, 
-      4, 0.2, 
+      4, 0.15, 
       0, false, true, false
     ));
     
@@ -112,7 +112,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 281, 
       20, 19, 
-      4, 0.2, 
+      4, 0.15, 
       0, false, true, false
     ));
     
@@ -121,7 +121,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 301, 
       20, 19, 
-      4, 0.2, 
+      4, 0.15, 
       0, false, true, false
     ));
     
@@ -130,7 +130,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
       this.spritesheet, 
       0, 321, 
       20, 19, 
-      4, 0.2, 
+      4, 0.15, 
       0, false, true, false
     ));
   }

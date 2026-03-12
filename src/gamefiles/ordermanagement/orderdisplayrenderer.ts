@@ -60,6 +60,15 @@ export class OrderDisplayRenderer implements IRenderer {
     // Calculate position to right-align the panel
     const posX = ctx.canvas.width - panelWidth - this.rightMargin;
 
+    // Draw "Night X" on the left
+    ctx.font = 'bold 20px "Jersey-20", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = "#cacaca";
+    const nightTitle = 'SHIFT #' + this.getLevelNumber();
+    ctx.fillText(nightTitle, posX, this.posY - 40);
+    ctx.strokeText(nightTitle, posX, this.posY - 40);
+    
     // Draw 50% opaque border/background around entire UI
     const padding = 8;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -70,12 +79,12 @@ export class OrderDisplayRenderer implements IRenderer {
       PANELHEIGHT + 24 + padding * 2
     );
 
-    // Draw "Night X" on the left
-    ctx.font = 'bold 14px "Jersey-20", monospace';
+    // Draw "Current Order" on the left
+    ctx.font = 'bold 18px "Jersey-20", monospace';
     ctx.textAlign = 'left';
     ctx.fillStyle = 'white';
-    const nightTitle = 'Shift #' + this.getLevelNumber();
-    ctx.fillText(nightTitle, posX, this.posY - 8);
+    const orders = 'Current Order';
+    ctx.fillText(orders, posX, this.posY - 8);
 
     // Draw "Order X / Y" on the right
     ctx.textAlign = 'right';

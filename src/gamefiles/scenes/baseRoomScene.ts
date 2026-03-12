@@ -31,6 +31,8 @@ import { SelfCheckout } from "./storeInterior/selfCheckoutController.ts";
 import { ShoppingCart } from "./storeInterior/shoppingCartController.ts";
 import { Entity } from "../../entity";
 import { WallSpriteController } from "./storeInterior/wallSpriteController.ts";
+import { FlickerLightController } from "./storeInterior/flickerLightController.ts";
+import { Vignette } from "./storeInterior/vignetteController.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -123,51 +125,34 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(pointTrigger);
     }
 
-    /* Create walls */
-    const topWall = new WallEntity(
-      new staticPositionComponent({ x: 0, y: 0 }),
-      1280, 5, //15, 1280, 5
-    );
-    const bottomWall = new WallEntity(
-      new staticPositionComponent({ x: 0, y: 705 }),
-      1280, 5, //1297, 1280, 5
-    );
-    const leftWall = new WallEntity(
-      new staticPositionComponent({ x: 0, y: 0 }),
-      5, 720, //1, 5, 720
-    );
-    const rightWall = new WallEntity(
-      new staticPositionComponent({ x: 1265, y: 0 }),
-      5, 720, //8, 5, 720
-    );
+    /* Create door triggers */
+    if (player) {
+      const playerBoundingBox = player.getComponent(BoundingBox);
+      if (!playerBoundingBox) {
+        throw new Error("Player is missing a BoundingBox component");
+      }
 
-    sceneManager.addEntity(topWall);
-    sceneManager.addEntity(bottomWall);
-    sceneManager.addEntity(leftWall);
-    sceneManager.addEntity(rightWall);
-
-    this.localEntities.push(topWall);
-    this.localEntities.push(bottomWall);
-    this.localEntities.push(leftWall);
-    this.localEntities.push(rightWall);
-
-    this.collisionSystem.addEntity(topWall);
-    this.collisionSystem.addEntity(bottomWall);
-    this.collisionSystem.addEntity(rightWall);
-    this.collisionSystem.addEntity(leftWall);
-
-    for (const wallSprite of this.roomData.wallSprites) {
-      const wallSpriteEntity = new WallSpriteController(
-        wallSprite.direction,
-        wallSprite.position,
-        wallSprite.size,
-        wallSprite.cornerType,
-        wallSprite.cornerPos
-      )
-      sceneManager.addEntity(wallSpriteEntity);
-      this.localEntities.push(wallSpriteEntity);
-      this.collisionSystem.addEntity(wallSpriteEntity);
+      for (const door of this.roomData.doors) {
+        if (this.allowedRoomIds.includes(door.targetSceneId)) {
+          const trigger = new DoorTrigger(
+            door.position,
+            door.size,
+            door.targetSceneId,
+            door.direction,
+            sceneManager,
+            playerBoundingBox
+          );
+          this.localEntities.push(trigger);
+          sceneManager.addEntity(trigger);
+          this.collisionSystem.addEntity(trigger);
+        }
+      }
     }
+    
+    /* Create vignette */
+    const vignette = new Vignette();
+    this.localEntities.push(vignette);
+    sceneManager.addEntity(vignette);
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
@@ -219,28 +204,51 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(shelf);
     }
 
-    /* Create door triggers */
-    if (player) {
-      const playerBoundingBox = player.getComponent(BoundingBox);
-      if (!playerBoundingBox) {
-        throw new Error("Player is missing a BoundingBox component");
-      }
+    
+    /* Create walls */
+    const topWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      1280, 5, //15, 1280, 5
+    );
+    const bottomWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 705 }),
+      1280, 5, //1297, 1280, 5
+    );
+    const leftWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      5, 720, //1, 5, 720
+    );
+    const rightWall = new WallEntity(
+      new staticPositionComponent({ x: 1265, y: 0 }),
+      5, 720, //8, 5, 720
+    );
 
-      for (const door of this.roomData.doors) {
-        if (this.allowedRoomIds.includes(door.targetSceneId)) {
-          const trigger = new DoorTrigger(
-            door.position,
-            door.size,
-            door.targetSceneId,
-            door.direction,
-            sceneManager,
-            playerBoundingBox
-          );
-          this.localEntities.push(trigger);
-          sceneManager.addEntity(trigger);
-          this.collisionSystem.addEntity(trigger);
-        }
-      }
+    sceneManager.addEntity(topWall);
+    sceneManager.addEntity(bottomWall);
+    sceneManager.addEntity(leftWall);
+    sceneManager.addEntity(rightWall);
+
+    this.localEntities.push(topWall);
+    this.localEntities.push(bottomWall);
+    this.localEntities.push(leftWall);
+    this.localEntities.push(rightWall);
+
+    this.collisionSystem.addEntity(topWall);
+    this.collisionSystem.addEntity(bottomWall);
+    this.collisionSystem.addEntity(rightWall);
+    this.collisionSystem.addEntity(leftWall);
+
+    for (const wallSprite of this.roomData.wallSprites) {
+      const wallSpriteEntity = new WallSpriteController(
+        wallSprite.direction,
+        wallSprite.position,
+        wallSprite.size,
+        wallSprite.cornerType,
+        wallSprite.cornerPos
+      )
+      sceneManager.addEntity(wallSpriteEntity);
+      this.localEntities.push(wallSpriteEntity);
+      this.collisionSystem.addEntity(wallSpriteEntity);
     }
 
     if (this.roomData.isCheckout) {
@@ -355,6 +363,12 @@ export class BaseRoomScene implements IScene {
       this.localEntities.push(lot);
 
     } else {
+      // One light per fluorescent tube position
+      for (const lightConfig of this.roomData.lightConfig) {
+        const light = new FlickerLightController(lightConfig);
+        sceneManager.addEntity(light);
+        this.localEntities.push(light);
+      }
       const floorGrid = new FloorGrid();
       sceneManager.addEntity(floorGrid);
       this.collisionSystem.addEntity(floorGrid);
