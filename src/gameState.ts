@@ -22,8 +22,11 @@ import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScree
 import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.ts";
 import { XY } from "./typeinterfaces.ts";
 import { MovementComponent } from "./componentLibrary/movementComponent.ts";
+import { PlayerHealthMonitor } from "./playerHealthMonitor/playerHealthMonitor.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
+const PLAYER_MAX_HEALTH = 8;
+const PLAYER_HEALTH_STEP = 1;
 
 /**
  * Holds all global state that persists across rooms and scenes.
@@ -40,6 +43,7 @@ export class GameState {
   private orderLoop: OrderDeliveryLoop;
   private bossSatisfaction: BossSatisfaction
   private player: PlayerController;
+  private healthMon: PlayerHealthMonitor;
   private globalKeyEntity: GlobalKeyListenerEntity;
 
   // For loading in game
@@ -68,7 +72,10 @@ export class GameState {
     this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
 
     /* Initialize boss satisfaction */
-    this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger); 
+    this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger);
+
+    /* Initialize player health */
+    this.healthMon = new PlayerHealthMonitor(PLAYER_MAX_HEALTH, PLAYER_HEALTH_STEP, this.gsEventTrigger);
 
     /* Initialize the player */
     this.player = new PlayerController(
@@ -76,7 +83,8 @@ export class GameState {
       gameEngine.getInputSystem(),
       { x: 0, y: 0 }, 5,
       this.inventoryManager,
-      this.orderLoop
+      this.orderLoop,
+      this.healthMon
     );
 
     // boss dialogue
@@ -168,6 +176,8 @@ export class GameState {
     this.orderLoop.reset();
     this.bossSatisfaction.reset();
     this.gameEngine.getCollisionSystem().clearEntities();
+    this.healthMon.resetHealth();
+    this.player.getComponent(MovementComponent)?.resetSpeedBias();
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
   }
@@ -205,6 +215,7 @@ export class GameState {
     this.sceneManager.resetAll();
     this.levelNumber = 0;
     this.levelActive = false;
+    this.healthMon.resetAll();
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
   }

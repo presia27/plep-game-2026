@@ -10,6 +10,7 @@ export class MovementComponent implements IComponent, IPosition {
   private velocity: XY = { x: 0, y: 0 };
   private position: XY;
   private speedBias: number;
+  private initSpeedBias: number;
   private velocityCommand: VelocityCommand | null = null;
 
   /**
@@ -20,6 +21,7 @@ export class MovementComponent implements IComponent, IPosition {
   constructor(position: XY, speedBiasFactor: number = 1) {
     this.position = position;
     this.speedBias = Math.max(speedBiasFactor, 0);
+    this.initSpeedBias = this.speedBias;
   }
 
   public setVelocityCommand(command: VelocityCommand | null): void {
@@ -66,7 +68,7 @@ export class MovementComponent implements IComponent, IPosition {
   }
 
   public resetSpeedBias(): void {
-    this.speedBias = 0;
+    this.speedBias = this.initSpeedBias;
   }
 
   /**

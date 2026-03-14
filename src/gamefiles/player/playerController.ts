@@ -4,6 +4,7 @@ import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { Entity } from "../../entity.ts";
 import { InputSystem } from "../../inputsys.ts";
+import { PlayerHealthMonitor } from "../../playerHealthMonitor/playerHealthMonitor.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
@@ -38,7 +39,8 @@ export class PlayerController extends Entity {
     defaultXY: XY,
     scale: number,
     inventoryMgr: InventoryManager,
-    orderLoop: OrderDeliveryLoop
+    orderLoop: OrderDeliveryLoop,
+    healthMon: PlayerHealthMonitor
   ) {
     super();
 
@@ -48,7 +50,7 @@ export class PlayerController extends Entity {
     const playerSize = new BasicSize(PLAYER_SIZE_X, PLAYER_SIZE_Y, scale);
     const playerBoundSize = new BasicSize(PLAYER_BOUND_X, PLAYER_BOUND_Y, scale);
     const playerBoundingBox = new BoundingBox(playerMovementAndPosition, playerBoundSize, PLAYER_BOUND_OFFSET_X, PLAYER_BOUND_OFFSET_Y);
-    const playerCollisionHandler = new PlayerCollisionHandler(playerBoundingBox, playerMovementAndPosition, playerSize, inputSystem, inventoryMgr, orderLoop);
+    const playerCollisionHandler = new PlayerCollisionHandler(playerBoundingBox, playerMovementAndPosition, playerSize, inputSystem, inventoryMgr, orderLoop, healthMon);
     super.addComponent(playerMovementAndPosition)
     super.addComponent(playerInputCtl);
     // super.addComponent(playerSize);

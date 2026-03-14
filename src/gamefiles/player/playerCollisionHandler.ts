@@ -20,6 +20,7 @@ import { SelfCheckout } from "../scenes/storeInterior/selfCheckoutController.ts"
 import { ShoppingCart } from "../scenes/storeInterior/shoppingCartController.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
+import { PlayerHealthMonitor } from "../../playerHealthMonitor/playerHealthMonitor.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -33,6 +34,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
   private inputSys: InputSystem;
   private inventoryMgr: InventoryManager;
   private orderLoop: OrderDeliveryLoop;
+  private healthMon: PlayerHealthMonitor;
   private enemyCooldownFlag: boolean = false;
 
   constructor(
@@ -41,7 +43,8 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
     sizeComponent: ISize,
     inputSys: InputSystem,
     inventoryMgr: InventoryManager,
-    orderLoop: OrderDeliveryLoop
+    orderLoop: OrderDeliveryLoop,
+    healthMon: PlayerHealthMonitor
   ) {
     super();
     this.boundingBox = boundingBox;
@@ -50,6 +53,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
     this.inputSys = inputSys;
     this.inventoryMgr = inventoryMgr;
     this.orderLoop = orderLoop;
+    this.healthMon = healthMon;
   }
 
   override handleCollision(other: IEntity, otherBounds: BoundingBox): void {
@@ -148,12 +152,12 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
     }
 
     if (other instanceof MonsterEntity) {
-      const decreaseFactor = 0.2;
       const enemyCoolTimeMs = 3000;
+      
       if (!this.enemyCooldownFlag) {
-        const currentSpeedBias = this.movementComponent.getSpeedBias();
-        this.movementComponent.setSpeedBias(currentSpeedBias - decreaseFactor);
-        console.log(this.movementComponent.getSpeedBias());
+        const health = this.healthMon.damage(); // damage and return new health value
+        const speedBias = health / this.healthMon.getMaxHealth();
+        this.movementComponent.setSpeedBias(speedBias);
         this.enemyCooldownFlag = true;
         // to avoid spamming to 0 on collision, use a cooldown
         setTimeout(() => {
