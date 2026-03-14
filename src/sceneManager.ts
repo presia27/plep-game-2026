@@ -174,8 +174,14 @@ export default class SceneManager {
       this.levelEntities[i]?.draw(context);
     }
 
+    // 3. Transient UI entities (filtered by lifecycle, for the lose screen)
     for (let i = this.transientUIEntities.length - 1; i >= 0; i--) {
-      this.transientUIEntities[i]?.draw(context);
+      const entityLifecycle = this.transientUIEntities[i]?.getComponent(BasicLifecycle);
+      if (entityLifecycle && !entityLifecycle.isAlive()) {
+        continue;
+      } else {
+        this.transientUIEntities[i]?.draw(context);
+      }
     }
 
     // 4. UI entities (drawn on top of everything)

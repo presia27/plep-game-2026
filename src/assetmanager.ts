@@ -19,6 +19,7 @@ export default class AssetManager {
   private globalVolume: number;
   private audioContext: AudioContext;
   private masterGainNode: GainNode;
+  private activeMusicSources: AudioBufferSourceNode[];
 
   constructor() {
     this.successCount = 0;
@@ -32,6 +33,7 @@ export default class AssetManager {
     this.masterGainNode = this.audioContext.createGain();
     this.masterGainNode.gain.value = this.globalVolume;
     this.masterGainNode.connect(this.audioContext.destination);
+    this.activeMusicSources = [];
   };
 
   /**
@@ -150,7 +152,37 @@ export default class AssetManager {
     gainNode.connect(this.masterGainNode);
     
     source.start(0, offset);
+    
+    // Track active music source
+    this.activeMusicSources.push(source);
+    
+    // Remove from tracking when it ends
+
+    source.onended = () => {
+      const index = this.activeMusicSources.indexOf(source);
+      if (index > -1) {
+        this.activeMusicSources.splice(index, 1);
+      }
+    };
+    
     return { source, gainNode };
+  }
+
+  /**
+   * Stops all currently playing music
+   * 
+   * This is for when the player presses back to menu to prevent
+   * multiple audio loops from playing as opening menu starts an audio loop
+   */
+  public stopAllMusic(): void {
+    this.activeMusicSources.forEach(source => {
+      try {
+        source.stop();
+      } catch (e) {
+        // Source may have already stopped
+      }
+    });
+    this.activeMusicSources = [];
   }
 
   /**

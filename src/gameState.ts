@@ -234,7 +234,7 @@ export class GameState {
         MSG_SERVICE.queueMessage(loseReason);
         setTimeout(() => {
           this.cleanState();
-          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason));
+          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height));
         }, 3000);
       }
     }
