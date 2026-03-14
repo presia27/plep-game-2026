@@ -33,10 +33,10 @@ export class VehicleMovementSys implements IComponent {
     const vehiclePos = this.movementComponent.getPosition();
     
     if (this.state === VehicleState.DRIVING_IN) {
-      console.debug("Car state is driving in");
+      //console.debug("Car state is driving in");
       if (vehiclePos.x >= this.stopPosition.x) { // stop the car if it hits 
         this.movementComponent.setPosition(vehiclePos);
-        console.debug("Car hit stopping point");
+        //console.debug("Car hit stopping point");
         this.state = VehicleState.WAITING;
       } else {
         this.moveRight();
@@ -48,7 +48,7 @@ export class VehicleMovementSys implements IComponent {
     }
 
     if (this.state === VehicleState.WAITING) {
-      console.debug("Car state is waiting");
+      //console.debug("Car state is waiting");
       this.speed = 0; // set speed to nothing (not sure if this is right)
       this.movementComponent.setVelocityCommand({
         direction: this.currentDirection,
@@ -57,7 +57,7 @@ export class VehicleMovementSys implements IComponent {
     }
 
     if (this.state === VehicleState.DRIVING_OUT) {
-      console.debug("Car state is now driving out");
+      //console.debug("Car state is now driving out");
       this.moveRight();
       //console.debug("speed: " + this.speed + " x direction: " + this.currentDirection.x);
       this.movementComponent.setVelocityCommand({
@@ -65,7 +65,7 @@ export class VehicleMovementSys implements IComponent {
         magnitude: this.speed
       })
       if (vehiclePos.x >= EXIT_X) {
-        console.debug("Car hit/passed exit point");
+        //console.debug("Car hit/passed exit point");
         this.state = VehicleState.DONE;
       }
     }

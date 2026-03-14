@@ -210,7 +210,11 @@ export class GameState {
   }
 
   public stateChangeHandler(data: any, eventType: string) {
-    console.log("Received state change assertion: ", eventType);
+    if (this.gameEngine.getGameContext().debug) {
+      // Show debug info if enabled
+      console.log("Received state change assertion: ", eventType);
+    }
+    
     if (LEVEL_OVER === eventType) {
       // Evaluate win/lose state
       const levelState = data as LevelResult;
@@ -230,7 +234,7 @@ export class GameState {
         MSG_SERVICE.queueMessage(loseReason);
         setTimeout(() => {
           this.cleanState();
-          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason));
+          this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height));
         }, 3000);
       }
     }

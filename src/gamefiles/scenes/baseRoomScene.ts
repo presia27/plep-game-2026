@@ -10,7 +10,7 @@ import { ShelfController, SHELF_WIDTH, SHELF_HEIGHT, SHELF_SCALE } from "../shel
 import { DoorTrigger } from "./doorTrigger.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
-import { roomData } from "./roomData.ts";
+import { DoorData, roomData, ShelfData } from "./roomData.ts";
 import { ItemEntity, ITEM_WIDTH, ITEM_HEIGHT } from "../ordermanagement/itemEntity.ts";
 import { DeliveryController } from "../deliveryEntity/deliveryController.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
@@ -403,12 +403,12 @@ export class BaseRoomScene implements IScene {
 
     // Re-add room entities
     for (const entity of this.localEntities) {
-      console.log("Re-adding entity:", entity.constructor.name);
+      //console.debug("Re-adding entity:", entity.constructor.name);
       sceneManager.addEntity(entity);
       this.collisionSystem.addEntity(entity);
     }
 
-    console.log("onResume complete");
+    //console.debug("onResume complete");
   }
 
   /**
