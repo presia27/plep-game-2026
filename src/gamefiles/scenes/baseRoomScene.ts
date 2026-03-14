@@ -125,29 +125,38 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(pointTrigger);
     }
 
-    /* Create door triggers */
-    if (player) {
-      const playerBoundingBox = player.getComponent(BoundingBox);
-      if (!playerBoundingBox) {
-        throw new Error("Player is missing a BoundingBox component");
-      }
+    /* Create walls */
+    const topWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      1280, 5, //15, 1280, 5
+    );
+    const bottomWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 705 }),
+      1280, 5, //1297, 1280, 5
+    );
+    const leftWall = new WallEntity(
+      new staticPositionComponent({ x: 0, y: 0 }),
+      5, 720, //1, 5, 720
+    );
+    const rightWall = new WallEntity(
+      new staticPositionComponent({ x: 1265, y: 0 }),
+      5, 720, //8, 5, 720
+    );
 
-      for (const door of this.roomData.doors) {
-        if (this.allowedRoomIds.includes(door.targetSceneId)) {
-          const trigger = new DoorTrigger(
-            door.position,
-            door.size,
-            door.targetSceneId,
-            door.direction,
-            sceneManager,
-            playerBoundingBox
-          );
-          this.localEntities.push(trigger);
-          sceneManager.addEntity(trigger);
-          this.collisionSystem.addEntity(trigger);
-        }
-      }
-    }
+    sceneManager.addEntity(topWall);
+    sceneManager.addEntity(bottomWall);
+    sceneManager.addEntity(leftWall);
+    sceneManager.addEntity(rightWall);
+
+    this.localEntities.push(topWall);
+    this.localEntities.push(bottomWall);
+    this.localEntities.push(leftWall);
+    this.localEntities.push(rightWall);
+
+    this.collisionSystem.addEntity(topWall);
+    this.collisionSystem.addEntity(bottomWall);
+    this.collisionSystem.addEntity(rightWall);
+    this.collisionSystem.addEntity(leftWall);
     
     /* Create vignette */
     const vignette = new Vignette();
@@ -204,39 +213,29 @@ export class BaseRoomScene implements IScene {
       this.collisionSystem.addEntity(shelf);
     }
 
-    
-    /* Create walls */
-    const topWall = new WallEntity(
-      new staticPositionComponent({ x: 0, y: 0 }),
-      1280, 5, //15, 1280, 5
-    );
-    const bottomWall = new WallEntity(
-      new staticPositionComponent({ x: 0, y: 705 }),
-      1280, 5, //1297, 1280, 5
-    );
-    const leftWall = new WallEntity(
-      new staticPositionComponent({ x: 0, y: 0 }),
-      5, 720, //1, 5, 720
-    );
-    const rightWall = new WallEntity(
-      new staticPositionComponent({ x: 1265, y: 0 }),
-      5, 720, //8, 5, 720
-    );
+    /* Create door triggers */
+    if (player) {
+      const playerBoundingBox = player.getComponent(BoundingBox);
+      if (!playerBoundingBox) {
+        throw new Error("Player is missing a BoundingBox component");
+      }
 
-    sceneManager.addEntity(topWall);
-    sceneManager.addEntity(bottomWall);
-    sceneManager.addEntity(leftWall);
-    sceneManager.addEntity(rightWall);
-
-    this.localEntities.push(topWall);
-    this.localEntities.push(bottomWall);
-    this.localEntities.push(leftWall);
-    this.localEntities.push(rightWall);
-
-    this.collisionSystem.addEntity(topWall);
-    this.collisionSystem.addEntity(bottomWall);
-    this.collisionSystem.addEntity(rightWall);
-    this.collisionSystem.addEntity(leftWall);
+      for (const door of this.roomData.doors) {
+        if (this.allowedRoomIds.includes(door.targetSceneId)) {
+          const trigger = new DoorTrigger(
+            door.position,
+            door.size,
+            door.targetSceneId,
+            door.direction,
+            sceneManager,
+            playerBoundingBox
+          );
+          this.localEntities.push(trigger);
+          sceneManager.addEntity(trigger);
+          this.collisionSystem.addEntity(trigger);
+        }
+      }
+    }
 
     for (const wallSprite of this.roomData.wallSprites) {
       const wallSpriteEntity = new WallSpriteController(
