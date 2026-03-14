@@ -19,6 +19,7 @@ import { VehicleEntity } from "../scenes/storeExterior/vehicleEntity.ts";
 import { SelfCheckout } from "../scenes/storeInterior/selfCheckoutController.ts";
 import { ShoppingCart } from "../scenes/storeInterior/shoppingCartController.ts";
 import { XY } from "../../typeinterfaces.ts";
+import { MonsterEntity } from "../monster/monsterEntity.ts";
 
 /**
  * Player collision handler that prevents the player from
@@ -32,6 +33,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
   private inputSys: InputSystem;
   private inventoryMgr: InventoryManager;
   private orderLoop: OrderDeliveryLoop;
+  private enemyCooldownFlag: boolean = false;
 
   constructor(
     boundingBox: BoundingBox,
@@ -143,6 +145,22 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
           this.inventoryMgr.clearItems();
         }
       }
+    }
+
+    if (other instanceof MonsterEntity) {
+      const decreaseFactor = 0.2;
+      const enemyCoolTimeMs = 3000;
+      if (!this.enemyCooldownFlag) {
+        const currentSpeedBias = this.movementComponent.getSpeedBias();
+        this.movementComponent.setSpeedBias(currentSpeedBias - decreaseFactor);
+        console.log(this.movementComponent.getSpeedBias());
+        this.enemyCooldownFlag = true;
+        // to avoid spamming to 0 on collision, use a cooldown
+        setTimeout(() => {
+          this.enemyCooldownFlag = false;
+        }, enemyCoolTimeMs);
+      }
+      
     }
 
   }
