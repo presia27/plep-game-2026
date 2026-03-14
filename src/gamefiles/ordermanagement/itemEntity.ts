@@ -61,9 +61,14 @@ export class ItemEntity extends Entity implements Observer {
     if (itemSprite === null) {
       throw new Error("Failed to load spritesheet for items");
     }
+    const interactIcon = ASSET_MANAGER.getImageAsset("interact");
+    if (interactIcon === null) {
+      throw new Error("Failed to load interact icon");
+    }
     const itemMeta = getItemMetadata(itemType);
     const renderer = new ItemRenderer(
       itemSprite,
+      interactIcon,
       itemMeta.spriteFrameX,
       itemMeta.spriteFrameY,
       ITEM_WIDTH,

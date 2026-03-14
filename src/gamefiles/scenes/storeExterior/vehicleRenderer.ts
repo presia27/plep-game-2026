@@ -54,7 +54,6 @@ export class VehicleRender implements IRenderer {
     this.bBox = bBox ?? null;
   }
 
-  // extend the functionality of draw to be able to draw hint text
   public draw(context: GameContext): void {
     const pos = this.pos.getPosition();
     context.ctx.drawImage(

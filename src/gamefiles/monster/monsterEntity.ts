@@ -12,7 +12,7 @@ import { ASSET_MANAGER } from "../main.ts";
 import SceneManager from "../../sceneManager.ts";
 
 // CONSTANTS
-const MONSTER_SPEED: number = 200;
+const MONSTER_SPEED: number = 150;
 const MONSTER_WIDTH: number = 20;
 const MONSTER_HEIGHT: number = 19;
 const MONSTER_BOUND_X: number = 14;

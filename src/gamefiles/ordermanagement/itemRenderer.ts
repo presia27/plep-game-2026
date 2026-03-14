@@ -1,10 +1,12 @@
 import { GameContext, IPosition, IRenderer, ISize } from "../../classinterfaces.ts";
+import { BasicSize } from "../../componentLibrary/BasicSize.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { StaticSpriteRenderer } from "../../componentLibrary/staticSpriteRenderer.ts";
 import { OrderDeliveryLoop } from "./orderloopsys.ts";
 
 export class ItemRenderer implements IRenderer{
   private image: HTMLImageElement;
+  private interactIcon: HTMLImageElement;
   private xStart: number;
   private yStart: number;
   private spriteWidth: number;
@@ -19,6 +21,7 @@ export class ItemRenderer implements IRenderer{
 
   constructor(
     image: HTMLImageElement,
+    interactIcon: HTMLImageElement,
     spriteXstart: number,
     spriteYstart: number,
     spriteWidth: number,
@@ -28,6 +31,7 @@ export class ItemRenderer implements IRenderer{
     boundingBox?: BoundingBox | null
   ) {
     this.image = image;
+    this.interactIcon = interactIcon;
     this.xStart = spriteXstart;
     this.yStart = spriteYstart;
     this.spriteWidth = spriteWidth;
@@ -120,13 +124,21 @@ export class ItemRenderer implements IRenderer{
 
     // Show hint text
     if (this.showHintText) {
-      const positionX = this.positionComponent.getPosition().x + (this.sizeComponent.getWidth() / 2);
-      const positionY = this.positionComponent.getPosition().y - 8;
-
+      const size = new BasicSize(9, 11, 2);
+      const positionX = this.positionComponent.getPosition().x + (this.sizeComponent.getWidth() / 2 - 6);
+      const positionY = this.positionComponent.getPosition().y + this.sizeComponent.getHeight();
+      
       ctx.save();
-      ctx.textAlign = "center";
-      ctx.fillStyle = '#000000'
-      ctx.fillText("E TO PICKUP", positionX, positionY);
+      ctx.drawImage(
+        this.interactIcon, 
+        0, 0,
+        size.getWidth(), size.getHeight(),
+        positionX, positionY,
+        size.getWidth() * 2, size.getHeight() * 2
+      );
+      // ctx.textAlign = "center";
+      // ctx.fillStyle = '#000000'
+      // ctx.fillText("E TO PICKUP", positionX, positionY);
       ctx.restore()
 
       // Once everything is drawn, reset temporary state used when a collision occurs

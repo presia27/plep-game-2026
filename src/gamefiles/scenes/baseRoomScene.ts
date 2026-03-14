@@ -29,6 +29,10 @@ import { FloorGrid } from "./storeInterior/floorGrid.ts";
 import { PlayerLight } from "../player/playerLight.ts";
 import { SelfCheckout } from "./storeInterior/selfCheckoutController.ts";
 import { ShoppingCart } from "./storeInterior/shoppingCartController.ts";
+import { Entity } from "../../entity";
+import { WallSpriteController } from "./storeInterior/wallSpriteController.ts";
+import { FlickerLightController } from "./storeInterior/flickerLightController.ts";
+import { Vignette } from "./storeInterior/vignetteController.ts";
 
 /** Coordinate on actual shelves describing where items can be placed before scaling  */
 const ITEM_HSHELF_POSITION: XY[] = [
@@ -124,19 +128,19 @@ export class BaseRoomScene implements IScene {
     /* Create walls */
     const topWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 0 }),
-      1280, 5, 15, 1280, 5
+      1280, 5, //15, 1280, 5
     );
     const bottomWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 705 }),
-      1280, 5, 1297, 1280, 5
+      1280, 5, //1297, 1280, 5
     );
     const leftWall = new WallEntity(
       new staticPositionComponent({ x: 0, y: 0 }),
-      5, 720, 1, 5, 720
+      5, 720, //1, 5, 720
     );
     const rightWall = new WallEntity(
       new staticPositionComponent({ x: 1265, y: 0 }),
-      5, 720, 8, 5, 720
+      5, 720, //8, 5, 720
     );
 
     sceneManager.addEntity(topWall);
@@ -153,6 +157,11 @@ export class BaseRoomScene implements IScene {
     this.collisionSystem.addEntity(bottomWall);
     this.collisionSystem.addEntity(rightWall);
     this.collisionSystem.addEntity(leftWall);
+    
+    /* Create vignette */
+    const vignette = new Vignette();
+    this.localEntities.push(vignette);
+    sceneManager.addEntity(vignette);
 
     /* Create and load shelving and add items */
     const allowedItems = this.roomData.allowedItems.slice(); // using slice to get a shallow copy
@@ -227,7 +236,20 @@ export class BaseRoomScene implements IScene {
         }
       }
     }
-    
+
+    for (const wallSprite of this.roomData.wallSprites) {
+      const wallSpriteEntity = new WallSpriteController(
+        wallSprite.direction,
+        wallSprite.position,
+        wallSprite.size,
+        wallSprite.cornerType,
+        wallSprite.cornerPos
+      )
+      sceneManager.addEntity(wallSpriteEntity);
+      this.localEntities.push(wallSpriteEntity);
+      this.collisionSystem.addEntity(wallSpriteEntity);
+    }
+
     if (this.roomData.isCheckout) {
       for (let i = 0; i < 3; i++) {
         // render checkout room sprites from bottom to top to layer properly
@@ -340,6 +362,12 @@ export class BaseRoomScene implements IScene {
       this.localEntities.push(lot);
 
     } else {
+      // One light per fluorescent tube position
+      for (const lightConfig of this.roomData.lightConfig) {
+        const light = new FlickerLightController(lightConfig);
+        sceneManager.addEntity(light);
+        this.localEntities.push(light);
+      }
       const floorGrid = new FloorGrid();
       sceneManager.addEntity(floorGrid);
       this.collisionSystem.addEntity(floorGrid);
@@ -422,5 +450,17 @@ export class BaseRoomScene implements IScene {
       y: nearestPoint.y
     });
   }
-  
+
+  /**
+   * Helper method that takes in an entity and adds it to the scene manager,
+   * collision system, and local entities
+   * 
+   * @param sceneMgr the scene manager
+   * @param e the entity to be added
+   */
+  private loadEntities(sceneMgr: SceneManager, e: Entity): void {
+    sceneMgr.addEntity(e);
+    this.localEntities.push(e);
+    this.collisionSystem.addEntity(e);
+  }
 }

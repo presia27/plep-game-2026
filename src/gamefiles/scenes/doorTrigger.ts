@@ -122,8 +122,8 @@ export class DoorTrigger extends Entity {
       }
     }
 
-    ctx.font = "20px Jersey-20";
-    ctx.fillStyle = "#b5b5b5";
+    ctx.font = "22px Jersey-20";
+    ctx.fillStyle = "#ffffff";
     ctx.strokeStyle = "#000000";
     ctx.lineWidth = 1;
 
@@ -133,12 +133,12 @@ export class DoorTrigger extends Entity {
       ctx.fillText(
         this.targetSceneId,
         (this.boundingBox.getLeft() + this.boundingBox.getRight()) / 2,
-        this.boundingBox.getBottom() + 16
+        this.boundingBox.getBottom() + 12
       );
       ctx.strokeText(
         this.targetSceneId,
         (this.boundingBox.getLeft() + this.boundingBox.getRight()) / 2,
-        this.boundingBox.getBottom() + 16
+        this.boundingBox.getBottom() + 12
       );
     } else if (this.direction === DoorDirection.DOWN) {
       ctx.textAlign = "center";
@@ -157,24 +157,24 @@ export class DoorTrigger extends Entity {
       ctx.fillText(
         this.targetSceneId,
         this.boundingBox.getRight(),
-        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2 + 6
       );
       ctx.strokeText(
         this.targetSceneId,
         this.boundingBox.getRight(),
-        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2 + 6
       );
     } else {
       ctx.textAlign = "right";
       ctx.fillText(
         this.targetSceneId,
         this.boundingBox.getLeft(),
-        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2 + 6
       );
       ctx.strokeText(
         this.targetSceneId,
         this.boundingBox.getLeft(),
-        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2
+        (this.boundingBox.getTop() + this.boundingBox.getBottom()) / 2 + 6
       );
     }
     

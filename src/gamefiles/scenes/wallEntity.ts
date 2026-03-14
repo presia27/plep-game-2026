@@ -23,18 +23,12 @@ export class WallEntity extends Entity {
   
   // sx, sw, sh values to be used when implementing sprites later on
   
-  constructor(pos: staticPositionComponent, width: number, height: number, sx: number, sw: number, sh: number) {
+  constructor(pos: staticPositionComponent, width: number, height: number) {
     super();
     const size = new BasicSize(width, height, SCALE);
     this.wallBoundingBox = new BoundingBox(pos, size, 0, 0) ;
     super.addComponent(pos);
     super.addComponent(this.wallBoundingBox);
-    const wallSprite = ASSET_MANAGER.getImageAsset("walls");
-    if (wallSprite === null) 
-      throw new Error("Failed to load asset for walls");
-
-    //const render = new StaticSpriteRenderer(wallSprite, sx, 1, sw, sh, pos, size, this.wallBoundingBox);
-    //super.setRenderer(render);
   }
   
   override draw(context: GameContext): void {

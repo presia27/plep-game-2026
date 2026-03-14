@@ -95,7 +95,7 @@ export class BossDialogueController extends Entity implements Observer{
     this.textboxManager.clearAll();  // Clear any existing messages first
     this.textboxManager
       .showMessage(text, duration)
-      .setPosition(x ?? 415, y ?? 15)  // Default small box position
+      .setPosition(x ?? 480, y ?? 15)  // Default small box position
       .setSize(469, 63)                // Small box dimensions
       .setFontSize(16)                  // Smaller text
       .setPadding(20)
