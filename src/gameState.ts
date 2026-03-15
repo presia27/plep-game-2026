@@ -10,7 +10,7 @@ import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
 import { GAME_RESET_GOTO_MENU, GAME_RESET_REPLAY, GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE, TOGGLE_PAUSE } from "./gameStateEventTrigger.ts";
 import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.ts";
-import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
+import { LevelResult, LevelSummary } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
 import { WinScreenScene } from "./gamefiles/scenes/winScreen/winScreenSceen.ts";
 import { BossSatisfaction } from "./gamefiles/bosssatisfaction/bossSatisfactionController.ts";
@@ -262,13 +262,23 @@ export class GameState {
 
       if (levelState.success) {
         MSG_SERVICE.queueMessage("YOUR SHIFT IS OVER");
+
+        const levelSummary: LevelSummary = {
+          quota: this.orderLoop.getTotalOrders(),
+          ordersFulfilled: this.orderLoop.getNumberOfDoneOrders(),
+          avgAccuracy: this.orderLoop.getAverageAccuracy(),
+          bossSatisfaction: this.bossSatisfaction.getSatisfaction(),
+          playerHealth: this.healthMon.getHealth(),
+          playerMaxHealth: this.healthMon.getMaxHealth()
+        }
+
         setTimeout(() => {
           this.cleanState();
           // go to next level state
           this.levelNumber = this.levelNumber + 1;
           this.levelActive = false;
           // Load stat screen
-          this.sceneManager.loadScene("statScreen", new StatScreenScene(this.gsEventTrigger));
+          this.sceneManager.loadScene("statScreen", new StatScreenScene(this.gsEventTrigger, levelSummary));
         }, 3000);
       } else {
         const loseReason = levelState.reason ?? "YOU FAILED";
@@ -296,11 +306,13 @@ export class GameState {
           this.bossDialogue.onLevelStart();
         }
       } else {
-        MSG_SERVICE.queueMessage("The game is over.");
-        setTimeout(() => {
-          this.cleanState();
-          this.sceneManager.loadScene("winScreen", new WinScreenScene(this.gsEventTrigger));
-        }, 3000);
+        this.cleanState();
+        this.sceneManager.loadScene("winScreen", new WinScreenScene(
+          this.gsEventTrigger,
+          this.gameEngine.getInputSystem(),
+          this.ctx.canvas.width,
+          this.ctx.canvas.height
+        ));
       }
     }
 

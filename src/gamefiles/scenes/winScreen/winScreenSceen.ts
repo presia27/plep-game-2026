@@ -1,22 +1,52 @@
 import { GameContext, IScene } from "../../../classinterfaces.ts";
-import { GameStateEventTrigger, NEXT_SCENE } from "../../../gameStateEventTrigger.ts";
+import { GAME_RESET_GOTO_MENU, GameStateEventTrigger } from "../../../gameStateEventTrigger.ts";
+import { InputSystem } from "../../../inputsys.ts";
 import SceneManager from "../../../sceneManager.ts";
+import { ButtonEntity } from "../buttonEntity.ts";
 import { WinScreenRender } from "./winScreenRender.ts";
 
 export class WinScreenScene implements IScene {
   private sceneTrigger: GameStateEventTrigger;
+  private inputSystem: InputSystem;
+  private canvasWidth: number;
+  private canvasHeight: number;
 
-  constructor(sceneTrigger: GameStateEventTrigger) {
+  constructor(
+    sceneTrigger: GameStateEventTrigger,
+    inputSystem: InputSystem,
+    canvasWidth: number,
+    canvasHeight: number
+  ) {
     this.sceneTrigger = sceneTrigger;
+    this.inputSystem = inputSystem;
+    this.canvasWidth = canvasWidth;
+    this.canvasHeight = canvasHeight;
   }
 
   onEnter(sceneManager: SceneManager): void {
-    const screenRenderer = new WinScreenRender();
-    sceneManager.addUIEntity(screenRenderer);
+    // Return to main menu
+    const handleMainMenuClick = () => {
+      this.sceneTrigger.assertChange(null, GAME_RESET_GOTO_MENU);
+    };
 
+    const mainMenuButton = new ButtonEntity(
+      "Return to Menu",
+      "transparent",
+      "white",
+      (this.canvasWidth) / 2 - 150,
+      (this.canvasHeight) - 200,
+      300,
+      50,
+      this.inputSystem,
+      handleMainMenuClick,
+      "center"
+    );
     setTimeout(() => {
-      this.onExit();
-    }, 5000);
+      sceneManager.addTransientUIEntity(mainMenuButton);
+    }, 2500);
+
+    const screenRenderer = new WinScreenRender();
+    sceneManager.addEntity(screenRenderer);
   }
 
   onResume(sceneManager: SceneManager): void {

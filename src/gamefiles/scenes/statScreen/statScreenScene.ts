@@ -1,22 +1,25 @@
 import { GameContext, IScene } from "../../../classinterfaces.ts";
 import { GameStateEventTrigger, NEXT_SCENE } from "../../../gameStateEventTrigger.ts";
 import SceneManager from "../../../sceneManager.ts";
+import { LevelSummary } from "../../levels/levelinterfaces.ts";
 import { StatScreenRender } from "./statScreenRender.ts";
 
 export class StatScreenScene implements IScene {
   private sceneTrigger: GameStateEventTrigger;
+  private levelSummary: LevelSummary;
 
-  constructor(sceneTrigger: GameStateEventTrigger) {
+  constructor(sceneTrigger: GameStateEventTrigger, levelSummary: LevelSummary) {
     this.sceneTrigger = sceneTrigger;
+    this.levelSummary = levelSummary;
   }
 
   onEnter(sceneManager: SceneManager): void {
-    const screenRenderer = new StatScreenRender();
+    const screenRenderer = new StatScreenRender(this.levelSummary);
     sceneManager.addUIEntity(screenRenderer);
 
     setTimeout(() => {
       this.onExit();
-    }, 5000);
+    }, 6000);
   }
 
   onResume(sceneManager: SceneManager): void {

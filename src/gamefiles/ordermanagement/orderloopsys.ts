@@ -377,6 +377,14 @@ export class OrderDeliveryLoop extends Entity implements Observer, Observable {
     }
   }
 
+  public getAverageAccuracy(): number {
+    let accuracySum = 0;
+    for (const order of this.doneOrders) {
+      accuracySum += order.getFulfillAccuracy() ?? 0;
+    }
+    return accuracySum / this.doneOrders.length;
+  }
+
   /**
    * return the length of the level in seconds
    */
