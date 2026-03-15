@@ -139,6 +139,7 @@ export const CheckoutRoom: roomData = {
     { x: 540, y: 30 },   // from electronics
     { x: 1130, y: 270 }, // from pharmacy
     { x: 540, y: 570 },  // from delivery
+    { x: 640, y: 360 }   // approximate center fo the room
   ],
   monsterSpawns: [],
   updatePoints: [],
