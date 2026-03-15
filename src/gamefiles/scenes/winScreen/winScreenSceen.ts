@@ -39,7 +39,7 @@ export class WinScreenScene implements IScene {
       50,
       this.inputSystem,
       handleMainMenuClick,
-      "left"
+      "center"
     );
     setTimeout(() => {
       sceneManager.addTransientUIEntity(mainMenuButton);
