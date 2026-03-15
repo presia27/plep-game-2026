@@ -41,11 +41,11 @@ export class ItemEntity extends Entity implements Observer {
 
     const itemSize = new BasicSize(ITEM_WIDTH, ITEM_HEIGHT, ITEM_SCALE);
     const itemPosition = new staticPositionComponent(positionXY);
-    const pickupSize = new BasicSize(ITEM_WIDTH * ITEM_SCALE, ITEM_HEIGHT * ITEM_SCALE, PICKUP_RADIUS_MULTIPLIER);
+    const pickupSize = new BasicSize((ITEM_WIDTH - 2) * ITEM_SCALE, ITEM_HEIGHT * ITEM_SCALE, PICKUP_RADIUS_MULTIPLIER);
     const pickupBounds = new BoundingBox(
       itemPosition,
       pickupSize,
-      -(((ITEM_WIDTH * ITEM_SCALE) * PICKUP_RADIUS_MULTIPLIER - (ITEM_WIDTH * ITEM_SCALE)) / 2),
+      -((((ITEM_WIDTH - 2) * ITEM_SCALE) * PICKUP_RADIUS_MULTIPLIER - (ITEM_WIDTH * ITEM_SCALE)) / 2),
       -(((ITEM_HEIGHT * ITEM_SCALE) * PICKUP_RADIUS_MULTIPLIER - (ITEM_HEIGHT * ITEM_SCALE)) / 2));
     
     const lifecycle = new ItemLifecycle();
