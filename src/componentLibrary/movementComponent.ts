@@ -9,10 +9,19 @@ import { XY, VelocityCommand } from "../typeinterfaces.ts";
 export class MovementComponent implements IComponent, IPosition {
   private velocity: XY = { x: 0, y: 0 };
   private position: XY;
+  private speedBias: number;
+  private initSpeedBias: number;
   private velocityCommand: VelocityCommand | null = null;
 
-  constructor(position: XY, speed: number = 100) {
+  /**
+   * 
+   * @param position XY Position coordinate for the default starting position
+   * @param speedBiasFactor Increase or decrease entity speed by multiplying by the specified amount (default 1x bias, i.e. no speed change)
+   */
+  constructor(position: XY, speedBiasFactor: number = 1) {
     this.position = position;
+    this.speedBias = Math.max(speedBiasFactor, 0);
+    this.initSpeedBias = this.speedBias;
   }
 
   public setVelocityCommand(command: VelocityCommand | null): void {
@@ -23,8 +32,8 @@ export class MovementComponent implements IComponent, IPosition {
     if (this.velocityCommand) {
       const direction = this.velocityCommand.direction;
       const speed = this.velocityCommand.magnitude;
-      this.velocity.x = direction.x * speed;
-      this.velocity.y = direction.y * speed;
+      this.velocity.x = direction.x * speed * this.speedBias;
+      this.velocity.y = direction.y * speed * this.speedBias;
     } else {
       this.velocity.x = 0;
       this.velocity.y = 0;
@@ -48,6 +57,18 @@ export class MovementComponent implements IComponent, IPosition {
 
   public getSpeed(): number {
     return Math.sqrt(this.velocity.x ** 2 + this.velocity.y ** 2);
+  }
+
+  public getSpeedBias(): number {
+    return this.speedBias;
+  }
+
+  public setSpeedBias(speed: number): void {
+    this.speedBias = Math.max(speed, 0);
+  }
+
+  public resetSpeedBias(): void {
+    this.speedBias = this.initSpeedBias;
   }
 
   /**
