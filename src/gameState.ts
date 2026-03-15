@@ -187,6 +187,8 @@ export class GameState {
     this.gameEngine.getCollisionSystem().clearEntities();
     this.healthMon.resetHealth();
     this.player.getComponent(MovementComponent)?.resetSpeedBias();
+    this.player.getComponent(MovementComponent)?.setPosition(
+      { x: PLAYER_DEFAULT_POSITION.x, y: PLAYER_DEFAULT_POSITION.y });
     this.flashFade.reset();
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
