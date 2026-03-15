@@ -15,8 +15,8 @@ import { ILevelParams } from "./levelinterfaces.ts";
  */
 
 const levelParams: ILevelParams = {
-  duration: 60,
-  orderPromptVariability: 6,
+  duration: 120,
+  orderPromptVariability: 4,
   totalOrders: 2
 }
 
