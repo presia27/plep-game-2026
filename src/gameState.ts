@@ -8,7 +8,7 @@ import { levelLoaders } from "./gamefiles/levels/levelLoaders.ts";
 import { MessageEntity } from "./gamefiles/messageHandler/messageEntity.ts";
 import { OrderDeliveryLoop } from "./gamefiles/ordermanagement/orderloopsys.ts";
 import { OrderDisplayEntity } from "./gamefiles/ordermanagement/orderdisplayentity.ts";
-import { GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE, TOGGLE_PAUSE } from "./gameStateEventTrigger.ts";
+import { GAME_RESET_GOTO_MENU, GAME_RESET_REPLAY, GameStateEventTrigger, LEVEL_OVER, NEXT_SCENE, TOGGLE_PAUSE } from "./gameStateEventTrigger.ts";
 import { StatScreenScene } from "./gamefiles/scenes/statScreen/statScreenScene.ts";
 import { LevelResult } from "./gamefiles/levels/levelinterfaces.ts";
 import { LoseScreenScene } from "./gamefiles/scenes/loseScreen/loseScreenScene.ts";
@@ -22,8 +22,15 @@ import { loadControlScreen } from "./gamefiles/scenes/controlScreen/controlScree
 import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/controlScreen/settingsScreen.ts";
 import { XY } from "./typeinterfaces.ts";
 import { MovementComponent } from "./componentLibrary/movementComponent.ts";
+import { PlayerHealthMonitor } from "./gamefiles/playerHealthMonitor/playerHealthMonitor.ts";
+import { FlashAndFade } from "./gamefiles/flashAndFade/flashAndFade.ts";
+import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
+import { STARTSCREEN_SCENEID, StartScreenScene } from "./gamefiles/scenes/controlScreen/startScreenScene.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
+const PLAYER_MAX_HEALTH = 8;
+const PLAYER_HEALTH_STEP = 1;
+const PLAYER_DEFAULT_POSITION: XY = {x: 640, y: 360};
 
 /**
  * Holds all global state that persists across rooms and scenes.
@@ -40,6 +47,8 @@ export class GameState {
   private orderLoop: OrderDeliveryLoop;
   private bossSatisfaction: BossSatisfaction
   private player: PlayerController;
+  private healthMon: PlayerHealthMonitor;
+  private flashFade: FlashAndFade; // Similar to vignette but for flashing and fading on damage
   private globalKeyEntity: GlobalKeyListenerEntity;
 
   // For loading in game
@@ -68,15 +77,23 @@ export class GameState {
     this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
 
     /* Initialize boss satisfaction */
-    this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger); 
+    this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger);
+
+    // Create new flash and fade entity
+    this.flashFade = new FlashAndFade();
+
+    /* Initialize player health */
+    this.healthMon = new PlayerHealthMonitor(PLAYER_MAX_HEALTH, PLAYER_HEALTH_STEP, this.gsEventTrigger, this.flashFade);
 
     /* Initialize the player */
     this.player = new PlayerController(
       ASSET_MANAGER,
       gameEngine.getInputSystem(),
-      { x: 0, y: 0 }, 5,
+      { x: PLAYER_DEFAULT_POSITION.x, y: PLAYER_DEFAULT_POSITION.y },
+      5,
       this.inventoryManager,
-      this.orderLoop
+      this.orderLoop,
+      this.healthMon
     );
 
     // boss dialogue
@@ -168,6 +185,9 @@ export class GameState {
     this.orderLoop.reset();
     this.bossSatisfaction.reset();
     this.gameEngine.getCollisionSystem().clearEntities();
+    this.healthMon.resetHealth();
+    this.player.getComponent(MovementComponent)?.resetSpeedBias();
+    this.flashFade.reset();
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
   }
@@ -191,6 +211,9 @@ export class GameState {
 
     // add bossDialogue (British)
     this.sceneManager.addLevelEntity(this.bossDialogue);
+
+    // add flash and fade
+    this.sceneManager.addLevelEntity(this.flashFade);
     
     // Add pause controller
     this.sceneManager.addLevelEntity(this.globalKeyEntity);
@@ -200,13 +223,31 @@ export class GameState {
    * Perform a hard reset of the game state system.
    */
   public reset(): void {
+    this.textboxManager.clearAll();
+    this.bossDialogue = new BossDialogueController(this.textboxManager, this.bossSatisfaction);
+    MSG_SERVICE.clearQueue();
     this.inventoryManager = new InventoryManager(INVENTORY_MAX_SLOTS);
     this.orderLoop = new OrderDeliveryLoop(this.gsEventTrigger);
+    this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger);
+    this.gameEngine.getCollisionSystem().clearEntities();
     this.sceneManager.resetAll();
     this.levelNumber = 0;
     this.levelActive = false;
+    this.flashFade = new FlashAndFade();
+    this.healthMon = new PlayerHealthMonitor(PLAYER_MAX_HEALTH, PLAYER_HEALTH_STEP, this.gsEventTrigger, this.flashFade);
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
+
+    // create new player
+    this.player = new PlayerController(
+      ASSET_MANAGER,
+      this.gameEngine.getInputSystem(),
+      { x: PLAYER_DEFAULT_POSITION.x, y: PLAYER_DEFAULT_POSITION.y },
+      5,
+      this.inventoryManager,
+      this.orderLoop,
+      this.healthMon
+    );
   }
 
   public stateChangeHandler(data: any, eventType: string) {
@@ -231,7 +272,9 @@ export class GameState {
         }, 3000);
       } else {
         const loseReason = levelState.reason ?? "YOU FAILED";
-        MSG_SERVICE.queueMessage(loseReason);
+        //MSG_SERVICE.queueMessage(loseReason);
+        this.player.getComponent(BasicLifecycle)?.die();
+        this.flashFade.fadeToBlack();
         setTimeout(() => {
           this.cleanState();
           this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height));
@@ -259,6 +302,37 @@ export class GameState {
           this.sceneManager.loadScene("winScreen", new WinScreenScene(this.gsEventTrigger));
         }, 3000);
       }
+    }
+
+    if (GAME_RESET_REPLAY === eventType) {
+      this.reset();
+      this.cleanState();
+      this.loadState();
+      const levelLoadProcedure = levelLoaders[this.levelNumber];
+      if (levelLoadProcedure) {
+        levelLoadProcedure(this.gameEngine, this.sceneManager, this.ctx, this.inventoryManager, this.orderLoop, this.bossSatisfaction);
+        this.levelActive = true;
+
+        this.bossDialogue.onLevelStart();
+      }
+    }
+
+    if (GAME_RESET_GOTO_MENU === eventType) {
+      this.reset();
+      const settingsScreen = new SettingsScreenScene(
+        this.gsEventTrigger,
+        this.gameEngine.getInputSystem(),
+        this.ctx.canvas.width,
+        this.ctx.canvas.height, false
+      );
+      const startScreen = new StartScreenScene(
+        this.gsEventTrigger,
+        this.gameEngine.getInputSystem(),
+        this.ctx.canvas.width,
+        this.ctx.canvas.height
+      );
+      this.sceneManager.registerScene(SETTINGSSCREEN_SCENEID, settingsScreen);
+      this.sceneManager.loadScene(STARTSCREEN_SCENEID, startScreen);
     }
 
     if (TOGGLE_PAUSE === eventType) {

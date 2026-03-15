@@ -29,4 +29,8 @@ export class MessengerService {
   public isEmpty(): boolean {
     return this.messageQueue.length === 0;
   }
+
+  public clearQueue(): void {
+    this.messageQueue = [];
+  }
 }

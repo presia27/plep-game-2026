@@ -1,5 +1,5 @@
 import { GameContext, IScene, IRenderer } from "../../../classinterfaces.ts";
-import { GameStateEventTrigger, NEXT_SCENE } from "../../../gameStateEventTrigger.ts";
+import { GAME_RESET_GOTO_MENU, GAME_RESET_REPLAY, GameStateEventTrigger, NEXT_SCENE } from "../../../gameStateEventTrigger.ts";
 import { InputSystem } from "../../../inputsys.ts";
 import SceneManager from "../../../sceneManager.ts";
 import { ButtonEntity } from "../buttonEntity.ts";
@@ -96,7 +96,7 @@ export class LoseScreenScene implements IScene {
 
     // Try Again button - replays the current level
     const handleTryAgainClick = () => {
-      this.sceneTrigger.assertChange(null, NEXT_SCENE);
+      this.sceneTrigger.assertChange(null, GAME_RESET_REPLAY);
     };
 
     this.tryAgainBtn = new ButtonEntity(
@@ -152,13 +152,14 @@ export class LoseScreenScene implements IScene {
     // Yes button - actually go back to menu
     const handleYesClick = () => {
       ASSET_MANAGER.stopAllMusic();
-      const startScreen = new StartScreenScene(
-        this.sceneTrigger,
-        this.inputSystem,
-        this.canvasWidth,
-        this.canvasHeight
-      );
-      sceneManager.loadScene(STARTSCREEN_SCENEID, startScreen);
+      // const startScreen = new StartScreenScene(
+      //   this.sceneTrigger,
+      //   this.inputSystem,
+      //   this.canvasWidth,
+      //   this.canvasHeight
+      // );
+      // sceneManager.loadScene(STARTSCREEN_SCENEID, startScreen);
+      this.sceneTrigger.assertChange(null, GAME_RESET_GOTO_MENU);
     };
     
     this.yesBtn = new ButtonEntity(
