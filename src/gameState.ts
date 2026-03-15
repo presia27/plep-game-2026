@@ -253,11 +253,8 @@ export class GameState {
           this.bossDialogue.onLevelStart();
         }
       } else {
-        MSG_SERVICE.queueMessage("The game is over.");
-        setTimeout(() => {
-          this.cleanState();
-          this.sceneManager.loadScene("winScreen", new WinScreenScene(this.gsEventTrigger));
-        }, 3000);
+        this.cleanState();
+        this.sceneManager.loadScene("winScreen", new WinScreenScene(this.gsEventTrigger));
       }
     }
 
