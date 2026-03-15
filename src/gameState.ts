@@ -25,6 +25,7 @@ import { MovementComponent } from "./componentLibrary/movementComponent.ts";
 import { PlayerHealthMonitor } from "./gamefiles/playerHealthMonitor/playerHealthMonitor.ts";
 import { FlashAndFade } from "./gamefiles/flashAndFade/flashAndFade.ts";
 import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
+import { STARTSCREEN_SCENEID, StartScreenScene } from "./gamefiles/scenes/controlScreen/startScreenScene.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 const PLAYER_MAX_HEALTH = 8;
@@ -318,13 +319,20 @@ export class GameState {
 
     if (GAME_RESET_GOTO_MENU === eventType) {
       this.reset();
-
-      loadControlScreen(
-        this.sceneManager,
+      const settingsScreen = new SettingsScreenScene(
+        this.gsEventTrigger,
         this.gameEngine.getInputSystem(),
-        this.ctx,
-        this.gsEventTrigger
+        this.ctx.canvas.width,
+        this.ctx.canvas.height, false
       );
+      const startScreen = new StartScreenScene(
+        this.gsEventTrigger,
+        this.gameEngine.getInputSystem(),
+        this.ctx.canvas.width,
+        this.ctx.canvas.height
+      );
+      this.sceneManager.registerScene(SETTINGSSCREEN_SCENEID, settingsScreen);
+      this.sceneManager.loadScene(STARTSCREEN_SCENEID, startScreen);
     }
 
     if (TOGGLE_PAUSE === eventType) {
