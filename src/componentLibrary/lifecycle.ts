@@ -1,4 +1,4 @@
-import { IComponent, ILifecycle } from "../classinterfaces.ts";
+import { GameContext, IComponent, ILifecycle } from "../classinterfaces.ts";
 
 /**
  * Basic lifecycle component that stores the living state of an object.
@@ -19,7 +19,7 @@ export class BasicLifecycle implements IComponent, ILifecycle {
     this.alive = true;
   }
 
-  public update(): void {
+  public update(context: GameContext): void {
     return;
   }
 }
