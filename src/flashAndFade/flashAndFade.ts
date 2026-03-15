@@ -59,7 +59,7 @@ export class FlashAndFade extends Entity {
   }
 
   /**
-   * Reset black mask to transparent
+   * Reset all mask parameters
    */
   public reset(): void {
     this.maskOpacity = 0;

@@ -3,12 +3,12 @@ import { Animator } from "../../animator.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { InputAction } from "../../inputactionlist.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
-import { PlayerLifecycle } from "./playerLifecycle.ts";
+import { PLAYER_DEATH_ANIMATION_TIME_MS, PlayerLifecycle } from "./playerLifecycle.ts";
 
 /**
  * Animated sprite renderer that uses directional animations
  * based on the EmployeeFullSpriteSheet sprite sheet
- * @author Emma and Primo, Preston
+ * @author Emma and Primo, Preston, Claude Sonnet 4.6 (for the death animation)
  */
 export class AnimatedSpriteRenderer implements IRenderer {
   private spritesheet: HTMLImageElement;
@@ -20,6 +20,11 @@ export class AnimatedSpriteRenderer implements IRenderer {
   private currentDirection: number;
   private scale: number;
   private lifecycle: PlayerLifecycle;
+
+  // Death animation
+  private soulBloomTimer: number = 0;
+  private soulBloomDuration: number = PLAYER_DEATH_ANIMATION_TIME_MS / 1000;
+  private wasAboutToDie: boolean = false;
 
   /**
    * Creates an animated sprite renderer
@@ -180,6 +185,23 @@ export class AnimatedSpriteRenderer implements IRenderer {
     
     const pos = this.positionComponent.getPosition();
     const animation = this.animations[this.currentDirection];
+
+    // Detect death
+    if (this.lifecycle.isAboutToDie() && !this.wasAboutToDie) {
+      // reset timer upon beginning of death
+      this.soulBloomTimer = 0;
+    }
+    this.wasAboutToDie = this.lifecycle.isAboutToDie();
+
+    // Draw sprite (fading out)
+    if (this.lifecycle.isAboutToDie()) {
+      this.soulBloomTimer += context.clockTick;
+      const fadeProgress = Math.min(this.soulBloomTimer / this.soulBloomDuration, 1);
+      
+      // Fade out the sprite
+      context.ctx.save();
+      context.ctx.globalAlpha = 1 - fadeProgress * 0.7; // Sprite becomes 30% visible
+    }
     
     if (animation) {
       if (isMoving) {
@@ -195,6 +217,12 @@ export class AnimatedSpriteRenderer implements IRenderer {
           20 * this.scale, 19 * this.scale // destination width, height
         );
       }
+    }
+
+    context.ctx.restore();
+    if (this.lifecycle.isAboutToDie()) {
+      // Draw effect
+      this.drawSoulEffect(context.ctx);
     }
 
     if (context.debug) {
@@ -222,4 +250,74 @@ export class AnimatedSpriteRenderer implements IRenderer {
       context.ctx.restore();
     }
   }
+
+  private drawSoulEffect(ctx: CanvasRenderingContext2D): void {
+    ctx.save();
+    const progress = Math.min(this.soulBloomTimer / this.soulBloomDuration, 1);
+
+    const position = {x: this.positionComponent.getPosition().x, y: this.positionComponent.getPosition().y};
+    const width = this.sizeComponent.getWidth();
+    const height = this.sizeComponent.getHeight();
+    
+    const centerX = position.x + width / 2;
+    const centerY = position.y + height / 2;
+    
+    // Soul rises upward as it expands
+    const riseDistance = 60; // pixels
+    const soulY = centerY - (progress * riseDistance);
+    
+    // Use additive blending for ethereal glow
+    const previousComposite = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = 'lighter';
+    
+    // Multi-layered bloom for depth
+    this.drawBloomLayer(ctx, centerX, soulY, progress, 1.0);   // Outer glow
+    this.drawBloomLayer(ctx, centerX, soulY, progress, 0.6);   // Mid glow
+    this.drawBloomLayer(ctx, centerX, soulY, progress, 0.3);   // Inner bright core
+    
+    ctx.globalCompositeOperation = previousComposite;
+    ctx.restore();
+  }
+
+  private drawBloomLayer(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    progress: number,
+    sizeMultiplier: number
+  ): void {
+    const width = this.sizeComponent.getWidth();
+    const height = this.sizeComponent.getHeight();
+
+    const baseRadius = Math.max(width, height) / 2;
+    
+    // Exponential growth for dramatic expansion
+    const growthCurve = Math.pow(progress, 0.7); // Slower start, faster end
+    const bloomRadius = baseRadius * (1 + growthCurve * 4) * sizeMultiplier;
+    
+    // Fade out as it expands (soul dissipating)
+    const fadeOutCurve = Math.pow(1 - progress, 1.5); // Slower fade at first
+    const alpha = 0.8 * fadeOutCurve;
+    
+    const gradient = ctx.createRadialGradient(
+      x, y, 0,
+      x, y, bloomRadius
+    );
+    
+    // White/pale blue for ethereal soul color
+    gradient.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+    gradient.addColorStop(0.2, `rgba(240, 248, 255, ${alpha * 0.8})`); // Alice blue tint
+    gradient.addColorStop(0.5, `rgba(255, 255, 255, ${alpha * 0.4})`);
+    gradient.addColorStop(0.8, `rgba(240, 248, 255, ${alpha * 0.1})`);
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(
+      x - bloomRadius,
+      y - bloomRadius,
+      bloomRadius * 2,
+      bloomRadius * 2
+    );
+  }
+
 }

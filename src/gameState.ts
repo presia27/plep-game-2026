@@ -24,10 +24,12 @@ import { XY } from "./typeinterfaces.ts";
 import { MovementComponent } from "./componentLibrary/movementComponent.ts";
 import { PlayerHealthMonitor } from "./playerHealthMonitor/playerHealthMonitor.ts";
 import { FlashAndFade } from "./flashAndFade/flashAndFade.ts";
+import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 const PLAYER_MAX_HEALTH = 8;
 const PLAYER_HEALTH_STEP = 1;
+const PLAYER_DEFAULT_POSITION: XY = {x: 640, y: 360};
 
 /**
  * Holds all global state that persists across rooms and scenes.
@@ -86,7 +88,8 @@ export class GameState {
     this.player = new PlayerController(
       ASSET_MANAGER,
       gameEngine.getInputSystem(),
-      { x: 0, y: 0 }, 5,
+      { x: PLAYER_DEFAULT_POSITION.x, y: PLAYER_DEFAULT_POSITION.y },
+      5,
       this.inventoryManager,
       this.orderLoop,
       this.healthMon
@@ -183,6 +186,7 @@ export class GameState {
     this.gameEngine.getCollisionSystem().clearEntities();
     this.healthMon.resetHealth();
     this.player.getComponent(MovementComponent)?.resetSpeedBias();
+    this.flashFade.reset();
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
   }
@@ -226,6 +230,17 @@ export class GameState {
     this.healthMon.resetAll();
     this.pauseSettingsScene = null;
     this.playerLastPositionBeforePause = null;
+
+    // create new player
+    this.player = new PlayerController(
+      ASSET_MANAGER,
+      this.gameEngine.getInputSystem(),
+      { x: PLAYER_DEFAULT_POSITION.x, y: PLAYER_DEFAULT_POSITION.y },
+      5,
+      this.inventoryManager,
+      this.orderLoop,
+      this.healthMon
+    );
   }
 
   public stateChangeHandler(data: any, eventType: string) {
@@ -251,6 +266,7 @@ export class GameState {
       } else {
         const loseReason = levelState.reason ?? "YOU FAILED";
         MSG_SERVICE.queueMessage(loseReason);
+        this.player.getComponent(BasicLifecycle)?.die();
         this.flashFade.fadeToBlack();
         setTimeout(() => {
           this.cleanState();

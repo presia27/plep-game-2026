@@ -1,6 +1,6 @@
 import { BasicLifecycle } from "../../componentLibrary/lifecycle.ts";
 
-export const PLAYER_DEATH_ANIMATION_TIME_MS = 3000;
+export const PLAYER_DEATH_ANIMATION_TIME_MS = 2000;
 
 export class PlayerLifecycle extends BasicLifecycle {
   private aboutToDie = false;

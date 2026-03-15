@@ -152,7 +152,7 @@ export class PlayerCollisionHandler extends AbstractCollisionHandler {
     }
 
     if (other instanceof MonsterEntity) {
-      const enemyCoolTimeMs = 3000;
+      const enemyCoolTimeMs = 1000;
       
       if (!this.enemyCooldownFlag) {
         const health = this.healthMon.damage(); // damage and return new health value
