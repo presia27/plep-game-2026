@@ -8,6 +8,8 @@ export interface LevelSummary {
   ordersFulfilled: number;
   avgAccuracy: number;
   bossSatisfaction: number;
+  playerHealth: number;
+  playerMaxHealth: number;
 }
 
 export interface ILevelParams {

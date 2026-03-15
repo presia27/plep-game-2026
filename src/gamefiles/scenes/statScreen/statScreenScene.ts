@@ -19,7 +19,7 @@ export class StatScreenScene implements IScene {
 
     setTimeout(() => {
       this.onExit();
-    }, 5000);
+    }, 6000);
   }
 
   onResume(sceneManager: SceneManager): void {

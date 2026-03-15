@@ -267,7 +267,9 @@ export class GameState {
           quota: this.orderLoop.getTotalOrders(),
           ordersFulfilled: this.orderLoop.getNumberOfDoneOrders(),
           avgAccuracy: this.orderLoop.getAverageAccuracy(),
-          bossSatisfaction: this.bossSatisfaction.getSatisfaction()
+          bossSatisfaction: this.bossSatisfaction.getSatisfaction(),
+          playerHealth: this.healthMon.getHealth(),
+          playerMaxHealth: this.healthMon.getMaxHealth()
         }
 
         setTimeout(() => {
@@ -277,7 +279,7 @@ export class GameState {
           this.levelActive = false;
           // Load stat screen
           this.sceneManager.loadScene("statScreen", new StatScreenScene(this.gsEventTrigger, levelSummary));
-        }, 5000);
+        }, 3000);
       } else {
         const loseReason = levelState.reason ?? "YOU FAILED";
         //MSG_SERVICE.queueMessage(loseReason);

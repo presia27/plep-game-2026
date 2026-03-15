@@ -13,6 +13,7 @@ export class StatScreenRender extends Entity {
       `Orders fulfilled: ${levelSummary.ordersFulfilled}`,
       `Average accuracy: ${(levelSummary.avgAccuracy * 100).toFixed(2)}%`,
       `Boss satisfaction: ${levelSummary.bossSatisfaction.toFixed(2)}`,
+      `Health: ${levelSummary.playerHealth}/${levelSummary.playerMaxHealth}`,
       'PERFORMANCE: SATISFACTORY',
       'YOU ARE MOVING ON'
     ];
@@ -71,20 +72,25 @@ class Renderer implements IRenderer {
       yOffset + heightOffset * 4,
     );
     ctx.fillText(
-      '===============================================',
+      this.typewriter.getRevealedText(5),
       xOffset,
       yOffset + heightOffset * 5,
     );
-    ctx.font = "48px 'Jersey-20', Arial";
     ctx.fillText(
-      this.typewriter.getRevealedText(5),
+      '===============================================',
       xOffset,
       yOffset + heightOffset * 6,
     );
+    ctx.font = "48px 'Jersey-20', Arial";
     ctx.fillText(
       this.typewriter.getRevealedText(6),
       xOffset,
       yOffset + heightOffset * 7,
+    );
+    ctx.fillText(
+      this.typewriter.getRevealedText(7),
+      xOffset,
+      yOffset + heightOffset * 8,
     );
 
     ctx.restore();
