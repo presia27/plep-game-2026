@@ -1,5 +1,5 @@
-import { GameContext } from "../classinterfaces";
-import { Entity } from "../entity.ts";
+import { GameContext } from "../../classinterfaces.ts";
+import { Entity } from "../../entity.ts";
 
 /**
  * Similar to the vignette controller, but designed to flash

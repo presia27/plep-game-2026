@@ -35,3 +35,5 @@ export class GameStateEventTrigger {
 export const LEVEL_OVER = "LEVEL_OVER";
 export const NEXT_SCENE = "NEXT_SCENE";
 export const TOGGLE_PAUSE = "TOGGLE_PAUSE";
+export const GAME_RESET_REPLAY = "GAME_RESET_REPLAY";
+export const GAME_RESET_GOTO_MENU = "GAME_RESET_GOTO_MENU";

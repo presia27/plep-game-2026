@@ -4,7 +4,7 @@ import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
 import { MovementComponent } from "../../componentLibrary/movementComponent.ts";
 import { Entity } from "../../entity.ts";
 import { InputSystem } from "../../inputsys.ts";
-import { PlayerHealthMonitor } from "../../playerHealthMonitor/playerHealthMonitor.ts";
+import { PlayerHealthMonitor } from "../playerHealthMonitor/playerHealthMonitor.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { InventoryManager } from "../inventory/inventoryManager.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";

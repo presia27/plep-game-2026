@@ -20,7 +20,7 @@ import { SelfCheckout } from "../scenes/storeInterior/selfCheckoutController.ts"
 import { ShoppingCart } from "../scenes/storeInterior/shoppingCartController.ts";
 import { XY } from "../../typeinterfaces.ts";
 import { MonsterEntity } from "../monster/monsterEntity.ts";
-import { PlayerHealthMonitor } from "../../playerHealthMonitor/playerHealthMonitor.ts";
+import { PlayerHealthMonitor } from "../playerHealthMonitor/playerHealthMonitor.ts";
 
 /**
  * Player collision handler that prevents the player from

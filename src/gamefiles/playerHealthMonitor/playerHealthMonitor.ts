@@ -1,6 +1,6 @@
 import { FlashAndFade } from "../flashAndFade/flashAndFade.ts";
-import { LevelResult } from "../gamefiles/levels/levelinterfaces.ts";
-import { GameStateEventTrigger, LEVEL_OVER } from "../gameStateEventTrigger.ts";
+import { LevelResult } from "../levels/levelinterfaces.ts";
+import { GameStateEventTrigger, LEVEL_OVER } from "../../gameStateEventTrigger.ts";
 
 /**
  * Game-scoped monitor of the player's health/status
@@ -17,6 +17,7 @@ export class PlayerHealthMonitor {
   private initMaxHealth: number;
   private healthStep: number;
   private initHealthStep: number;
+  private stateChangeCalled: boolean = false;
 
   private eventTrigger: GameStateEventTrigger;
   private flashFade: FlashAndFade | null;
@@ -110,12 +111,13 @@ export class PlayerHealthMonitor {
    * trigger a state change
    */
   private checkHealthState(): void {
-    if (this.currentHealth <= 0) {
+    if (this.currentHealth <= 0 && !this.stateChangeCalled) {
       const levelStatus: LevelResult = {
         success: false,
         reason: "SOUL STOLEN"
-      }
-      this.eventTrigger.assertChange(levelStatus, LEVEL_OVER)
+      };
+      this.eventTrigger.assertChange(levelStatus, LEVEL_OVER);
+      this.stateChangeCalled = true;
     }
   }
 }
