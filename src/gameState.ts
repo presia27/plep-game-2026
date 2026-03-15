@@ -272,7 +272,7 @@ export class GameState {
         }, 3000);
       } else {
         const loseReason = levelState.reason ?? "YOU FAILED";
-        MSG_SERVICE.queueMessage(loseReason);
+        //MSG_SERVICE.queueMessage(loseReason);
         this.player.getComponent(BasicLifecycle)?.die();
         this.flashFade.fadeToBlack();
         setTimeout(() => {
