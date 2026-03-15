@@ -14,9 +14,7 @@ export class WinScreenScene implements IScene {
     const screenRenderer = new WinScreenRender();
     sceneManager.addUIEntity(screenRenderer);
 
-    setTimeout(() => {
-      this.onExit();
-    }, 5000);
+    
   }
 
   onResume(sceneManager: SceneManager): void {

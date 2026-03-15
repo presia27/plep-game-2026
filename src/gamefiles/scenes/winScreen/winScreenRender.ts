@@ -10,7 +10,7 @@ export class WinScreenRender extends Entity {
 
     const texts = [
       "CONTRACT: FULFILLED",
-      "YOU ARE NOW FREE"
+      "YOU ARE NOW FREE - CONGRATULATIONS"
     ];
 
     const typewriter = new MultiLineTypewriter(texts, 30);
