@@ -1,3 +1,4 @@
+import { FlashAndFade } from "../flashAndFade/flashAndFade.ts";
 import { LevelResult } from "../gamefiles/levels/levelinterfaces.ts";
 import { GameStateEventTrigger, LEVEL_OVER } from "../gameStateEventTrigger.ts";
 
@@ -18,19 +19,21 @@ export class PlayerHealthMonitor {
   private initHealthStep: number;
 
   private eventTrigger: GameStateEventTrigger;
+  private flashFade: FlashAndFade | null;
 
   /**
    * 
    * @param maxHealth Maximum health of the player (also the default on instantiation)
    * @param healthStep How much to alter the health of the player by default
    */
-  constructor(maxHealth: number, healthStep: number, eventTrigger: GameStateEventTrigger) {
+  constructor(maxHealth: number, healthStep: number, eventTrigger: GameStateEventTrigger, flashFade: FlashAndFade) {
     this.currentHealth = maxHealth;
     this.maxHealth = maxHealth;
     this.initMaxHealth = maxHealth;
     this.healthStep = healthStep;
     this.initHealthStep = healthStep;
     this.eventTrigger = eventTrigger;
+    this.flashFade = flashFade ?? null;
   }
 
   /**
@@ -38,6 +41,10 @@ export class PlayerHealthMonitor {
    */
   public damage(): number {
     this.currentHealth = Math.max(this.currentHealth - this.healthStep, 0);
+    if (this.flashFade) {
+      this.flashFade.triggerFlash(0.15, 0.15);
+      this.flashFade.darken(0.2);
+    }
     this.checkHealthState();
     return this.currentHealth;
   }

@@ -23,6 +23,7 @@ import { SETTINGSSCREEN_SCENEID, SettingsScreenScene } from "./gamefiles/scenes/
 import { XY } from "./typeinterfaces.ts";
 import { MovementComponent } from "./componentLibrary/movementComponent.ts";
 import { PlayerHealthMonitor } from "./playerHealthMonitor/playerHealthMonitor.ts";
+import { FlashAndFade } from "./flashAndFade/flashAndFade.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 const PLAYER_MAX_HEALTH = 8;
@@ -44,6 +45,7 @@ export class GameState {
   private bossSatisfaction: BossSatisfaction
   private player: PlayerController;
   private healthMon: PlayerHealthMonitor;
+  private flashFade: FlashAndFade; // Similar to vignette but for flashing and fading on damage
   private globalKeyEntity: GlobalKeyListenerEntity;
 
   // For loading in game
@@ -74,8 +76,11 @@ export class GameState {
     /* Initialize boss satisfaction */
     this.bossSatisfaction = new BossSatisfaction(this.gsEventTrigger);
 
+    // Create new flash and fade entity
+    this.flashFade = new FlashAndFade();
+
     /* Initialize player health */
-    this.healthMon = new PlayerHealthMonitor(PLAYER_MAX_HEALTH, PLAYER_HEALTH_STEP, this.gsEventTrigger);
+    this.healthMon = new PlayerHealthMonitor(PLAYER_MAX_HEALTH, PLAYER_HEALTH_STEP, this.gsEventTrigger, this.flashFade);
 
     /* Initialize the player */
     this.player = new PlayerController(
@@ -201,6 +206,9 @@ export class GameState {
 
     // add bossDialogue (British)
     this.sceneManager.addLevelEntity(this.bossDialogue);
+
+    // add flash and fade
+    this.sceneManager.addLevelEntity(this.flashFade);
     
     // Add pause controller
     this.sceneManager.addLevelEntity(this.globalKeyEntity);
@@ -243,6 +251,7 @@ export class GameState {
       } else {
         const loseReason = levelState.reason ?? "YOU FAILED";
         MSG_SERVICE.queueMessage(loseReason);
+        this.flashFade.fadeToBlack();
         setTimeout(() => {
           this.cleanState();
           this.sceneManager.loadScene("loseScreen", new LoseScreenScene(this.gsEventTrigger, loseReason, this.gameEngine.getInputSystem(), this.ctx.canvas.width, this.ctx.canvas.height));
