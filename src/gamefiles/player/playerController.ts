@@ -11,6 +11,7 @@ import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { AnimatedSpriteRenderer } from "./animatedSpriteRenderer.ts";
 import { PlayerCollisionHandler } from "./playerCollisionHandler.ts";
 import { PlayerInputController } from "./playerInputController.ts";
+import { PlayerLifecycle } from "./playerLifecycle.ts";
 
 // CONSTANTS
 const PLAYER_SPEED: number = 325;
@@ -51,18 +52,20 @@ export class PlayerController extends Entity {
     const playerBoundSize = new BasicSize(PLAYER_BOUND_X, PLAYER_BOUND_Y, scale);
     const playerBoundingBox = new BoundingBox(playerMovementAndPosition, playerBoundSize, PLAYER_BOUND_OFFSET_X, PLAYER_BOUND_OFFSET_Y);
     const playerCollisionHandler = new PlayerCollisionHandler(playerBoundingBox, playerMovementAndPosition, playerSize, inputSystem, inventoryMgr, orderLoop, healthMon);
+    const playerLifecycle = new PlayerLifecycle();
     super.addComponent(playerMovementAndPosition)
     super.addComponent(playerInputCtl);
     // super.addComponent(playerSize);
     // super.addComponent(playerBoundSize);
     super.addComponent(playerBoundingBox);
     super.addComponent(playerCollisionHandler);
+    super.addComponent(playerLifecycle);
 
     const playerSprite = assetManager.getImageAsset("player");
     if (playerSprite === null) {
       throw new Error("Failed to load asset for the player");
     }
-    const renderer = new AnimatedSpriteRenderer(playerSprite, playerMovementAndPosition, playerSize, inputSystem, scale, playerBoundingBox);
+    const renderer = new AnimatedSpriteRenderer(playerSprite, playerMovementAndPosition, playerSize, inputSystem, scale, playerLifecycle, playerBoundingBox);
     super.setRenderer(renderer);
   }
 }

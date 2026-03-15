@@ -3,6 +3,7 @@ import { Animator } from "../../animator.ts";
 import { InputSystem } from "../../inputsys.ts";
 import { InputAction } from "../../inputactionlist.ts";
 import { BoundingBox } from "../../componentLibrary/boundingBox.ts";
+import { PlayerLifecycle } from "./playerLifecycle.ts";
 
 /**
  * Animated sprite renderer that uses directional animations
@@ -18,6 +19,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
   private animations: Animator[];
   private currentDirection: number;
   private scale: number;
+  private lifecycle: PlayerLifecycle;
 
   /**
    * Creates an animated sprite renderer
@@ -36,7 +38,8 @@ export class AnimatedSpriteRenderer implements IRenderer {
     sizeComponent: ISize,
     inputSystem: InputSystem,
     scale: number = 4.0,
-    boundingBox?: BoundingBox | null
+    playerLifecycle: PlayerLifecycle,
+    boundingBox?: BoundingBox | null,
   ) {
     this.spritesheet = spritesheet;
     this.positionComponent = positionComponent;
@@ -45,6 +48,7 @@ export class AnimatedSpriteRenderer implements IRenderer {
     this.animations = [];
     this.currentDirection = 0; // default facing down
     this.scale = scale;
+    this.lifecycle = playerLifecycle;
 
     if (boundingBox) {
       this.boundingBox = boundingBox;
