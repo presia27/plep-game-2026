@@ -46,7 +46,8 @@ class Renderer implements IRenderer {
       "Q to Drop Items",
       "F to Deliver Items",
       "Collect Items on time,", 
-      "avoiding the antiquated husks!",
+      "avoiding the lost husks",
+      "who seek your soul!",
       "",
       "Good luck, runner!"
     ];
@@ -65,9 +66,7 @@ class Renderer implements IRenderer {
         "You are tredging through by working for",
         "a megaconglomerate with advanced",
         "technology to transport your soul",
-        "into a husk. Stay cautious, for those",
-        "lost will try to steal your soul",
-        "as their own.",
+        "into an expendible husk.",
         "",
         "Be wary, young traveler. May you",
         "return from this experience alive."
@@ -76,7 +75,7 @@ class Renderer implements IRenderer {
 
 
     lore.forEach((line) => {
-        ctx.fillText(line, this.canvasWidth-(this.canvasWidth/3), yOffset - 50);
+        ctx.fillText(line, this.canvasWidth-(this.canvasWidth/3), yOffset);
         yOffset += lineHeight;
     });
 
