@@ -51,17 +51,17 @@ class Renderer implements IRenderer {
     ctx.fillText(
       "COPYRIGHT (C) 2026 PLEP DEVELOPERS",
       ctx.canvas.width / 2,
-      ctx.canvas.height - 40
+      ctx.canvas.height - 44
     );
     ctx.fillText(
       "THE PERSONS, EVENTS, CHARACTERS AND FIRMS IN THIS GAME ARE FICTICIOUS.",
       ctx.canvas.width / 2,
-      ctx.canvas.height - 26
+      ctx.canvas.height - 30
     );
     ctx.fillText(
       "ANY SIMILARITY TO ACTUAL PERSONS, LIVING OR DEAD, OR TO ACTUAL EVENTS OR FIRMS IS PURELY COINCIDENTAL.",
       ctx.canvas.width / 2,
-      ctx.canvas.height - 12
+      ctx.canvas.height - 16
     );
 
     ctx.restore();
