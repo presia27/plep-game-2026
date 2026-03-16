@@ -6,6 +6,8 @@ import { ASSET_MANAGER } from "../../main.ts";
 import { ButtonEntity } from "../buttonEntity.ts";
 import { SETTINGSSCREEN_SCENEID } from "./settingsScreen.ts";
 import { StartScreenRender } from "./startScreenRender.ts";
+import { INSTRUCTIONSCREEN_SCENEID } from "./instructionsScreen.ts";
+//import { InstructionsScreenRender } from "./instructionScreenRender.ts";
 
 export const STARTSCREEN_SCENEID = "start"
 
@@ -56,13 +58,17 @@ export class StartScreenScene implements IScene {
       sceneManager.loadScene(SETTINGSSCREEN_SCENEID);
     }
 
+    const handleInstructionsClick = () => {
+      sceneManager.loadScene(INSTRUCTIONSCREEN_SCENEID);
+    }
+
     /* Add buttons */
     const startBtn = new ButtonEntity(
       "PLAY",
       "transparent",
       "white",
       72,
-      (this.canvasHeight) - 272,
+      (this.canvasHeight) - 344,
       200,
       50,
       this.inputSystem,
@@ -86,6 +92,21 @@ export class StartScreenScene implements IScene {
     );
     sceneManager.addTransientUIEntity(settingsBtn);
     this.localEntities.push(settingsBtn);
+
+    const instructionsBtn = new ButtonEntity(
+      "HOW TO PLAY",
+      "transparent",
+      "white",
+      72,
+      (this.canvasHeight - 272),
+      200,
+      50,
+      this.inputSystem,
+      handleInstructionsClick,
+      "left"
+    );
+    sceneManager.addTransientUIEntity(instructionsBtn);
+    this.localEntities.push(instructionsBtn);
 
     /* Add Background */
     const screenRenderer = new StartScreenRender(() => {return "PROJECT RUNNER"});
