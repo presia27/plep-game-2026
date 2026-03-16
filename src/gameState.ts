@@ -26,6 +26,7 @@ import { PlayerHealthMonitor } from "./gamefiles/playerHealthMonitor/playerHealt
 import { FlashAndFade } from "./gamefiles/flashAndFade/flashAndFade.ts";
 import { BasicLifecycle } from "./componentLibrary/lifecycle.ts";
 import { STARTSCREEN_SCENEID, StartScreenScene } from "./gamefiles/scenes/controlScreen/startScreenScene.ts";
+import { INSTRUCTIONSCREEN_SCENEID, InstructionsScreenScene } from "./gamefiles/scenes/controlScreen/instructionsScreen.ts";
 
 export const INVENTORY_MAX_SLOTS = 5;
 const PLAYER_MAX_HEALTH = 8;
@@ -345,7 +346,16 @@ export class GameState {
         this.ctx.canvas.width,
         this.ctx.canvas.height
       );
+      const instructionScreen = new InstructionsScreenScene(
+        this.gsEventTrigger,
+        this.gameEngine.getInputSystem(),
+        this.ctx.canvas.width,
+        this.ctx.canvas.height,
+        false
+      )
+      
       this.sceneManager.registerScene(SETTINGSSCREEN_SCENEID, settingsScreen);
+      this.sceneManager.registerScene(INSTRUCTIONSCREEN_SCENEID, instructionScreen)
       this.sceneManager.loadScene(STARTSCREEN_SCENEID, startScreen);
     }
 
