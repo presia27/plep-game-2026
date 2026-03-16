@@ -144,10 +144,18 @@ export class InputSystem {
   }
 
   public startInput() {
-    const getXandY = (e: MouseEvent | WheelEvent | PointerEvent) => ({
-      x: e.clientX - this.ctx.canvas.getBoundingClientRect().left,
-      y: e.clientY - this.ctx.canvas.getBoundingClientRect().top
-    });
+    const getXandY = (e: MouseEvent | WheelEvent | PointerEvent) => {
+      const rect = this.ctx.canvas.getBoundingClientRect();
+
+      // Calculate scale factors
+      const scaleX = this.ctx.canvas.width / rect.width;
+      const scaleY = this.ctx.canvas.height / rect.height;
+      
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      }
+    };
 
     this.ctx.canvas.addEventListener("mousemove", e => {
       if (this.debug) {
