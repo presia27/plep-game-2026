@@ -17,13 +17,22 @@ import { MessengerService } from "../messengerService.ts";
 
 const canvas: HTMLCanvasElement = document.getElementById("gameWorld") as HTMLCanvasElement;
 const ctx = canvas?.getContext("2d");
+const params = new URLSearchParams(window.location.search);
+const debugParam = params.get('debugging') === 'true';
 
 if (ctx === null || ctx === undefined) {
   throw new Error("Unable to get 2D canvas context");
 }
 
+const gameOptions = {
+  debugging: false
+};
+
+// Check debug URL param and set gameOptions accordingly
+if (debugParam) gameOptions.debugging = true;
+
 const sceneManager = new SceneManager();
-const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, { debugging: false });
+const gameEngine = new GameEngine(ctx, sceneManager, myInputMap, gameOptions);
 export const ASSET_MANAGER = new AssetManager();
 export const MSG_SERVICE = new MessengerService();
 
