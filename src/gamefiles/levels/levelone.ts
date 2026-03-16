@@ -7,7 +7,6 @@ import { MSG_SERVICE } from "../main.ts";
 import { OrderDeliveryLoop } from "../ordermanagement/orderloopsys.ts";
 import { BaseRoomScene } from "../scenes/baseRoomScene.ts";
 import { CheckoutRoom, DeliveryRoom, PharmaRoom } from "../scenes/roomData.ts";
-import { Vignette } from "../scenes/storeInterior/vignetteController.ts";
 import { ILevelParams } from "./levelinterfaces.ts";
 
 /**
@@ -16,8 +15,8 @@ import { ILevelParams } from "./levelinterfaces.ts";
  */
 
 const levelParams: ILevelParams = {
-  duration: 60,
-  orderPromptVariability: 6,
+  duration: 90,
+  orderPromptVariability: 3,
   totalOrders: 2
 }
 
