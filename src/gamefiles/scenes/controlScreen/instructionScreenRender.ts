@@ -41,7 +41,7 @@ class Renderer implements IRenderer {
 
     // Game instructions
     const instructions = [
-      "WASD to move",
+      "WASD to Move",
       "E to Pick Up Items",
       "Q to Drop Items",
       "F to Deliver Items",
@@ -62,10 +62,12 @@ class Renderer implements IRenderer {
 
     const lore = [
         "Living in the year 2167,",
-        "You are tredging by working for",
+        "You are tredging through by working for",
         "a megaconglomerate with advanced",
         "technology to transport your soul",
-        "into an expendible husk.",
+        "into a lost husk. Stay cautious,",
+        "for they will try to steal your soul",
+        "as their own.",
         "",
         "Be wary, young traveler. May you",
         "return from this experience alive."
@@ -74,7 +76,7 @@ class Renderer implements IRenderer {
 
 
     lore.forEach((line) => {
-        ctx.fillText(line, this.canvasWidth-(this.canvasWidth/3), yOffset);
+        ctx.fillText(line, this.canvasWidth-(this.canvasWidth/3), yOffset - 50);
         yOffset += lineHeight;
     });
 
