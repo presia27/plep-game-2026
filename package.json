@@ -1,11 +1,10 @@
 {
-  "name": "plepgame",
+  "name": "projectrunner",
   "version": "0.0.1",
-  "description": "PLEP Developers Group horror/action/satire game",
+  "description": "PLEP Developers Group horror/action/satire game - Project Runner",
   "keywords": [
     "Animation",
     "game",
-    "engine",
     "engine",
     "horror",
     "action",
@@ -20,7 +19,12 @@
     "url": "git+https://github.com/presia27/plep-game-2026.git"
   },
   "license": "Apache-2.0",
-  "author": "Preston Sia (presia27)",
+  "contributors": [
+    {"name": "Preston Sia"},
+    {"name": "Luke Willis"},
+    {"name": "Emma Szebenyi"},
+    {"name": "Primitivo Bambao"}
+  ],
   "type": "commonjs",
   "main": "server.js",
   "scripts": {
