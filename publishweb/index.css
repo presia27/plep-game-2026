@@ -5,8 +5,9 @@ body {
 
 /* Game canvas wrapper */
 #gameArea {
-  background-color: gray;
+  background-color: black;
   color: white;
+  width: 100vw;
   height: 100vh;
   /* min-height: 784px;*/
   display: flex;
@@ -17,9 +18,10 @@ body {
 
 /* HTML Canvas Element */
 #gameWorld {
-  image-rendering: pixelated;
-  /* max-width: 100%;
-  max-height: 100%; */
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
   height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
